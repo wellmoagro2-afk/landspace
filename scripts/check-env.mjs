@@ -13,13 +13,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 
+// Detectar se estamos em CI/Vercel
+const isCI = 
+  process.env.CI === 'true' || 
+  process.env.CI === '1' ||
+  process.env.VERCEL === '1' || 
+  !!process.env.VERCEL_ENV ||
+  !!process.env.VERCEL_URL;
+
 // Verificar se .env.local existe
 const envLocalPath = join(projectRoot, '.env.local');
 const envPath = join(projectRoot, '.env');
-
 const hasEnvFile = existsSync(envLocalPath) || existsSync(envPath);
 
-if (!hasEnvFile) {
+// Em CI/Vercel, não exigir .env.local (variáveis vêm de Environment Variables)
+if (!hasEnvFile && !isCI) {
   console.error('\n❌ Arquivo .env.local não encontrado!\n');
   console.log('📋 Para resolver:');
   console.log('  1. Copie o arquivo .env.example para .env.local:');
@@ -29,27 +37,53 @@ if (!hasEnvFile) {
   process.exit(1);
 }
 
-// Tentar importar e validar env.ts
-try {
-  // Carregar variáveis de ambiente do arquivo .env.local
-  if (existsSync(envLocalPath)) {
-    const envContent = readFileSync(envLocalPath, 'utf-8');
-    const envLines = envContent.split('\n');
-    
-    envLines.forEach((line) => {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith('#')) {
-        const [key, ...valueParts] = trimmed.split('=');
-        if (key && valueParts.length > 0) {
-          const value = valueParts.join('=').trim();
-          // Remover aspas se presentes
-          const cleanValue = value.replace(/^["']|["']$/g, '');
+if (isCI && !hasEnvFile) {
+  console.log('ℹ️  Modo CI/Vercel detectado: variáveis vêm de Environment Variables (não é necessário .env.local)\n');
+}
+
+// Carregar variáveis de ambiente do arquivo .env.local (apenas se existir)
+// Em CI/Vercel, variáveis já vêm de Environment Variables, mas ainda podemos carregar .env.local se existir
+if (existsSync(envLocalPath)) {
+  const envContent = readFileSync(envLocalPath, 'utf-8');
+  const envLines = envContent.split('\n');
+  
+  envLines.forEach((line) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        // Remover aspas se presentes
+        const cleanValue = value.replace(/^["']|["']$/g, '');
+        // Só sobrescrever se não estiver já definido (prioridade para env vars do sistema/CI)
+        if (!process.env[key.trim()]) {
           process.env[key.trim()] = cleanValue;
         }
       }
-    });
-  }
+    }
+  });
+} else if (existsSync(envPath)) {
+  // Tentar carregar .env também (fallback)
+  const envContent = readFileSync(envPath, 'utf-8');
+  const envLines = envContent.split('\n');
+  
+  envLines.forEach((line) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        const cleanValue = value.replace(/^["']|["']$/g, '');
+        if (!process.env[key.trim()]) {
+          process.env[key.trim()] = cleanValue;
+        }
+      }
+    }
+  });
+}
 
+// Tentar importar e validar env.ts
+try {
   // Detectar provider do Prisma (fail-fast antes de validar env)
   const schemaPath = join(projectRoot, 'prisma', 'schema.prisma');
   let prismaProvider = 'postgresql'; // default
@@ -123,8 +157,8 @@ try {
     ENV = envModule.ENV;
   } catch (e) {
     // Fallback: validar manualmente as variáveis obrigatórias
-    const required = ['SESSION_SECRET', 'DATABASE_URL', 'PREVIEW_SECRET'];
-    const missing = required.filter(key => !process.env[key]);
+    const required = ['SESSION_SECRET', 'DATABASE_URL', 'PREVIEW_SECRET', 'ADMIN_PASSWORD'];
+    const missing = required.filter(key => !process.env[key] || process.env[key].trim() === '');
     
     if (missing.length > 0) {
       console.error('\n❌ Variáveis obrigatórias faltando:\n');
@@ -132,6 +166,11 @@ try {
         console.error(`   - ${key}`);
       });
       console.error('\n');
+      if (isCI) {
+        console.error('💡 Em CI/Vercel, configure essas variáveis nas Environment Variables do projeto.\n');
+      } else {
+        console.error('💡 Configure essas variáveis no arquivo .env.local\n');
+      }
       process.exit(1);
     }
     
@@ -148,6 +187,11 @@ try {
     
     if (process.env.ADMIN_KEY && process.env.ADMIN_KEY.length < 24) {
       console.error('\n❌ ADMIN_KEY deve ter no mínimo 24 caracteres se configurado\n');
+      process.exit(1);
+    }
+    
+    if (process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length === 0) {
+      console.error('\n❌ ADMIN_PASSWORD não pode estar vazio\n');
       process.exit(1);
     }
     
