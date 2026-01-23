@@ -1,0 +1,573 @@
+/* ============================================
+   PRINT STYLESHEET - WHITE PAPER 4.0
+   Hard Reset - Padrão Elsevier/Nature
+   ============================================ */
+@media print {
+  /* ============================================
+     1. LIMPEZA GERAL DE ATIVOS
+     ============================================ */
+  
+  /* Force fundo branco puro e texto preto em TUDO */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+    background-gradient: none !important;
+    radial-gradient: none !important;
+    linear-gradient: none !important;
+  }
+  
+  html,
+  body,
+  [data-editorial="briefing"],
+  [data-editorial="briefing"] * {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  /* ============================================
+     2. OCULTAR ELEMENTOS NÃO ESSENCIAIS
+     ============================================ */
+  
+  /* Header, Footer, Navegação Global */
+  body > header:not(.print-header),
+  body > footer:not(.print-footer),
+  body > nav,
+  header:not(.print-header),
+  footer:not(.print-footer),
+  nav,
+  [role="navigation"],
+  [data-header],
+  [data-footer],
+  [id*="whatsapp"],
+  [class*="whatsapp"],
+  [class*="floating"],
+  [class*="chat-button"],
+  [class*="social"],
+  [class*="share"],
+  [data-editorial="briefing"] .editorial-topbar,
+  [data-editorial="briefing"] .editorial-sidebar,
+  [data-editorial="briefing"] .editorial-actions,
+  [data-editorial="briefing"] .related-section,
+  [data-editorial="briefing"] .no-print,
+  [data-editorial="briefing"] button:not(.print-only),
+  [data-editorial="briefing"] iframe,
+  [data-editorial="briefing"] video,
+  [data-editorial="briefing"] audio,
+  [data-editorial="briefing"] embed,
+  [data-editorial="briefing"] object,
+  [data-editorial="briefing"] .war-room-terminal,
+  [data-editorial="briefing"] .war-room-glass,
+  [data-editorial="briefing"] .intelligence-resource-button,
+  [data-editorial="briefing"] .attachment-section,
+  [data-editorial="briefing"] .related-map-inline,
+  [data-editorial="briefing"] .related-podcast-inline,
+  [data-editorial="briefing"] .briefing-signature,
+  [data-editorial="briefing"] .breadcrumbs,
+  [data-editorial="briefing"] nav,
+  [data-editorial="briefing"] aside,
+  [data-editorial="briefing"] .editorial-content-wrapper,
+  [data-editorial="briefing"] .citation-box,
+  [data-editorial="briefing"] .print-qrcode:not(:last-child) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* ============================================
+     3. CONFIGURAÇÃO DE PÁGINA
+     ============================================ */
+  
+  @page {
+    margin: 2.5cm 2cm 2cm 2cm;
+    size: A4 portrait;
+    marks: none;
+  }
+  
+  /* ============================================
+     4. CABEÇALHO DE IDENTIFICAÇÃO (PÁGINA 1)
+     Barra técnica: Logo (Esq) | Data (Centro) | ID (Dir)
+     ============================================ */
+  
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff !important;
+    padding: 0.3cm 2cm;
+    border-bottom: 0.5pt solid #cccccc !important;
+    z-index: 1000;
+    height: auto;
+    min-height: 0.6cm;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .print-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 1cm;
+  }
+  
+  .print-logo {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace;
+    font-size: 8pt;
+    font-weight: 600;
+    color: #10b981 !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  
+  .print-date {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace;
+    font-size: 7.5pt;
+    color: #666666 !important;
+    font-weight: 400;
+    white-space: nowrap;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .print-id-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15cm;
+    flex-shrink: 0;
+  }
+  
+  .print-id {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace;
+    font-size: 8pt;
+    font-weight: 600;
+    color: #666666 !important;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  
+  .print-doi {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace;
+    font-size: 7pt;
+    color: #666666 !important;
+  }
+  
+  .print-doi-link {
+    color: #666666 !important;
+    text-decoration: none;
+  }
+  
+  /* ============================================
+     5. CONTEÚDO EDITORIAL
+     ============================================ */
+  
+  [data-editorial="briefing"] .editorial-container {
+    background: #ffffff !important;
+    padding-top: 1cm;
+    padding-bottom: 1.5cm;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  [data-editorial="briefing"] article {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  [data-editorial="briefing"] .editorial-prose {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-width: 100% !important;
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+  
+  /* ============================================
+     6. TÍTULO (EVITAR DUPLICAÇÃO)
+     ============================================ */
+  
+  /* Esconder todos os títulos exceto o primeiro h1 */
+  [data-editorial="briefing"] .article-header h1:not(:first-of-type),
+  [data-editorial="briefing"] .editorial-prose h1:not(:first-of-type),
+  [data-editorial="briefing"] article h1:not(:first-of-type) {
+    display: none !important;
+  }
+  
+  /* Título Principal - Apenas um */
+  [data-editorial="briefing"] .article-header h1:first-of-type,
+  [data-editorial="briefing"] .intelligence-title:first-of-type,
+  [data-editorial="briefing"] .editorial-prose h1:first-of-type,
+  [data-editorial="briefing"] article h1:first-of-type {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-family: var(--font-intelligence-title), var(--editorial-serif), serif !important;
+    font-size: 22pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.8cm !important;
+    page-break-after: avoid !important;
+    width: 100% !important;
+    text-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  
+  /* ============================================
+     7. BLOCO DO AUTOR E AFILIAÇÃO
+     ============================================ */
+  
+  .print-author-info {
+    display: block !important;
+    text-align: center;
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.6cm !important;
+    page-break-inside: avoid !important;
+  }
+  
+  .print-author-name {
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 12pt !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    margin-bottom: 0.2cm !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3cm;
+  }
+  
+  .print-orcid-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .print-orcid-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  
+  .print-author-affiliation {
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 9pt !important;
+    font-style: italic !important;
+    color: #000000 !important;
+    line-height: 1.5 !important;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  /* ============================================
+     8. ARTICLE INFO (Keywords/Abstract)
+     ============================================ */
+  
+  .print-article-info {
+    display: flex !important;
+    flex-direction: row !important;
+    margin-top: 0.8cm !important;
+    margin-bottom: 1cm !important;
+    gap: 1cm !important;
+    page-break-inside: avoid !important;
+    border-left: 2pt solid #10b981 !important;
+    padding-left: 0.8cm !important;
+    background: #ffffff !important;
+  }
+  
+  .print-keywords-section {
+    width: 30% !important;
+    flex-shrink: 0;
+  }
+  
+  .print-keywords-label {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    margin-bottom: 0.3cm !important;
+  }
+  
+  .print-keywords-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2cm;
+  }
+  
+  .print-keyword-item {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace !important;
+    font-size: 9pt !important;
+    color: #000000 !important;
+  }
+  
+  .print-abstract-section {
+    width: 70% !important;
+    flex: 1;
+  }
+  
+  .print-abstract-label {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    margin-bottom: 0.3cm !important;
+  }
+  
+  .print-abstract-text {
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 10pt !important;
+    font-style: italic !important;
+    color: #000000 !important;
+    line-height: 1.6 !important;
+    text-align: justify !important;
+  }
+  
+  /* Ocultar AbstractKeywordsBox no print (usar ArticleInfo) */
+  [data-editorial="briefing"] .abstract-keywords-box {
+    display: none !important;
+  }
+  
+  /* ============================================
+     9. CORPO DO DOCUMENTO (COLUNA ÚNICA)
+     ============================================ */
+  
+  [data-editorial="briefing"] .white-paper-content,
+  [data-editorial="briefing"] .editorial-prose,
+  [data-editorial="briefing"] article {
+    column-count: 1 !important;
+    max-width: 100% !important;
+  }
+  
+  [data-editorial="briefing"] .desenvolvimento-section,
+  [data-editorial="briefing"] .conclusao-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    break-inside: avoid !important;
+    margin-bottom: 0.8cm !important;
+  }
+  
+  /* Títulos de Seção */
+  [data-editorial="briefing"] .desenvolvimento-section h2,
+  [data-editorial="briefing"] .conclusao-section h2,
+  [data-editorial="briefing"] h2 {
+    font-family: var(--font-editorial-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-size: 14pt !important;
+    font-weight: 700 !important;
+    color: #10b981 !important;
+    margin-top: 0.8cm !important;
+    margin-bottom: 0.4cm !important;
+    page-break-after: avoid !important;
+    text-shadow: none !important;
+  }
+  
+  [data-editorial="briefing"] h3 {
+    font-family: var(--font-editorial-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-size: 12pt !important;
+    font-weight: 700 !important;
+    color: #10b981 !important;
+    margin-top: 0.6cm !important;
+    margin-bottom: 0.3cm !important;
+    page-break-after: avoid !important;
+    text-shadow: none !important;
+  }
+  
+  /* Parágrafos */
+  [data-editorial="briefing"] .editorial-prose p,
+  [data-editorial="briefing"] .desenvolvimento-content p,
+  [data-editorial="briefing"] .conclusao-content p {
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+    color: #000000 !important;
+    text-align: justify !important;
+    orphans: 3 !important;
+    widows: 3 !important;
+    margin-bottom: 0.6cm !important;
+  }
+  
+  /* ============================================
+     10. REFERÊNCIAS
+     ============================================ */
+  
+  [data-editorial="briefing"] .references-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    column-count: 1 !important;
+    width: 100% !important;
+    margin-top: 1.5cm !important;
+    padding-top: 0.8cm !important;
+    border-top: 2px solid #cccccc !important;
+    page-break-before: always !important;
+  }
+  
+  [data-editorial="briefing"] .references-section h2 {
+    font-family: var(--editorial-serif), serif !important;
+    font-size: 12pt !important;
+    font-weight: 700 !important;
+    color: #10b981 !important;
+    margin-bottom: 0.6cm !important;
+    page-break-after: avoid !important;
+    text-shadow: none !important;
+  }
+  
+  [data-editorial="briefing"] .references-content {
+    font-family: var(--editorial-serif), Georgia, 'Times New Roman', serif !important;
+    font-size: 10pt !important;
+    line-height: 1.6 !important;
+    color: #000000 !important;
+    text-align: left !important;
+  }
+  
+  [data-editorial="briefing"] .references-content p,
+  [data-editorial="briefing"] .references-content li {
+    font-size: 10pt !important;
+    line-height: 1.6 !important;
+    margin-bottom: 0.3cm !important;
+    text-align: left !important;
+    text-indent: -1.2cm !important;
+    padding-left: 1.2cm !important;
+  }
+  
+  /* ============================================
+     11. QR CODE (APENAS ÚLTIMA PÁGINA)
+     ============================================ */
+  
+  .print-qrcode {
+    display: none !important;
+  }
+  
+  /* QR Code aparece apenas na última página */
+  .print-qrcode:last-of-type {
+    display: block !important;
+    position: absolute;
+    bottom: 2.5cm;
+    right: 2cm;
+    page-break-inside: avoid !important;
+    z-index: 10;
+  }
+  
+  .print-qrcode-image {
+    width: 1.5cm !important;
+    height: 1.5cm !important;
+    image-rendering: crisp-edges;
+    border: 0.5pt solid #cccccc !important;
+    background: #ffffff !important;
+  }
+  
+  .print-qrcode-label {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace !important;
+    font-size: 6pt !important;
+    color: #666666 !important;
+    text-align: center;
+    margin-top: 0.2cm;
+  }
+  
+  /* ============================================
+     12. RODAPÉ INSTITUCIONAL FIXO
+     ============================================ */
+  
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff !important;
+    padding: 0.3cm 2cm;
+    border-top: 0.5pt solid #cccccc !important;
+    z-index: 1000;
+    height: auto;
+    min-height: 0.6cm;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .print-footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .print-footer-text {
+    font-family: var(--font-intelligence-mono), 'Courier New', monospace;
+    font-size: 7pt;
+    color: #666666 !important;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+  
+  .print-footer-qrcode {
+    display: none !important;
+  }
+  
+  /* ============================================
+     13. ELEMENTOS ADICIONAIS
+     ============================================ */
+  
+  [data-editorial="briefing"] .editorial-prose img,
+  [data-editorial="briefing"] .editorial-prose figure img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+    margin: 0.8cm 0 !important;
+    border: 0.5pt solid #cccccc !important;
+    background: #ffffff !important;
+  }
+  
+  [data-editorial="briefing"] .editorial-prose figure {
+    page-break-inside: avoid !important;
+    margin: 1cm 0 !important;
+    text-align: center !important;
+  }
+  
+  [data-editorial="briefing"] .editorial-prose figcaption {
+    font-family: var(--editorial-serif), serif !important;
+    font-size: 9pt !important;
+    color: #666666 !important;
+    margin-top: 0.3cm !important;
+    font-style: italic !important;
+    text-align: left !important;
+  }
+  
+  [data-editorial="briefing"] .editorial-prose a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+    text-decoration-color: #999999 !important;
+  }
+  
+  /* Quebras de página inteligentes */
+  [data-editorial="briefing"] .editorial-prose h1,
+  [data-editorial="briefing"] .editorial-prose h2,
+  [data-editorial="briefing"] .editorial-prose h3 {
+    page-break-after: avoid !important;
+  }
+  
+  [data-editorial="briefing"] .editorial-prose p {
+    page-break-inside: avoid !important;
+  }
+}

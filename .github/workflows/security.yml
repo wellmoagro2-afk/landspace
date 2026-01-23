@@ -1,0 +1,76 @@
+name: Security Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Dependency Review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+      
+      - name: Run ESLint
+        run: npm run lint
+      
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+      
+      - name: Run npm audit (gate - HIGH/CRITICAL)
+        run: npm audit --audit-level=high
+      
+      - name: Run npm audit (visibility - MODERATE)
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Generate Prisma Client
+        run: npm run db:generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+      
+      - name: Check environment variables
+        run: npm run check:env
+        env:
+          SESSION_SECRET: test-session-secret-min-32-chars-for-validation-only-xyz
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          PREVIEW_SECRET: test-preview-secret-min-32-chars-for-validation-only-xyz
+          DRAFT_MODE_SECRET: test-draft-mode-secret-min-32-chars-for-validation-xyz
+          ADMIN_KEY: test-admin-key-min-24-chars-xyz
+      
+      - name: Build (typecheck only)
+        run: npm run build -- --webpack
+        env:
+          SESSION_SECRET: test-session-secret-min-32-chars-for-validation-only-xyz
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          PREVIEW_SECRET: test-preview-secret-min-32-chars-for-validation-only-xyz
+          DRAFT_MODE_SECRET: test-draft-mode-secret-min-32-chars-for-validation-xyz
+          ADMIN_KEY: test-admin-key-min-24-chars-xyz
+          NODE_ENV: production

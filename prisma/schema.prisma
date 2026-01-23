@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContentStatus {
+  draft
+  published
+  archived
+}
+
+enum MapEmbedType {
+  iframe
+  url
+  html
+}
+
+model Briefing {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  subtitle      String?
+  summary       String
+  tags          String        // JSON array como string
+  coverImageUrl String?
+  readingTime   String        // ex: "6 min"
+  contentMdx    String        // Conteúdo MDX/Markdown
+  status        ContentStatus @default(draft)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  seoTitle      String?
+  seoDescription String?
+  pdfUrl        String?
+  youtubeUrl    String?
+  relatedMaps   String?       // JSON array de slugs como string
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Map {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  summary       String
+  tags          String        // JSON array como string
+  coverImageUrl String?
+  mapEmbedType  MapEmbedType  @default(iframe)
+  mapEmbedData  String        // JSON com configuração do mapa
+  status        ContentStatus @default(draft)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  seoTitle      String?
+  seoDescription String?
+  relatedBriefing String?    // Slug do briefing relacionado
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Podcast {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  summary       String
+  tags          String        // JSON array como string
+  coverImageUrl String?
+  audioUrl      String
+  youtubeUrl    String?
+  duration      String        // ex: "18:42"
+  status        ContentStatus @default(draft)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  seoTitle      String?
+  seoDescription String?
+  transcriptUrl String?
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+// ============================================
+// PORTAL DO CLIENTE - Studio
+// ============================================
+
+enum ServiceType {
+  PERICIA_EVIDENCIAS
+  PERICIA_AMBIENTAL
+  AVALIACAO_RURAL
+  CAR
+  GEOREF
+  OUTROS
+}
+
+enum ProjectStatus {
+  TRIAGEM
+  VALIDACAO_DADOS
+  PROPOSTA
+  ENTRADA_PAGA
+  EM_PRODUCAO
+  QA_INTERNO
+  PREVIA_ENTREGUE
+  AJUSTES
+  FINAL_PRONTO
+  SALDO_PENDENTE
+  LIBERADO
+  ENCERRADO
+}
+
+enum StepState {
+  PENDING
+  ACTIVE
+  DONE
+}
+
+enum FileKind {
+  PREVIEW
+  FINAL
+}
+
+enum PaymentMethod {
+  PIX
+  BOLETO
+  CARTAO
+  AJUSTE
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+model Project {
+  id            String        @id @default(cuid())
+  protocol      String        @unique // ex: "LS-2026-000123"
+  pinHash       String        // bcrypt hash do PIN
+  clientName    String
+  clientEmail   String?
+  clientPhone   String?
+  serviceType   ServiceType
+  status        ProjectStatus @default(TRIAGEM)
+  totalValue    Decimal       @default(0)
+  entryValue    Decimal       @default(0)
+  paidValue     Decimal       @default(0) // soma de Payments CONFIRMED
+  balanceValue  Decimal       @default(0) // computado: max(totalValue - paidValue, 0)
+  finalRelease  Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  steps         ProjectStep[]
+  files         ProjectFile[]
+  payments      Payment[]
+
+  @@index([protocol])
+  @@index([status])
+  @@index([clientEmail])
+}
+
+model ProjectStep {
+  id          String      @id @default(cuid())
+  projectId   String
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stepKey     String      // ex: "TRIAGEM_RECEBIDA", "VALIDACAO_DADOS"
+  title       String
+  description String?
+  state       StepState   @default(PENDING)
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  order       Int         // ordem de exibição
+
+  @@index([projectId])
+  @@index([projectId, order])
+}
+
+model ProjectFile {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind        FileKind  // PREVIEW ou FINAL
+  filename    String
+  storagePath String    // caminho local no MVP, depois S3/R2
+  version     String    @default("v1") // ex: "v1", "v2"
+  isLocked    Boolean   @default(true) // FINAL locked até release
+  uploadedAt  DateTime  @default(now())
+
+  @@index([projectId])
+  @@index([projectId, kind])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  method      PaymentMethod
+  amount      Decimal
+  status      PaymentStatus @default(PENDING)
+  note        String?       // comprovante, observações
+  createdAt   DateTime      @default(now())
+  confirmedAt DateTime?
+
+  @@index([projectId])
+  @@index([projectId, status])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  requestId   String?  // x-request-id do request
+  userId      String?  // ID do usuário (se autenticado)
+  protocol    String?  // Protocolo do projeto (se aplicável)
+  action      String   // Ação realizada (ex: "portal_login", "file_download", "final_release")
+  entityType  String?  // Tipo de entidade (ex: "Project", "Payment", "File")
+  entityId    String?  // ID da entidade
+  metadata    String?  // JSON com dados adicionais
+  ipAddress   String?
+  userAgent   String?
+  success     Boolean  @default(true)
+  errorMessage String?
+  createdAt   DateTime @default(now())
+
+  @@index([requestId])
+  @@index([userId])
+  @@index([protocol])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model AdminConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique // ex: "admin_password"
+  value     String   // valor criptografado ou hash
+  updatedAt DateTime @updatedAt
+  updatedBy String?  // quem atualizou (para auditoria)
+
+  @@index([key])
+}

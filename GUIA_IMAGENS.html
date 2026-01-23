@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo de Imagens - LandSpace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #0f172a;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        h3 {
+            color: #334155;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #475569;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #475569;
+        }
+        
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #dc2626;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: transparent;
+            color: #e2e8f0;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .checklist {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .checklist-item {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .checklist-item::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        
+        .course-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Guia Completo de Imagens - LandSpace</h1>
+        <p><strong>Última atualização:</strong> Janeiro 2025</p>
+        <p>Este guia detalha todas as imagens necessárias para o site, incluindo tamanhos, qualidade e onde colocá-las.</p>
+
+        <h2>📁 Estrutura de Pastas</h2>
+        <pre><code>public/
+├── courses/                         # Imagens dos cursos (21 cursos)
+│   ├── transicao-uso-cobertura.png
+│   ├── potencial-uso-conservacionista.png
+│   ├── modelagem-perda-solos-rusle.png
+│   └── ... (18 outros cursos)
+└── favicon.svg                      # Favicon do site</code></pre>
+
+        <div class="info">
+            <strong>💡 Nota:</strong> O logo é renderizado via SVG inline no componente <code>Header.tsx</code>, não há arquivo de imagem física.
+        </div>
+
+        <h2>🎨 Logo Principal</h2>
+        
+        <h3>Localização</h3>
+        <ul>
+            <li><strong>Renderização:</strong> SVG inline no componente <code>Header.tsx</code></li>
+            <li><strong>Onde aparece:</strong> Header (topo de todas as páginas)</li>
+        </ul>
+
+        <h3>Especificações Técnicas</h3>
+        <p>O logo é um SVG composto por:</p>
+        <ul>
+            <li><strong>Bússola estilizada</strong> com pontos cardeais</li>
+            <li><strong>Cores:</strong> <code>#0f172a</code> (azul marinho) e <code>#06b6d4</code> (ciano)</li>
+            <li><strong>Dimensões:</strong> 40x40px (viewBox: <code>0 0 40 40</code>)</li>
+            <li><strong>Texto:</strong> "LAND" (azul marinho) + "SPACE" (ciano) com linhas decorativas</li>
+        </ul>
+
+        <div class="warning">
+            <strong>⚠️ Fallback:</strong> Se necessário substituir por imagem, use:
+            <ul>
+                <li><strong>Tamanho:</strong> 80x80px a 120x120px (quadrado)</li>
+                <li><strong>Formato:</strong> PNG com transparência ou SVG</li>
+                <li><strong>Resolução:</strong> 2x (160x160px a 240x240px para retina)</li>
+                <li><strong>Peso máximo:</strong> 50KB (PNG) ou 20KB (SVG)</li>
+                <li><strong>Fundo:</strong> Transparente</li>
+            </ul>
+        </div>
+
+        <h2>📚 Imagens dos Cursos</h2>
+
+        <h3>Localização</h3>
+        <ul>
+            <li><strong>Caminho:</strong> <code>public/courses/[slug-do-curso].png</code></li>
+            <li><strong>Onde aparece:</strong> 
+                <ul>
+                    <li>Cards de curso na Home e listagem (<code>CourseCard.tsx</code>)</li>
+                    <li>Hero Section das páginas de detalhes</li>
+                    <li>Sidebar de compra nas páginas de detalhes</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>Especificações Técnicas</h3>
+
+        <h4>Tamanho e Proporção</h4>
+        <ul>
+            <li><strong>Proporção:</strong> <span class="badge">16:9 (aspect-video) - OBRIGATÓRIO</span></li>
+            <li><strong>Largura mínima:</strong> 1200px</li>
+            <li><strong>Largura recomendada:</strong> 1600px a 1920px</li>
+            <li><strong>Altura:</strong> Proporcional (ex: 1200x675px, 1600x900px, 1920x1080px)</li>
+            <li><strong>Resolução:</strong> 72-96 DPI (web)</li>
+            <li><strong>Resolução Retina:</strong> 2x (2400x1350px para máxima qualidade)</li>
+        </ul>
+
+        <h4>Formato e Qualidade</h4>
+        <ul>
+            <li><strong>Formato:</strong> PNG ou JPG
+                <ul>
+                    <li><strong>PNG:</strong> Se tiver transparência, texto ou gráficos vetoriais</li>
+                    <li><strong>JPG:</strong> Se for foto/imagem complexa (melhor compressão)</li>
+                </ul>
+            </li>
+            <li><strong>Qualidade JPG:</strong> 85-90% (balanço qualidade/tamanho)</li>
+            <li><strong>Peso máximo:</strong> 300KB por imagem (otimizado)</li>
+            <li><strong>Peso ideal:</strong> 150-250KB</li>
+            <li><strong>Otimização:</strong> <span class="badge">OBRIGATÓRIA</span> antes de subir</li>
+        </ul>
+
+        <h3>Nomenclatura - Lista Completa (21 Cursos)</h3>
+        <p>Use o <code>slug</code> do curso como nome do arquivo:</p>
+        
+        <div class="course-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Curso</th>
+                        <th>Slug</th>
+                        <th>Nome do Arquivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Dinâmica e Transição de Uso e Cobertura da Terra</td><td><code>transicao-uso-cobertura</code></td><td><code>transicao-uso-cobertura.png</code></td></tr>
+                    <tr><td>2</td><td>Planejamento de Uso Conservacionista do Solo</td><td><code>potencial-uso-conservacionista</code></td><td><code>potencial-uso-conservacionista.png</code></td></tr>
+                    <tr><td>3</td><td>Modelagem de Perda de Solos com a RUSLE</td><td><code>modelagem-perda-solos-rusle</code></td><td><code>modelagem-perda-solos-rusle.png</code></td></tr>
+                    <tr><td>4</td><td>Estudo de Fragilidade Ambiental</td><td><code>estudo-fragilidade-ambiental</code></td><td><code>estudo-fragilidade-ambiental.png</code></td></tr>
+                    <tr><td>5</td><td>Análise de Vulnerabilidade e Riscos Ambientais</td><td><code>analise-vulnerabilidade-riscos-ambientais</code></td><td><code>analise-vulnerabilidade-riscos-ambientais.png</code></td></tr>
+                    <tr><td>6</td><td>GeoAI: Classificação de Uso do Solo com Sentinel-2</td><td><code>geoai-classificacao-uso-solo-sentinel-2</code></td><td><code>geoai-classificacao-uso-solo-sentinel-2.png</code></td></tr>
+                    <tr><td>7</td><td>GeoAI: Monitoramento Histórico com Landsat</td><td><code>geoai-monitoramento-historico-landsat</code></td><td><code>geoai-monitoramento-historico-landsat.png</code></td></tr>
+                    <tr><td>8</td><td>GeoAI: Alta Resolução com CBERS-4A</td><td><code>geoai-alta-resolucao-cbers-4a</code></td><td><code>geoai-alta-resolucao-cbers-4a.png</code></td></tr>
+                    <tr><td>9</td><td>GeoAI: Mapeamento com Radar Sentinel-1</td><td><code>geoai-mapeamento-radar-sentinel-1</code></td><td><code>geoai-mapeamento-radar-sentinel-1.png</code></td></tr>
+                    <tr><td>10</td><td>Modelagem e Espacialização Climática</td><td><code>modelagem-espacializacao-climatica</code></td><td><code>modelagem-espacializacao-climatica.png</code></td></tr>
+                    <tr><td>11</td><td>Morfometria de Bacias Hidrográficas</td><td><code>morfometria-bacias-hidrograficas</code></td><td><code>morfometria-bacias-hidrograficas.png</code></td></tr>
+                    <tr><td>12</td><td>Monitoramento Remoto da Qualidade da Água</td><td><code>monitoramento-remoto-qualidade-agua</code></td><td><code>monitoramento-remoto-qualidade-agua.png</code></td></tr>
+                    <tr><td>13</td><td>Mapeamento Aéreo com Drones (VANT)</td><td><code>mapeamento-aereo-drones-vant</code></td><td><code>mapeamento-aereo-drones-vant.png</code></td></tr>
+                    <tr><td>14</td><td>Monitoramento Inteligente de Irrigação</td><td><code>monitoramento-inteligente-irrigacao</code></td><td><code>monitoramento-inteligente-irrigacao.png</code></td></tr>
+                    <tr><td>15</td><td>Estatística e Geoestatística Agrícola</td><td><code>estatistica-geoestatistica-agricola</code></td><td><code>estatistica-geoestatistica-agricola.png</code></td></tr>
+                    <tr><td>16</td><td>Geotecnologias como Suporte Científico</td><td><code>geotecnologias-como-metodo-cientifico</code></td><td><code>geotecnologias-como-metodo-cientifico.png</code></td></tr>
+                    <tr><td>17</td><td>Erros Cartográficos que Comprometem Seu Mapa</td><td><code>erros-cartograficos-comprometem-mapa</code></td><td><code>erros-cartograficos-comprometem-mapa.png</code></td></tr>
+                    <tr><td>18</td><td>Análise Ambiental Integrada por Geossistemas</td><td><code>analise-ambiental-integrada-geossistemas</code></td><td><code>analise-ambiental-integrada-geossistemas.png</code></td></tr>
+                    <tr><td>19</td><td>Introdução à Cartografia Digital</td><td><code>introducao-cartografia-digital</code></td><td><code>introducao-cartografia-digital.png</code></td></tr>
+                    <tr><td>20</td><td>Sensoriamento Remoto: Fundamentos para Análise Científica</td><td><code>sensoriamento-remoto-fundamentos-analise-cientifica</code></td><td><code>sensoriamento-remoto-fundamentos-analise-cientifica.png</code></td></tr>
+                    <tr><td>21</td><td>Geotecnologias no Estudo das Mudanças Climáticas</td><td><code>geotecnologias-estudo-mudancas-climaticas</code></td><td><code>geotecnologias-estudo-mudancas-climaticas.png</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info">
+            <strong>💡 Dicas de Design:</strong>
+            <ul>
+                <li>✅ Imagem relacionada ao conteúdo do curso</li>
+                <li>✅ Texto legível (se houver)</li>
+                <li>✅ Cores que combinam com a paleta do site (slate, emerald, sky)</li>
+                <li>✅ Evitar imagens muito escuras (dificulta leitura de badges)</li>
+                <li>✅ Espaço para badges (canto superior direito para desconto, superior esquerdo para nível/duração)</li>
+                <li>✅ Imagem deve funcionar bem em crop 16:9 (aspect-video)</li>
+                <li>✅ Evitar elementos importantes nas bordas (podem ser cortados em diferentes tamanhos de tela)</li>
+            </ul>
+        </div>
+
+        <h3>Como as Imagens São Usadas</h3>
+        <ol>
+            <li><strong>Cards de Curso (<code>CourseCard.tsx</code>):</strong>
+                <ul>
+                    <li>Container com <code>aspect-video</code> (16:9)</li>
+                    <li><code>object-cover</code> para preencher o espaço</li>
+                    <li>Hover effect com <code>scale-105</code></li>
+                    <li>Fallback: gradiente cinza com texto "Imagem do curso"</li>
+                </ul>
+            </li>
+            <li><strong>Páginas de Detalhes:</strong>
+                <ul>
+                    <li>Hero Section: altura variável (h-96 a h-[500px])</li>
+                    <li>Sidebar: altura fixa (h-56)</li>
+                    <li>Mesmo <code>object-cover</code> para consistência</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>👤 Fotos de Perfil (Depoimentos)</h2>
+
+        <h3>Localização</h3>
+        <ul>
+            <li><strong>Fonte:</strong> URLs do Unsplash (armazenadas em <code>src/app/cursos/testimonials.ts</code>)</li>
+            <li><strong>Onde aparece:</strong> Seção de depoimentos nas páginas de curso</li>
+        </ul>
+
+        <h3>Especificações Técnicas</h3>
+        <ul>
+            <li><strong>Formato:</strong> JPG (via Unsplash)</li>
+            <li><strong>Tamanho:</strong> 256x256px (quadrado)</li>
+            <li><strong>Qualidade:</strong> Alta (parâmetro <code>q=80</code>)</li>
+            <li><strong>Crop:</strong> <code>fit=facearea&facepad=2</code></li>
+            <li><strong>Renderização:</strong> Tag <code>&lt;img&gt;</code> com <code>rounded-full</code></li>
+        </ul>
+
+        <div class="info">
+            <strong>💡 Nota:</strong> As imagens são carregadas dinamicamente via URLs externas. Se precisar substituir por imagens locais, salve em <code>public/assets/testimonials/</code> e atualize o array em <code>testimonials.ts</code>.
+        </div>
+
+        <h2>✅ Checklist de Imagens</h2>
+
+        <div class="checklist">
+            <h3>Imagens dos Cursos (21 cursos)</h3>
+            <p>Para cada curso, verifique:</p>
+            <div class="checklist-item">Tamanho: 1200x675px (mínimo) ou 1600x900px (recomendado)</div>
+            <div class="checklist-item">Proporção: 16:9 exata</div>
+            <div class="checklist-item">Peso: &lt; 300KB (otimizado)</div>
+            <div class="checklist-item">Nome do arquivo corresponde ao slug em <code>data.ts</code></div>
+            <div class="checklist-item">Imagem testada nos cards e páginas de detalhes</div>
+            <div class="checklist-item">Fallback funcionando (gradiente aparece quando imagem não carrega)</div>
+        </div>
+
+        <h2>🛠️ Como Adicionar Novas Imagens</h2>
+
+        <h3>1. Preparar a Imagem</h3>
+        <ol>
+            <li>Redimensionar para <strong>1200x675px</strong> (mínimo) ou <strong>1600x900px</strong> (recomendado)</li>
+            <li>Garantir proporção <strong>16:9</strong> exata</li>
+            <li>Otimizar usando TinyPNG ou Squoosh</li>
+            <li>Verificar peso do arquivo (&lt; 300KB)</li>
+        </ol>
+
+        <h3>2. Colocar no Local Correto</h3>
+        <ul>
+            <li>Salvar em: <code>public/courses/[slug-do-curso].png</code></li>
+            <li>Verificar se o <code>slug</code> corresponde ao definido em <code>src/app/cursos/data.ts</code></li>
+        </ul>
+
+        <h3>3. Verificar no Site</h3>
+        <ol>
+            <li>Rodar <code>npm run dev</code></li>
+            <li>Navegar até <code>/cursos</code> (listagem)</li>
+            <li>Verificar se a imagem aparece no card</li>
+            <li>Clicar no curso e verificar Hero Section e Sidebar</li>
+            <li>Testar em diferentes tamanhos de tela (mobile, tablet, desktop)</li>
+        </ol>
+
+        <h3>4. Se a Imagem Não Aparecer</h3>
+        <ul>
+            <li>✅ Verificar se o nome do arquivo está correto (case-sensitive)</li>
+            <li>✅ Verificar se está na pasta <code>public/courses/</code></li>
+            <li>✅ Verificar se o caminho no <code>data.ts</code> está correto: <code>image: "/courses/[slug].png"</code></li>
+            <li>✅ Limpar cache do navegador (Ctrl+Shift+R ou Cmd+Shift+R)</li>
+            <li>✅ Verificar console do navegador para erros 404</li>
+        </ul>
+
+        <h2>📊 Resumo de Especificações</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Formato</th>
+                    <th>Tamanho</th>
+                    <th>Proporção</th>
+                    <th>Peso Máx</th>
+                    <th>Localização</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Logo</td>
+                    <td>SVG (inline)</td>
+                    <td>40x40px</td>
+                    <td>1:1</td>
+                    <td>-</td>
+                    <td><code>Header.tsx</code></td>
+                </tr>
+                <tr>
+                    <td>Curso</td>
+                    <td>PNG/JPG</td>
+                    <td>1200x675px+</td>
+                    <td>16:9</td>
+                    <td>300KB</td>
+                    <td><code>public/courses/</code></td>
+                </tr>
+                <tr>
+                    <td>Depoimentos</td>
+                    <td>JPG (URL)</td>
+                    <td>256x256px</td>
+                    <td>1:1</td>
+                    <td>-</td>
+                    <td>Unsplash (via <code>testimonials.ts</code>)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎯 Dicas Finais</h2>
+        <ol>
+            <li><strong>Sempre otimize</strong> as imagens antes de colocar no site</li>
+            <li><strong>Use nomes descritivos</strong> mas sem espaços ou caracteres especiais (use hífens)</li>
+            <li><strong>Teste em diferentes dispositivos</strong> (mobile, tablet, desktop)</li>
+            <li><strong>Mantenha consistência</strong> no estilo visual das imagens</li>
+            <li><strong>Use ferramentas de compressão</strong> para reduzir peso sem perder qualidade</li>
+            <li><strong>Respete a proporção 16:9</strong> - imagens fora de proporção serão cortadas</li>
+            <li><strong>Evite texto nas imagens</strong> - use badges HTML/CSS sobrepostos quando possível</li>
+        </ol>
+
+        <h2>🔗 Links Úteis</h2>
+        <ul>
+            <li><a href="https://tinypng.com/" target="_blank">TinyPNG</a> - Compressão de imagens (PNG/JPG)</li>
+            <li><a href="https://squoosh.app/" target="_blank">Squoosh</a> - Otimização e compressão avançada</li>
+            <li><a href="https://imageoptim.com/" target="_blank">ImageOptim</a> - Otimização automática (Mac)</li>
+            <li><a href="http://luci.criosweb.ro/riot/" target="_blank">RIOT</a> - Otimização com preview (Windows)</li>
+            <li><a href="https://resizeimage.net/" target="_blank">ResizeImage</a> - Redimensionamento online</li>
+            <li><a href="https://bulkresizephotos.com/" target="_blank">Bulk Resize Photos</a> - Redimensionar múltiplas imagens</li>
+        </ul>
+
+        <div class="footer">
+            <p><strong>Última atualização:</strong> Janeiro 2025</p>
+        </div>
+    </div>
+</body>
+</html>

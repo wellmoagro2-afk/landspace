@@ -1,0 +1,125 @@
+src/app/api/portal/test-login/route.ts(49,67): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/app/api/portal/test-login/route.ts(49,70): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/app/api/portal/test-login/route.ts(82,50): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/app/api/portal/test-login/route.ts(82,53): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/app/catalogo/erros-cartograficos-comprometem-mapa/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/estatistica-geoestatistica-agricola/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/estudo-fragilidade-ambiental/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geoai-alta-resolucao-cbers-4a/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geoai-classificacao-uso-solo-sentinel-2/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geoai-mapeamento-radar-sentinel-1/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geoai-monitoramento-historico-landsat/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geotecnologias-como-metodo-cientifico/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geotecnologias-estudo-mudancas-climaticas/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/geotecnologias-metodo-cientifico/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/introducao-cartografia-digital/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/mapeamento-aereo-drones-vant/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/modelagem-espacializacao-climatica/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/modelagem-perda-solos-rusle/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/monitoramento-inteligente-irrigacao/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/monitoramento-remoto-qualidade-agua/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/morfometria-bacias-hidrograficas/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/sensoriamento-remoto-fundamentos-analise-cientifica/page.tsx(25,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/catalogo/transicao-uso-cobertura/page.tsx(31,122): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/insights/[slug]/page.tsx(43,33): error TS2322: Type 'Course | null | undefined' is not assignable to type 'Course | null'.
+  Type 'undefined' is not assignable to type 'Course | null'.
+src/app/labs/page.tsx(121,19): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/labs/page.tsx(174,19): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/labs/page.tsx(227,19): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/strategy/admin/briefings/[id]/page.tsx(24,37): error TS2322: Type '{ slug: string; title: string; subtitle: string | null; summary: string; publishedAt: Date | null; tags: string; youtubeUrl: string | null; relatedMaps: string | null; id: string; ... 8 more ...; pdfUrl: string | null; } | null' is not assignable to type 'Briefing | null'.
+  Type '{ slug: string; title: string; subtitle: string | null; summary: string; publishedAt: Date | null; tags: string; youtubeUrl: string | null; relatedMaps: string | null; id: string; ... 8 more ...; pdfUrl: string | null; }' is not assignable to type 'Briefing'.
+    Types of property 'subtitle' are incompatible.
+      Type 'string | null' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(184,22): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(186,24): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(187,26): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(188,23): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(189,23): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(190,41): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingClient.tsx(191,28): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/BriefingPDFManager.tsx(27,33): error TS2322: Type 'RefObject<PDFPreviewHandle | null>' is not assignable to type 'RefObject<PDFPreviewHandle>'.
+  Type 'PDFPreviewHandle | null' is not assignable to type 'PDFPreviewHandle'.
+    Type 'null' is not assignable to type 'PDFPreviewHandle'.
+src/app/strategy/briefings/[slug]/BriefingPDFWrapper.tsx(27,33): error TS2322: Type 'RefObject<PDFPreviewHandle | null>' is not assignable to type 'RefObject<PDFPreviewHandle>'.
+  Type 'PDFPreviewHandle | null' is not assignable to type 'PDFPreviewHandle'.
+    Type 'null' is not assignable to type 'PDFPreviewHandle'.
+src/app/strategy/briefings/[slug]/BriefingReaderServer.tsx(76,17): error TS2353: Object literal may only specify known properties, and 'summary' does not exist in type '{ title: string; pdfUrl?: string | undefined; mapUrl?: string | undefined; shareUrl?: string | undefined; }'.
+src/app/strategy/briefings/[slug]/components/CitationBox.tsx(102,53): error TS2554: Expected 0-1 arguments, but got 2.
+src/app/strategy/briefings/[slug]/components/ScholarlyArticleJsonLd.tsx(107,29): error TS2339: Property 'get' does not exist on type 'Promise<ReadonlyHeaders>'.
+src/app/strategy/briefings/[slug]/CopySelectionButton.tsx(13,7): error TS2304: Cannot find name 'toastError'.
+src/app/strategy/briefings/[slug]/CopySelectionButton.tsx(21,7): error TS2304: Cannot find name 'toastSuccess'.
+src/app/strategy/briefings/[slug]/CopySelectionButton.tsx(24,7): error TS2304: Cannot find name 'toastError'.
+src/app/strategy/briefings/[slug]/page.tsx(163,13): error TS2322: Type 'string | string[] | undefined' is not assignable to type 'string[] | undefined'.
+  Type 'string' is not assignable to type 'string[]'.
+src/app/strategy/briefings/[slug]/PDFPreviewWrapper.tsx(35,9): error TS2322: Type '{ briefing: { title: string; pdfUrl?: string | undefined; mapUrl?: string | undefined; mapDownloadUrl?: string | undefined; shareUrl?: string | undefined; }; onShowPDFPreview: () => void; }' is not assignable to type 'IntrinsicAttributes & EditorialActionsClientProps'.
+  Property 'onShowPDFPreview' does not exist on type 'IntrinsicAttributes & EditorialActionsClientProps'.
+src/app/strategy/briefings/[slug]/ReaderTOC.tsx(134,23): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/strategy/briefings/[slug]/ReaderTOC.tsx(170,23): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(33,39): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(34,16): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(34,48): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(34,68): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(39,20): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(40,39): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(54,28): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(63,22): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/[slug]/RelatedMapsSection.tsx(66,22): error TS18048: 'map' is possibly 'undefined'.
+src/app/strategy/briefings/page.tsx(31,59): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/studio/components/StudioServiceHero.tsx(23,30): error TS2322: Type '"outline"' is not assignable to type 'BadgeVariant | undefined'.
+src/app/studio/protocolo-pericial/page.tsx(232,55): error TS2322: Type '"outline"' is not assignable to type 'ButtonVariant | undefined'.
+src/app/studio/protocolo-pericial/page.tsx(236,59): error TS2322: Type '"outline"' is not assignable to type 'ButtonVariant | undefined'.
+src/components/Header.tsx(333,24): error TS2339: Property 'conditional' does not exist on type '{ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { href: "/academy"; label: "Academy"; } | { href: "/labs"; label: "Labs"; } | { href: string; label: string; conditional: boolean; } | ... 4 more ... | { ...; }'.
+  Property 'conditional' does not exist on type '{ href: "/tech"; label: "Tech"; }'.
+src/components/Header.tsx(362,24): error TS2339: Property 'external' does not exist on type '{ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { href: "/academy"; label: "Academy"; } | { href: "/labs"; label: "Labs"; } | { href: string; label: string; conditional: boolean; } | ... 4 more ... | { ...; }'.
+  Property 'external' does not exist on type '{ href: "/tech"; label: "Tech"; }'.
+src/components/Header.tsx(420,47): error TS2339: Property 'exploreLinks' does not exist on type '{ color: string; hoverColor: string; buttonGradient: string; buttonHover: string; buttonShadow: string; navLinks: ({ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { ...; } | { ...; })[]; ctaHref: string; ctaLabel: string; } | ... 4 more ... | { ...'.
+  Property 'exploreLinks' does not exist on type '{ color: string; hoverColor: string; buttonGradient: string; buttonHover: string; buttonShadow: string; navLinks: ({ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { ...; } | { ...; })[]; ctaHref: string; ctaLabel: string; }'.
+src/components/Header.tsx(434,29): error TS2339: Property 'exploreLinks' does not exist on type '{ color: string; hoverColor: string; buttonGradient: string; buttonHover: string; buttonShadow: string; navLinks: ({ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { ...; } | { ...; })[]; ctaHref: string; ctaLabel: string; } | ... 4 more ... | { ...'.
+  Property 'exploreLinks' does not exist on type '{ color: string; hoverColor: string; buttonGradient: string; buttonHover: string; buttonShadow: string; navLinks: ({ href: "/tech"; label: "Tech"; } | { href: "/studio"; label: "Studio"; } | { href: "/strategy"; label: "Strategy"; } | { ...; } | { ...; })[]; ctaHref: string; ctaLabel: string; }'.
+src/components/Header.tsx(434,47): error TS7006: Parameter 'link' implicitly has an 'any' type.
+src/components/Header.tsx(434,53): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/Header.tsx(509,52): error TS2367: This comparison appears to be unintentional because the types '"tech" | "academy" | "studio" | "labs" | "global"' and '"strategy"' have no overlap.
+src/components/Header.tsx(560,52): error TS2367: This comparison appears to be unintentional because the types '"tech" | "academy" | "studio" | "labs" | "global"' and '"strategy"' have no overlap.
+src/components/home/FinalCTA.tsx(15,7): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/components/LoadingScreen.tsx(43,11): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/components/studio/StudioPulseWordCloud.tsx(148,35): error TS2552: Cannot find name 'getFontSizeClass'. Did you mean 'fontSizeClass'?
+src/components/studio/StudioPulseWordCloud.tsx(149,34): error TS2552: Cannot find name 'getOpacityClass'. Did you mean 'opacityClass'?
+src/components/studio/StudioPulseWordCloud.tsx(150,37): error TS2552: Cannot find name 'getFontWeightClass'. Did you mean 'fontWeightClass'?
+src/content/strategy/maps.ts(130,9): error TS2322: Type '"raster"' is not assignable to type '"symbol" | "fill" | "line" | "circle"'.
+src/lib/auth.ts(39,21): error TS2352: Conversion of type 'JWTPayload' to type 'AdminSession' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JWTPayload' is missing the following properties from type 'AdminSession': authenticated, nonce
+src/lib/auth.ts(66,35): error TS2345: Argument of type 'AdminSession' is not assignable to parameter of type 'JWTPayload'.
+  Index signature for type 'string' is missing in type 'AdminSession'.
+src/lib/briefingData.ts(277,9): error TS2741: Property 'relatedPodcast' is missing in type '{ mapEmbedUrl: undefined; mapDownloadPath: undefined; mapUrl: undefined; mapDownloadUrl: undefined; slug: string; title: string; subtitle: string | null; summary: string; publishedAt: Date | null; ... 12 more ...; pdfUrl: string | null; }' but required in type 'BriefingWithExtras'.
+src/lib/keystatic/briefings.ts(64,9): error TS4104: The type 'readonly string[]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.
+src/lib/keystatic/briefings.ts(67,9): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/lib/keystatic/briefings.ts(70,9): error TS4104: The type 'readonly string[]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.
+src/lib/keystatic/briefings.ts(71,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/lib/keystatic/briefings.ts(72,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/lib/keystatic/briefings.ts(75,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/lib/keystatic/briefings.ts(77,9): error TS4104: The type 'readonly string[]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.
+src/lib/keystatic/briefings.ts(81,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(82,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(83,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(84,7): error TS4104: The type 'readonly string[]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.
+src/lib/keystatic/briefings.ts(85,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(87,7): error TS4104: The type 'readonly string[]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.
+src/lib/keystatic/briefings.ts(88,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(90,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/keystatic/briefings.ts(91,7): error TS2322: Type '() => Promise<DocumentElement[]>' is not assignable to type 'string'.
+src/lib/portal-auth.ts(72,35): error TS2345: Argument of type 'PortalSession' is not assignable to parameter of type 'JWTPayload'.
+  Index signature for type 'string' is missing in type 'PortalSession'.
+src/lib/portal-auth.ts(98,21): error TS2352: Conversion of type 'JWTPayload' to type 'PortalSession' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JWTPayload' is missing the following properties from type 'PortalSession': protocol, nonce
+src/lib/portal-auth.ts(120,5): error TS2353: Object literal may only specify known properties, and 'exp' does not exist in type 'AdminSession'.
+src/lib/portal-auth.ts(124,35): error TS2345: Argument of type 'AdminSession' is not assignable to parameter of type 'JWTPayload'.
+  Index signature for type 'string' is missing in type 'AdminSession'.
+src/lib/portal-auth.ts(150,21): error TS2352: Conversion of type 'JWTPayload' to type 'AdminSession' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JWTPayload' is missing the following properties from type 'AdminSession': authenticated, expiresAt
+src/lib/portal-auth.ts(153,17): error TS2339: Property 'exp' does not exist on type 'AdminSession'.

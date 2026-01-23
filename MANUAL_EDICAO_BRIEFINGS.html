@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Completo de Edição de Briefings - LandSpace Strategy Editorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.8;
+            color: #e2e8f0;
+            background: #05070C;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #02040a 0%, #05070C 100%);
+            border-bottom: 2px solid #10b981;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            color: #10b981;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .meta {
+            color: #4ade80;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        nav {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: sticky;
+            top: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        nav h2 {
+            color: #10b981;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        nav ul {
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0.5rem 0;
+        }
+        
+        nav a {
+            color: #4ade80;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+        
+        nav a:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            transform: translateX(5px);
+        }
+        
+        main {
+            background: rgba(5, 7, 12, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #10b981;
+            font-size: 2.5rem;
+            margin: 2rem 0 1rem;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        h2 {
+            color: #10b981;
+            font-size: 2rem;
+            margin: 3rem 0 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        h3 {
+            color: #4ade80;
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+        }
+        
+        h4 {
+            color: #4ade80;
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem;
+        }
+        
+        p {
+            margin: 1rem 0;
+            color: #e2e8f0;
+            line-height: 1.8;
+        }
+        
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: #e2e8f0;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+        
+        code {
+            background: rgba(16, 185, 129, 0.1);
+            color: #4ade80;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        pre {
+            background: #02040a;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        pre code {
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: #4ade80;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        a {
+            color: #10b981;
+            text-decoration: underline;
+            text-decoration-color: rgba(16, 185, 129, 0.5);
+            transition: all 0.3s;
+        }
+        
+        a:hover {
+            color: #4ade80;
+            text-decoration-color: #4ade80;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+            margin: 3rem 0;
+        }
+        
+        .highlight-box {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid #10b981;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 6px;
+        }
+        
+        .warning-box {
+            background: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid #fbbf24;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 6px;
+        }
+        
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 6px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        th {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        td {
+            color: #e2e8f0;
+        }
+        
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+            text-align: center;
+            color: #4ade80;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            main {
+                background: white;
+                border: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            nav {
+                position: relative;
+                max-height: none;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📘 Manual Completo de Edição de Briefings</h1>
+            <p style="color: #e2e8f0; font-size: 1.2rem; margin-top: 1rem;">LandSpace Strategy Editorial</p>
+            <div class="meta">
+                <strong>Versão:</strong> 3.0 - Estrutura "Big Tech"<br>
+                <strong>Última Atualização:</strong> Janeiro 2026<br>
+                <strong>Sistema:</strong> Keystatic CMS + Next.js<br>
+                <strong>Estrutura:</strong> Nova arquitetura editorial compartimentada
+            </div>
+        </header>
+        
+        <main>
+            <h1>📘 Manual Completo de Edição de Briefings - LandSpace Strategy Editorial</h1>
+
+<strong>Versão:</strong> 3.0 - Estrutura "Big Tech"  
+<strong>Última Atualização:</strong> Janeiro 2026  
+<strong>Sistema:</strong> Keystatic CMS + Next.js  
+<strong>Estrutura:</strong> Nova arquitetura editorial compartimentada
+
+<hr>
+
+<h2 id="1">📋 Índice</h2>
+
+<ol><li><a href="#acesso-ao-sistema">Acesso ao Sistema</a></li></ol>
+<ol><li><a href="#nova-estrutura-big-tech">Nova Estrutura "Big Tech"</a></li></ol>
+<ol><li><a href="#campos-obrigatórios">Campos Obrigatórios</a></li></ol>
+<ol><li><a href="#núcleo-estratégico">Núcleo Estratégico</a></li></ol>
+<ol><li><a href="#material-e-método-compartimentado">Material e Método (Compartimentado)</a></li></ol>
+<ol><li><a href="#análise-técnica">Análise Técnica</a></li></ol>
+<ol><li><a href="#fechamento">Fechamento</a></li></ol>
+<ol><li><a href="#campos-opcionais">Campos Opcionais</a></li></ol>
+<ol><li><a href="#padrões-editoriais">Padrões Editoriais</a></li></ol>
+<ol><li><a href="#metadados-e-identificação">Metadados e Identificação</a></li></ol>
+<ol><li><a href="#multimídia-e-recursos">Multimídia e Recursos</a></li></ol>
+<ol><li><a href="#validação-e-publicação">Validação e Publicação</a></li></ol>
+<ol><li><a href="#exemplo-completo">Exemplo Completo</a></li></ol>
+<ol><li><a href="#troubleshooting">Troubleshooting</a></li></ol>
+
+<hr>
+
+<h2 id="1">🔐 Acesso ao Sistema</h2>
+
+<h3>Desenvolvimento Local</h3>
+<pre><code>http://localhost:3000/keystatic</code></pre>
+
+<h3>Produção</h3>
+<pre><code>https://landspace.io/keystatic</code></pre>
+
+<strong>Nota:</strong> O Keystatic salva os arquivos diretamente no repositório Git. Certifique-se de ter permissões de escrita.
+
+<hr>
+
+<h2 id="1">🚀 Nova Estrutura "Big Tech"</h2>
+
+<p>A partir da versão 3.0, o sistema utiliza uma estrutura editorial rigorosa estilo "Big Tech", com campos compartimentados e especializados. Esta estrutura garante maior organização, clareza metodológica e visualização profissional dos processos técnicos.</p>
+
+<h3><strong>Principais Mudanças:</strong></h3>
+
+<ol><li><strong>Compartimentação do Material e Método:</strong></li></ol>
+   - Área de Estudo (recorte espacial)
+   - Bases de Dados (fontes e resoluções)
+   - Procedimentos (renderizado como fluxograma visual)
+
+<ol><li><strong>Destaque Máximo para o Mapa:</strong></li></ol>
+   - Mapa aparece automaticamente na seção "Resultados e Discussão"
+   - Visualização destacada com glow verde
+
+<ol><li><strong>Fluxograma de Procedimentos:</strong></li></ol>
+   - Lista de procedimentos renderizada como fluxograma vertical
+   - Círculos numerados com linhas finas
+   - Comunica "Processo Tecnológico" visualmente
+
+<ol><li><strong>Conclusão em Bullets:</strong></li></ol>
+   - Lista de achados e próximos passos
+   - Formato mais direto e objetivo
+
+<h3><strong>Compatibilidade:</strong></h3>
+
+<p>O sistema mantém <strong>compatibilidade total</strong> com briefings antigos:
+<ul><li>Se usar os novos campos (<code>introducao</code>, <code>resultados_discussao</code>) → <strong>Nova estrutura</strong></li>
+<li>Se usar campos legados (<code>desenvolvimento</code>, <code>conclusao</code> como string) → <strong>Estrutura legada</strong></li></ul></p>
+
+<hr>
+
+<h2 id="1">✅ Campos Obrigatórios</h2>
+
+<h3>1. <strong>Slug</strong> (URL Amigável)</h3>
+<ul><li><strong>Tipo:</strong> Texto</li>
+<li><strong>Formato:</strong> Apenas letras minúsculas, números e hífens</li>
+<li><strong>Exemplo:</strong> <code>petroleo-poder-oriente-medio</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Sem espaços
+  - Sem caracteres especiais (exceto hífen)
+  - Único (não pode repetir)
+  - Descritivo do conteúdo
+
+<h3>2. <strong>Título</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto</li>
+<li><strong>Limite:</strong> Sem limite específico, mas recomendado até 100 caracteres</li>
+<li><strong>Formato:</strong> Título principal do briefing</li>
+<li><strong>Exemplo:</strong> <code>"Petróleo e Poder no Oriente Médio"</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Impactante e estratégico
+  - Claro e objetivo
+  - Sem ponto final
+
+<h3>3. <strong>Resumo (Summary)</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto Multilinha</li>
+<li><strong>Limite:</strong> Recomendado 150-200 palavras</li>
+<li><strong>Formato:</strong> Descrição curta do briefing</li>
+<li><strong>Exemplo:</strong></li></ul>
+  <pre><code>Este relatório analisa as tensões geopolíticas no Estreito de Ormuz 
+  e seu impacto no preço do barril de petróleo, mapeando as rotas de 
+  exportação e dependências energéticas globais através de visualizações 
+  interativas e análises estratégicas.</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Aparece na listagem de briefings
+  - Deve ser informativo e atraente
+  - Não deve repetir o título
+
+<h3>4. <strong>Abstract (Resumo Executivo)</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto Multilinha</li>
+<li><strong>Limite:</strong> Máximo 200 palavras (OBRIGATÓRIO)</li>
+<li><strong>Formato:</strong> Resumo acadêmico completo</li>
+<li><strong>Exemplo:</strong></li></ul>
+  <pre><code>Este relatório analisa as tensões geopolíticas no Estreito de Ormuz 
+  e seu impacto no preço do barril de petróleo. Através de uma análise 
+  geoespacial detalhada, examinamos como o controle sobre recursos 
+  petrolíferos molda relações de poder, conflitos e alianças estratégicas 
+  na região. O estudo mapeia as principais rotas de exportação, identifica 
+  pontos críticos de vulnerabilidade no sistema energético global e avalia 
+  as implicações para a segurança energética de países importadores. Os 
+  resultados demonstram que aproximadamente 21% do petróleo mundial transita 
+  pelo Estreito de Ormuz, tornando-o um ponto crítico de vulnerabilidade 
+  estratégica. A análise revela padrões de dependência energética que criam 
+  vulnerabilidades significativas para economias globais, especialmente na 
+  Ásia e Europa.</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Aparece no cabeçalho do PDF/impressão
+  - Deve ser completo e acadêmico
+  - Contar palavras rigorosamente (máx. 200)
+  - Usado para indexação (Google Scholar, Zotero, Mendeley)
+
+<h3>5. <strong>Palavras-chave (Keywords)</strong></h3>
+<ul><li><strong>Tipo:</strong> Array de Texto</li>
+<li><strong>Quantidade:</strong> Exatamente 3 palavras-chave (OBRIGATÓRIO)</li>
+<li><strong>Formato:</strong> Termos técnicos principais</li>
+<li><strong>Exemplo:</strong></li></ul>
+  <pre><code>- &quot;Geopolítica&quot;
+  - &quot;Petróleo&quot;
+  - &quot;Oriente Médio&quot;</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Exatamente 3 (nem mais, nem menos)
+  - Termos técnicos e específicos
+  - Primeira letra maiúscula
+  - Sem aspas no valor (apenas na lista)
+
+<h3>6. <strong>Data de Publicação (Published At)</strong></h3>
+<ul><li><strong>Tipo:</strong> Data</li>
+<li><strong>Formato:</strong> YYYY-MM-DD</li>
+<li><strong>Exemplo:</strong> <code>2026-01-15</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Data real de publicação
+  - Não pode ser futura (exceto em Draft Mode)
+  - Usada para ordenação e filtros
+
+<h3>7. <strong>Volume</strong></h3>
+<ul><li><strong>Tipo:</strong> Número Inteiro</li>
+<li><strong>Padrão:</strong> 1</li>
+<li><strong>Descrição:</strong> Volume da publicação (ex: 1 para 2026)</li>
+<li><strong>Exemplo:</strong> <code>1</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Geralmente corresponde ao ano (Volume 1 = 2026)
+  - Incrementa a cada ano
+
+<h3>8. <strong>Edição</strong></h3>
+<ul><li><strong>Tipo:</strong> Número Inteiro</li>
+<li><strong>Descrição:</strong> Número sequencial da edição</li>
+<li><strong>Exemplo:</strong> <code>1</code>, <code>2</code>, <code>3</code>...</li>
+<li><strong>Regras:</strong></li></ul>
+  - Sequencial dentro do volume
+  - Primeira edição do volume = 1
+
+<hr>
+
+<h2 id="1">🎯 Núcleo Estratégico</h2>
+
+<h3><strong>Introdução</strong></h3>
+<ul><li><strong>Tipo:</strong> Editor de Texto Rico (MDX)</li>
+<li><strong>Campo:</strong> <code>introducao</code></li>
+<li><strong>Descrição:</strong> Contexto e objetivos do briefing</li>
+<li><strong>Formato:</strong> Markdown completo com suporte a:</li></ul>
+  - Formatação (negrito, itálico, listas)
+  - Links
+  - Imagens
+  - Divisores
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code class="language-markdown">## Contexto Geopolítico
+  
+  O Estreito de Ormuz representa um ponto crítico...
+  
+  ## Objetivos
+  
+  Este briefing tem como objetivo:
+  
+  1. Mapear as rotas de exportação
+  2. Identificar vulnerabilidades estratégicas
+  3. Avaliar implicações para segurança energética</code></pre>
+<ul><li><strong>Renderização:</strong></li></ul>
+  - Fonte: Serif (Merriweather)
+  - Tamanho: 19px (web) / 11pt (print)
+  - Alinhamento: Justificado
+
+<hr>
+
+<h2 id="1">🔬 Material e Método (Compartimentado)</h2>
+
+<p>A seção Material e Método é dividida em três subseções especializadas:</p>
+
+<h3><strong>1. Área de Estudo</strong></h3>
+<ul><li><strong>Tipo:</strong> Editor Markdown</li>
+<li><strong>Campo:</strong> <code>area_estudo</code></li>
+<li><strong>Foco:</strong> Recorte espacial da análise</li>
+<li><strong>Conteúdo Típico:</strong></li></ul>
+  - Delimitação geográfica
+  - Coordenadas e extensão
+  - Características da área
+  - Justificativa do recorte
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code class="language-markdown">A análise concentra-se na região do **Estreito de Ormuz**, 
+  localizado entre o Irã e Omã, com coordenadas aproximadas 
+  de 26°30&#039;N, 56°15&#039;E. Esta área compreende aproximadamente 
+  39 km de largura no ponto mais estreito...</code></pre>
+
+<h3><strong>2. Bases de Dados</strong></h3>
+<ul><li><strong>Tipo:</strong> Editor Markdown</li>
+<li><strong>Campo:</strong> <code>bases_dados</code></li>
+<li><strong>Foco:</strong> Fontes e resoluções utilizadas</li>
+<li><strong>Conteúdo Típico:</strong></li></ul>
+  - Lista de fontes de dados
+  - Resoluções espaciais e temporais
+  - Período de coleta
+  - Limitações dos dados
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code class="language-markdown">### Fontes Principais
+  
+  - **Satélites:** Landsat 8/9, Sentinel-2
+  - **Resolução Espacial:** 10-30 metros
+  - **Resolução Temporal:** 16 dias
+  - **Período:** 2020-2025
+  
+  ### Dados Auxiliares
+  
+  - Base cartográfica: OpenStreetMap
+  - Dados administrativos: GADM</code></pre>
+
+<h3><strong>3. Procedimentos (Pipeline Metodológico)</strong></h3>
+<ul><li><strong>Tipo:</strong> Lista/Bullets</li>
+<li><strong>Campo:</strong> <code>procedimentos</code></li>
+<li><strong>Formato:</strong> Array de strings (cada item = uma etapa)</li>
+<li><strong>Renderização:</strong> <strong>Fluxograma Vertical Sutil</strong></li></ul>
+  - Círculos numerados (verde esmeralda)
+  - Linha vertical sutil conectando as etapas
+  - Visual que comunica "Processo Tecnológico"
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code>Etapa 1: Aquisição de imagens satelitais
+  Etapa 2: Pré-processamento e correção atmosférica
+  Etapa 3: Classificação supervisionada usando Random Forest
+  Etapa 4: Validação com dados de campo
+  Etapa 5: Análise de mudanças temporais
+  Etapa 6: Geração de mapas temáticos</code></pre>
+<ul><li><strong>Visual no Site:</strong></li></ul>
+  <pre><code>┌─ 1 ─┐ Aquisição de imagens satelitais
+  │     │
+  └─ 2 ─┘ Pré-processamento e correção atmosférica
+  │     │
+  └─ 3 ─┘ Classificação supervisionada usando Random Forest
+  │     │
+  └─ 4 ─┘ Validação com dados de campo
+  │     │
+  └─ 5 ─┘ Análise de mudanças temporais
+  │     │
+  └─ 6 ─┘ Geração de mapas temáticos</code></pre>
+<ul><li><strong>Dicas:</strong></li></ul>
+  - Cada item deve ser uma etapa completa e clara
+  - Use linguagem técnica mas acessível
+  - Ordem cronológica do processo
+  - Máximo recomendado: 8-10 etapas
+
+<hr>
+
+<h2 id="1">📊 Análise Técnica</h2>
+
+<h3><strong>1. Resultados e Discussão</strong></h3>
+<ul><li><strong>Tipo:</strong> Editor de Texto Rico (MDX) com suporte a imagens</li>
+<li><strong>Campo:</strong> <code>resultados_discussao</code></li>
+<li><strong>Características Especiais:</strong></li></ul>
+  - <strong>Destaque máximo para o Mapa</strong> (se configurado)
+  - Mapa aparece automaticamente no topo da seção
+  - Box destacado com glow verde
+  - Suporte completo a Markdown
+<ul><li><strong>Conteúdo Típico:</strong></li></ul>
+  - Apresentação dos resultados principais
+  - Discussão dos achados
+  - Comparação com literatura
+  - Implicações estratégicas
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code class="language-markdown">## Principais Resultados
+  
+  A análise revelou que aproximadamente **21% do petróleo mundial** 
+  transita pelo Estreito de Ormuz...
+  
+  ### Padrões Identificados
+  
+  1. Concentração de rotas no canal principal
+  2. Variação sazonal do tráfego
+  3. Dependência crítica de países asiáticos
+  
+  ## Discussão
+  
+  Estes resultados indicam uma vulnerabilidade estratégica significativa...</code></pre>
+<ul><li><strong>Mapa em Destaque:</strong></li></ul>
+  - Se <code>mapEmbedUrl</code>, <code>mapUrl</code> ou <code>mapDownloadPath</code> estiverem configurados
+  - Mapa aparece automaticamente antes do texto
+  - Visualização destacada com borda e glow verde
+  - Altura mínima: 600px
+
+<h3><strong>2. Limitações e Incertezas</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto Curto (1 parágrafo)</li>
+<li><strong>Campo:</strong> <code>limitacoes_incertezas</code></li>
+<li><strong>Formato:</strong> Texto simples (não Markdown)</li>
+<li><strong>Limite:</strong> 1 parágrafo (recomendado 100-200 palavras)</li>
+<li><strong>Renderização:</strong></li></ul>
+  - Caixa destacada com fundo verde claro (5% opacidade)
+  - Borda esquerda verde esmeralda (4px)
+  - Fonte Serif, tamanho ligeiramente maior
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code>Esta análise está sujeita a limitações relacionadas à disponibilidade 
+  de dados em tempo real sobre o tráfego marítimo. As estimativas de 
+  volume de petróleo são baseadas em dados agregados e podem não refletir 
+  variações diárias. Além disso, fatores geopolíticos dinâmicos podem 
+  alterar rapidamente os padrões identificados.</code></pre>
+<ul><li><strong>Dicas:</strong></li></ul>
+  - Seja honesto e transparente
+  - Identifique limitações metodológicas
+  - Mencione incertezas dos dados
+  - Evite listas (apenas parágrafo corrido)
+
+<hr>
+
+<h2 id="1">🎯 Fechamento</h2>
+
+<h3><strong>1. Conclusão</strong></h3>
+<ul><li><strong>Tipo:</strong> Lista de Bullets</li>
+<li><strong>Campo:</strong> <code>conclusao</code></li>
+<li><strong>Formato:</strong> Array de strings (cada item = um bullet)</li>
+<li><strong>Conteúdo:</strong> Achados principais e próximos passos</li>
+<li><strong>Renderização:</strong></li></ul>
+  - Lista com bullets verdes (círculos pequenos)
+  - Glow sutil nos bullets
+  - Espaçamento generoso entre itens
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code>Achado 1: O Estreito de Ormuz concentra 21% do petróleo mundial
+  Achado 2: Países asiáticos apresentam maior dependência energética
+  Achado 3: Variações sazonais afetam significativamente os padrões de tráfego
+  Próximo Passo 1: Desenvolver modelo preditivo de interrupções
+  Próximo Passo 2: Expandir análise para outros estreitos estratégicos</code></pre>
+<ul><li><strong>Visual no Site:</strong></li></ul>
+  <pre><code>• Achado 1: O Estreito de Ormuz concentra 21% do petróleo mundial
+  • Achado 2: Países asiáticos apresentam maior dependência energética
+  • Próximo Passo 1: Desenvolver modelo preditivo de interrupções</code></pre>
+<ul><li><strong>Dicas:</strong></li></ul>
+  - Separe achados de próximos passos (ou misture se preferir)
+  - Seja específico e acionável
+  - Máximo recomendado: 5-8 itens
+
+<h3><strong>2. Referências</strong></h3>
+<ul><li><strong>Tipo:</strong> Editor Markdown</li>
+<li><strong>Campo:</strong> <code>referencias</code></li>
+<li><strong>Formato:</strong> Padrão ABNT NBR 6023</li>
+<li><strong>Características:</strong></li></ul>
+  - Ordem alfabética
+  - Formatação ABNT rigorosa
+  - Links suportados
+<ul><li><strong>Exemplo:</strong></li></ul>
+  <pre><code class="language-markdown">AGÊNCIA INTERNACIONAL DE ENERGIA. World Energy Outlook 2024. 
+  Paris: IEA, 2024. Disponível em: https://www.iea.org/reports/world-energy-outlook-2024. 
+  Acesso em: 15 jan. 2026.
+  
+  SILVA, J. P. Geopolítica do Petróleo no Oriente Médio. 
+  São Paulo: Editora XYZ, 2023.
+  
+  SMITH, A. B.; JONES, C. D. Maritime Chokepoints and Global Energy Security. 
+  Energy Policy, v. 45, p. 123-145, 2024.</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Sistema Autor-Data nas citações
+  - Referências em ordem alfabética
+  - Formato ABNT NBR 6023
+  - Links para recursos online
+
+<hr>
+
+<h2 id="1">📝 Campos Opcionais (mas Recomendados)</h2>
+
+<h3>9. <strong>Subtítulo</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto</li>
+<li><strong>Formato:</strong> Subtítulo descritivo</li>
+<li><strong>Exemplo:</strong> <code>"Uma Análise Geoespacial das Tensões Geopolíticas e Impactos no Mercado Energético Global"</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Complementa o título
+  - Mais descritivo que o título
+  - Opcional, mas recomendado
+
+<h3>10. <strong>ID do Briefing (Briefing ID)</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto</li>
+<li><strong>Formato:</strong> <code>LS-STR-YYYY-XXX</code></li>
+<li><strong>Exemplo:</strong> <code>LS-STR-2026-001</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Se vazio, será gerado automaticamente
+  - Formato: <code>LS-STR-[ANO]-[NÚMERO]</code>
+  - Recomendado preencher manualmente para controle
+
+<h3>11. <strong>DOI (Digital Object Identifier)</strong></h3>
+<ul><li><strong>Tipo:</strong> Texto</li>
+<li><strong>Formato:</strong> <code>10.xxxx/xxxx</code></li>
+<li><strong>Exemplo:</strong> <code>10.5281/zenodo.1234567</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Obrigatório para publicações acadêmicas
+  - Obter via Zenodo, ResearchGate ou similar
+  - Aparece no rodapé do PDF
+  - Sem "https://doi.org/" (apenas o número)
+
+<h3>12. <strong>Tags</strong></h3>
+<ul><li><strong>Tipo:</strong> Array de Texto</li>
+<li><strong>Formato:</strong> Tags para categorização</li>
+<li><strong>Exemplo:</strong></li></ul>
+  <pre><code>- &quot;Energia&quot;
+  - &quot;Geopolítica&quot;
+  - &quot;Oriente Médio&quot;
+  - &quot;Petróleo&quot;</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Diferente de Keywords (mais amplas)
+  - Usadas para filtros e navegação
+  - Múltiplas tags permitidas
+
+<h3>13. <strong>Imagem de Capa (Cover Image)</strong></h3>
+<ul><li><strong>Tipo:</strong> Upload de Imagem</li>
+<li><strong>Diretório:</strong> <code>public/strategy/briefings/covers/</code></li>
+<li><strong>Formatos:</strong> JPEG, PNG, WebP</li>
+<li><strong>Recomendação:</strong></li></ul>
+  - Resolução mínima: 1200x630px
+  - Proporção: 16:9 ou similar
+  - Peso: Máximo 500KB (otimizado)
+<ul><li><strong>Regras:</strong></li></ul>
+  - Aparece na listagem e no topo do briefing
+  - Deve ser relevante ao conteúdo
+
+<h3>14. <strong>Arquivo PDF</strong></h3>
+<ul><li><strong>Tipo:</strong> Upload de Arquivo</li>
+<li><strong>Diretório:</strong> <code>public/strategy/briefings/pdfs/</code></li>
+<li><strong>Formato:</strong> PDF</li>
+<li><strong>Regras:</strong></li></ul>
+  - Versão final para download
+  - Deve incluir cabeçalho do journal
+  - Deve incluir rodapé com DOI
+
+<hr>
+
+<h2 id="1">📐 Estrutura do Conteúdo (Nova Ordem)</h2>
+
+<h3><strong>Ordem de Renderização na Página:</strong></h3>
+
+<ol><li><strong>Metadados Iniciais</strong></li></ol>
+   - Título, Subtítulo, Resumo
+   - Abstract & Keywords Box
+
+<ol><li><strong>Introdução</strong> (Núcleo Estratégico)</li></ol>
+   - Contexto e objetivos
+   - Editor MDX completo
+
+<ol><li><strong>Material e Método</strong> (Compartimentado)</li></ol>
+   - Área de Estudo
+   - Bases de Dados
+   - Procedimentos (Fluxograma Visual)
+
+<ol><li><strong>Resultados e Discussão</strong></li></ol>
+   - <strong>Mapa em Destaque</strong> (se configurado)
+   - Conteúdo MDX rico
+
+<ol><li><strong>Limitações e Incertezas</strong></li></ol>
+   - Caixa destacada (1 parágrafo)
+
+<ol><li><strong>Conclusão</strong></li></ol>
+   - Lista de bullets (achados e próximos passos)
+
+<ol><li><strong>Referências</strong></li></ol>
+   - Padrão ABNT
+
+<ol><li><strong>QR Code</strong> (apenas print)</li></ol>
+
+<ol><li><strong>Rodapé</strong> (apenas print)</li></ol>
+
+<h3><strong>Campos Legados (Compatibilidade)</strong></h3>
+
+<p>O sistema mantém compatibilidade com briefings antigos:</p>
+
+<ul><li><strong><code>desenvolvimento</code></strong> (MDX) - Campo legado</li>
+<li><strong><code>conclusao</code></strong> (MDX ou string) - Campo legado</li>
+<li><strong><code>content</code></strong> (MDX) - Campo legado</li></ul>
+
+<strong>Quando usar legado:</strong>
+<ul><li>Briefings criados antes da versão 3.0</li>
+<li>Migração gradual para nova estrutura</li></ul>
+
+<strong>Recomendação:</strong> Migrar para nova estrutura quando possível
+
+<hr>
+
+<h2 id="1">🎨 Padrões Editoriais</h2>
+
+<h3>Tipografia</h3>
+
+<h4>Web (Tela)</h4>
+<ul><li><strong>Corpo do Texto:</strong></li></ul>
+  - Fonte: Merriweather (Serif)
+  - Tamanho: 19px
+  - Espaçamento: 1.8
+  - Alinhamento: Justificado
+  - Cor: <code>#e2e8f0</code> (War Room Text)
+
+<ul><li><strong>Títulos H1:</strong></li></ul>
+  - Fonte: Outfit/Geist (Sans-serif)
+  - Tamanho: 2.5rem (40px)
+  - Peso: Semibold
+  - Cor: <code>#10b981</code> (Verde Esmeralda)
+  - Text-shadow: Glow verde
+
+<ul><li><strong>Títulos H2:</strong></li></ul>
+  - Fonte: Serif
+  - Tamanho: 2rem (32px)
+  - Peso: 600
+  - Cor: <code>#10b981</code>
+  - Margin-top: 3rem
+
+<ul><li><strong>Metadados:</strong></li></ul>
+  - Fonte: JetBrains Mono (Monospace)
+  - Tamanho: 9pt
+  - Cor: <code>#4ade80</code> (Verde Menta)
+
+<h4>Print/PDF</h4>
+<ul><li><strong>Corpo do Texto:</strong></li></ul>
+  - Fonte: Georgia, 'Times New Roman', Serif
+  - Tamanho: 11pt
+  - Espaçamento: 1.5
+  - Alinhamento: Justificado
+  - Cor: <code>#000000</code> (Preto)
+
+<ul><li><strong>Fundo:</strong> <code>#FFFFFF</code> (Branco)</li>
+<li><strong>Títulos:</strong> Verde Esmeralda <code>#10b981</code></li></ul>
+
+<h3>Estrutura do Documento (Ordem)</h3>
+
+<ol><li><strong>Cabeçalho do Journal</strong> (apenas print)</li></ol>
+   - Logo LandSpace Strategy
+   - Metadata box (indexação)
+   - QR Code para mapa interativo
+   - Referência completa: <code>Volume (Ano) ID</code>
+
+<ol><li><strong>Informações do Autor</strong> (apenas print)</li></ol>
+   - Nome: "Wellmo dos Santos Alves, PhD"
+   - Ícone ORCID
+   - Afiliação completa
+
+<ol><li><strong>Título</strong></li></ol>
+   - Subtítulo<em></em> (se houver)
+
+<ol><li><strong>Abstract & Keywords Box</strong> (Web)</li></ol>
+   - Abstract completo
+   - Keywords listadas
+
+<ol><li><strong>Desenvolvimento</strong></li></ol>
+   - Corpo principal
+   - Seções e subseções
+   - Mapas e ilustrações
+
+<ol><li><strong>Conclusão</strong></li></ol>
+   - Síntese
+   - Recomendações estratégicas
+
+<ol><li><strong>Referências</strong></li></ol>
+   - Padrão ABNT NBR 6023
+   - Ordem alfabética
+
+<ol><li><strong>QR Code</strong> (apenas print, última página)</li></ol>
+   - Link para versão interativa
+
+<ol><li><strong>Rodapé</strong> (apenas print)</li></ol>
+   - DOI
+   - Copyright
+   - Número da página
+
+<hr>
+
+<h2 id="1">🏷️ Metadados e Identificação</h2>
+
+<h3>ID Técnico (Briefing ID)</h3>
+
+<strong>Formato:</strong> <code>LS-STR-YYYY-XXX</code>
+
+<ul><li><strong>LS:</strong> LandSpace</li>
+<li><strong>STR:</strong> Strategy</li>
+<li><strong>YYYY:</strong> Ano (4 dígitos)</li>
+<li><strong>XXX:</strong> Número sequencial (3 dígitos, zero à esquerda)</li></ul>
+
+<strong>Exemplos:</strong>
+<ul><li><code>LS-STR-2026-001</code> (Primeiro briefing de 2026)</li>
+<li><code>LS-STR-2026-002</code> (Segundo briefing de 2026)</li>
+<li><code>LS-STR-2027-001</code> (Primeiro briefing de 2027)</li></ul>
+
+<strong>Geração Automática:</strong>
+<ul><li>Se o campo estiver vazio, o sistema gera automaticamente</li>
+<li>Baseado no ano da data de publicação e número sequencial</li></ul>
+
+<h3>DOI (Digital Object Identifier)</h3>
+
+<strong>Formato:</strong> <code>10.xxxx/xxxx</code>
+
+<strong>Onde Obter:</strong>
+<ol><li><strong>Zenodo</strong> (Recomendado - gratuito)</li></ol>
+   - Acesse: https://zenodo.org
+   - Crie conta/login
+   - Faça upload do PDF
+   - Copie o DOI gerado
+
+<ol><li><strong>ResearchGate</strong></li></ol>
+   - Upload de publicação
+   - DOI gerado automaticamente
+
+<ol><li><strong>Outros repositórios acadêmicos</strong></li></ol>
+
+<strong>Exemplo:</strong> <code>10.5281/zenodo.1234567</code>
+
+<strong>Importante:</strong>
+<ul><li>Não incluir "https://doi.org/" no campo</li>
+<li>Apenas o número do DOI</li>
+<li>O sistema adiciona o link automaticamente</li></ul>
+
+<h3>Referência Completa no Cabeçalho</h3>
+
+<strong>Formato:</strong> <code>Volume (Ano) ID</code>
+
+<strong>Exemplo:</strong> <code>1 (2026) LS-STR-2026-001</code>
+
+<p>Aparece no topo do PDF/impressão.</p>
+
+<hr>
+
+<h2 id="1">🗺️ Multimídia e Recursos</h2>
+
+<h3>Mapas</h3>
+
+<h4>URL do Mapa (Embed)</h4>
+<ul><li><strong>Tipo:</strong> Texto (URL)</li>
+<li><strong>Formato:</strong> URL completa do iframe</li>
+<li><strong>Exemplo:</strong> <code>https://www.google.com/maps/embed?pb=...</code></li>
+<li><strong>Uso:</strong> Embed do mapa na página</li></ul>
+
+<h4>URL do Mapa</h4>
+<ul><li><strong>Tipo:</strong> Texto (URL)</li>
+<li><strong>Formato:</strong> URL para abrir o mapa</li>
+<li><strong>Exemplo:</strong> <code>https://www.google.com/maps/@25,45,5z</code></li>
+<li><strong>Uso:</strong> Link externo para o mapa</li></ul>
+
+<h4>Arquivo do Mapa para Download</h4>
+<ul><li><strong>Tipo:</strong> Upload de Arquivo</li>
+<li><strong>Diretório:</strong> <code>public/strategy/briefings/maps/</code></li>
+<li><strong>Formatos:</strong> PNG, JPEG, PDF</li>
+<li><strong>Recomendação:</strong></li></ul>
+  - Resolução: Mínimo 300 DPI
+  - Formato: PNG (transparência) ou PDF (vetor)
+  - Peso: Otimizado para web
+
+<h3>Vídeo (YouTube)</h3>
+
+<h4>URL do YouTube</h4>
+<ul><li><strong>Tipo:</strong> Texto (URL)</li>
+<li><strong>Formato:</strong> URL completa do YouTube</li>
+<li><strong>Exemplo:</strong> <code>https://www.youtube.com/watch?v=example-petroleo</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - URL completa (não apenas ID)
+  - Vídeo relacionado ao briefing
+  - Aparece na seção de anexos
+
+<h3>Mapas Relacionados</h3>
+
+<ul><li><strong>Tipo:</strong> Array de Texto (Slugs)</li>
+<li><strong>Formato:</strong> Slugs dos mapas relacionados</li>
+<li><strong>Exemplo:</strong></li></ul>
+  <pre><code>- &quot;conflitos-hidricos-transfronteiricos&quot;
+  - &quot;fluxos-petroleo-global&quot;</code></pre>
+<ul><li><strong>Regras:</strong></li></ul>
+  - Apenas slugs (não títulos)
+  - Mapas devem existir no sistema
+  - Aparecem na seção de anexos
+
+<h3>Podcast Relacionado</h3>
+
+<ul><li><strong>Tipo:</strong> Texto (Slug)</li>
+<li><strong>Formato:</strong> Slug do podcast</li>
+<li><strong>Exemplo:</strong> <code>petroleo-geopolitica-mapas</code></li>
+<li><strong>Regras:</strong></li></ul>
+  - Apenas slug (não título)
+  - Podcast deve existir no sistema
+  - Aparece na seção de anexos
+
+<hr>
+
+<h2 id="1">✅ Validação e Publicação</h2>
+
+<h3>Checklist Antes de Publicar</h3>
+
+<h4>Campos Obrigatórios</h4>
+<ul><li>[ ] Slug preenchido e único</li>
+<li>[ ] Título preenchido</li>
+<li>[ ] Resumo (Summary) preenchido</li>
+<li>[ ] Abstract preenchido (máx. 200 palavras)</li>
+<li>[ ] Keywords preenchidas (exatamente 3)</li>
+<li>[ ] Data de publicação definida</li>
+<li>[ ] Volume definido</li>
+<li>[ ] Edição definida</li></ul>
+
+<h4>Conteúdo (Nova Estrutura)</h4>
+<ul><li>[ ] Introdução preenchida</li>
+<li>[ ] Material e Método:</li></ul>
+  - [ ] Área de Estudo (recomendado)
+  - [ ] Bases de Dados (recomendado)
+  - [ ] Procedimentos (lista com etapas)
+<ul><li>[ ] Resultados e Discussão preenchidos</li>
+<li>[ ] Limitações e Incertezas (recomendado)</li>
+<li>[ ] Conclusão (lista de bullets)</li>
+<li>[ ] Referências preenchidas (padrão ABNT)</li></ul>
+
+<h4>Conteúdo (Estrutura Legada - Compatibilidade)</h4>
+<ul><li>[ ] Desenvolvimento preenchido (se usar legado)</li>
+<li>[ ] Conclusão preenchida (se usar legado)</li></ul>
+
+<h4>Metadados</h4>
+<ul><li>[ ] Briefing ID definido (ou deixar gerar automaticamente)</li>
+<li>[ ] DOI obtido e preenchido (recomendado)</li>
+<li>[ ] Tags adicionadas</li></ul>
+
+<h4>Multimídia</h4>
+<ul><li>[ ] Imagem de capa adicionada (recomendado)</li>
+<li>[ ] Mapa embed/URL configurado (se aplicável)</li>
+<li>[ ] PDF gerado e enviado (se aplicável)</li></ul>
+
+<h4>Revisão</h4>
+<ul><li>[ ] Texto revisado (ortografia e gramática)</li>
+<li>[ ] Referências no padrão ABNT</li>
+<li>[ ] Abstract com máximo 200 palavras</li>
+<li>[ ] Keywords exatamente 3</li>
+<li>[ ] Links funcionando</li>
+<li>[ ] Imagens otimizadas</li></ul>
+
+<h3>Processo de Publicação</h3>
+
+<ol><li><strong>Criar/Editar no Keystatic</strong></li></ol>
+   - Acesse <code>/keystatic</code>
+   - Crie novo briefing ou edite existente
+   - Preencha todos os campos obrigatórios
+
+<ol><li><strong>Salvar</strong></li></ol>
+   - Clique em "Save"
+   - Arquivo salvo em <code>src/content/keystatic/briefings/[slug].mdx</code>
+
+<ol><li><strong>Preview (Draft Mode)</strong></li></ol>
+   - Use Draft Mode para visualizar antes de publicar
+   - Acesse: <code>/api/draft/enable?secret=SEU_SECRET&slug=nome-do-briefing</code>
+   - Verifique tudo está correto
+
+<ol><li><strong>Commit e Push (Git)</strong></li></ol>
+   <pre><code class="language-bash">git add .
+   git commit -m &quot;Adiciona briefing: [título]&quot;
+   git push</code></pre>
+
+<ol><li><strong>Deploy Automático</strong></li></ol>
+   - Vercel faz deploy automaticamente
+   - Briefing disponível em produção
+
+<h3>Draft Mode</h3>
+
+<strong>Habilitar:</strong>
+<pre><code>http://localhost:3000/api/draft/enable?secret=SEU_SECRET&amp;slug=nome-do-briefing</code></pre>
+
+<strong>Desabilitar:</strong>
+<pre><code>http://localhost:3000/api/draft/disable</code></pre>
+
+<strong>Uso:</strong>
+<ul><li>Visualizar conteúdo não publicado</li>
+<li>Testar antes de fazer commit</li>
+<li>Revisar alterações</li></ul>
+
+<hr>
+
+<h2 id="1">📄 Exemplo Completo (Nova Estrutura)</h2>
+
+<h3>Frontmatter (YAML)</h3>
+
+<pre><code class="language-yaml">---
+slug: petroleo-poder-oriente-medio
+title: &quot;Petróleo e Poder no Oriente Médio&quot;
+subtitle: &quot;Uma Análise Geoespacial das Tensões Geopolíticas e Impactos no Mercado Energético Global&quot;
+summary: &quot;Este relatório analisa as tensões geopolíticas no Estreito de Ormuz e seu impacto no preço do barril de petróleo, mapeando as rotas de exportação e dependências energéticas globais através de visualizações interativas e análises estratégicas.&quot;
+abstract: &quot;Este relatório analisa as tensões geopolíticas no Estreito de Ormuz e seu impacto no preço do barril de petróleo. Através de uma análise geoespacial detalhada, examinamos como o controle sobre recursos petrolíferos molda relações de poder, conflitos e alianças estratégicas na região. O estudo mapeia as principais rotas de exportação, identifica pontos críticos de vulnerabilidade no sistema energético global e avalia as implicações para a segurança energética de países importadores. Os resultados demonstram que aproximadamente 21% do petróleo mundial transita pelo Estreito de Ormuz, tornando-o um ponto crítico de vulnerabilidade estratégica. A análise revela padrões de dependência energética que criam vulnerabilidades significativas para economias globais, especialmente na Ásia e Europa.&quot;
+keywords:
+  - &quot;Geopolítica&quot;
+  - &quot;Petróleo&quot;
+  - &quot;Oriente Médio&quot;
+publishedAt: &quot;2026-01-15&quot;
+volume: 1
+edition: 1
+briefingId: &quot;LS-STR-2026-001&quot;
+doi: &quot;10.5281/zenodo.1234567&quot;
+tags:
+  - &quot;Energia&quot;
+  - &quot;Geopolítica&quot;
+  - &quot;Oriente Médio&quot;
+  - &quot;Petróleo&quot;
+---</code></pre>
+
+<h3>Conteúdo (Nova Estrutura Big Tech)</h3>
+
+<h4>1. Introdução (Núcleo Estratégico)</h4>
+
+<pre><code class="language-markdown">## Contexto Geopolítico
+
+<p>O Oriente Médio concentra aproximadamente **48% das reservas mundiais de petróleo**, tornando-se o epicentro das dinâmicas energéticas globais. Esta análise examina como o controle sobre recursos petrolíferos molda relações de poder, conflitos e alianças estratégicas na região.</p>
+
+## Objetivos
+
+<p>Este briefing tem como objetivo:</p>
+
+<p>1. Mapear as principais rotas de exportação de petróleo
+2. Identificar pontos críticos de vulnerabilidade estratégica
+3. Avaliar implicações para a segurança energética global</code></pre></p>
+
+<h4>2. Material e Método</h4>
+
+<strong>Área de Estudo:</strong>
+<pre><code class="language-markdown">A análise concentra-se na região do **Estreito de Ormuz**, localizado entre o Irã e Omã, com coordenadas aproximadas de 26°30&#039;N, 56°15&#039;E. Esta área compreende aproximadamente 39 km de largura no ponto mais estreito e representa um dos chokepoints mais críticos do sistema energético global.</code></pre>
+
+<strong>Bases de Dados:</strong>
+<pre><code class="language-markdown">### Fontes Principais
+
+<p>- **Dados de Tráfego Marítimo:** MarineTraffic API (resolução: 1 hora)
+- **Dados de Produção:** Agência Internacional de Energia (IEA)
+- **Dados Geopolíticos:** Global Conflict Tracker
+- **Período de Análise:** 2020-2025</p>
+
+### Resoluções
+
+<p>- **Espacial:** 1 km (agregação de rotas)
+- **Temporal:** Diária (agregação horária)</code></pre></p>
+
+<strong>Procedimentos:</strong>
+<pre><code>Aquisição de dados de tráfego marítimo via API MarineTraffic
+Filtragem de navios petroleiros (tipo: tanker)
+Agregação espacial por rotas principais
+Cálculo de volumes diários de tráfego
+Análise de padrões sazonais e tendências
+Identificação de pontos críticos de congestionamento
+Geração de mapas temáticos de vulnerabilidade
+Validação com dados históricos de interrupções</code></pre>
+
+<h4>3. Resultados e Discussão</h4>
+
+<pre><code class="language-markdown">## Principais Resultados
+
+<p>A análise revelou que aproximadamente **21% do petróleo mundial** transita pelo Estreito de Ormuz, com um volume médio diário de 21 milhões de barris.</p>
+
+### Padrões Identificados
+
+<p>1. **Concentração de Rotas:** 85% do tráfego utiliza o canal principal
+2. **Variação Sazonal:** Picos de tráfego durante o inverno (hemisfério norte)
+3. **Dependência Crítica:** China, Índia e Japão representam 60% do tráfego</p>
+
+## Discussão
+
+<p>Estes resultados indicam uma vulnerabilidade estratégica significativa. Qualquer interrupção no Estreito de Ormuz teria impacto imediato nos preços globais de petróleo e poderia desencadear crises energéticas em múltiplos países.</code></pre></p>
+
+<strong>Nota:</strong> O mapa (se configurado) aparecerá automaticamente no topo desta seção.
+
+<h4>4. Limitações e Incertezas</h4>
+
+<pre><code>Esta análise está sujeita a limitações relacionadas à disponibilidade de dados em tempo real sobre o tráfego marítimo. As estimativas de volume de petróleo são baseadas em dados agregados e podem não refletir variações diárias. Além disso, fatores geopolíticos dinâmicos podem alterar rapidamente os padrões identificados, especialmente em contextos de tensão regional.</code></pre>
+
+<h4>5. Conclusão (Lista de Bullets)</h4>
+
+<pre><code>O Estreito de Ormuz concentra 21% do petróleo mundial, representando um ponto crítico de vulnerabilidade estratégica
+Países asiáticos (China, Índia, Japão) apresentam maior dependência energética desta rota
+Variações sazonais afetam significativamente os padrões de tráfego, com picos no inverno
+Desenvolver modelo preditivo de interrupções baseado em dados históricos
+Expandir análise para outros estreitos estratégicos (Malaca, Bab el-Mandeb)
+Criar sistema de alerta precoce para monitoramento de tensões geopolíticas</code></pre>
+
+<h4>6. Referências</h4>
+
+<pre><code class="language-markdown">AGÊNCIA INTERNACIONAL DE ENERGIA. World Energy Outlook 2024. Paris: IEA, 2024. Disponível em: https://www.iea.org/reports/world-energy-outlook-2024. Acesso em: 15 jan. 2026.
+
+<p>SILVA, J. P. Geopolítica do Petróleo no Oriente Médio. São Paulo: Editora XYZ, 2023.</p>
+
+<p>SMITH, A. B.; JONES, C. D. Maritime Chokepoints and Global Energy Security. Energy Policy, v. 45, p. 123-145, 2024.</code></pre></p>
+
+<hr>
+
+<h2 id="1">🔧 Troubleshooting</h2>
+
+<h3>Erro: "Abstract deve ter no máximo 200 palavras"</h3>
+<ul><li><strong>Solução:</strong> Conte as palavras rigorosamente</li>
+<li><strong>Dica:</strong> Use um contador de palavras online</li>
+<li><strong>Limite:</strong> Exatamente 200 palavras ou menos</li></ul>
+
+<h3>Erro: "Keywords deve ter exatamente 3 itens"</h3>
+<ul><li><strong>Solução:</strong> Adicione exatamente 3 palavras-chave</li>
+<li><strong>Não pode:</strong> 2 ou 4 ou mais</li>
+<li><strong>Deve ser:</strong> Exatamente 3</li></ul>
+
+<h3>Fluxograma de Procedimentos não aparece</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - Campo <code>procedimentos</code> está preenchido
+  - É uma lista (array), não texto corrido
+  - Cada item é uma etapa completa
+<ul><li><strong>Solução:</strong> Adicione itens na lista de procedimentos (não use texto corrido)</li></ul>
+
+<h3>Mapa não aparece em destaque</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - <code>mapEmbedUrl</code>, <code>mapUrl</code> ou <code>mapDownloadPath</code> configurados
+  - Mapa aparece automaticamente na seção "Resultados e Discussão"
+<ul><li><strong>Solução:</strong> Configure pelo menos um dos campos de mapa</li></ul>
+
+<h3>Conclusão não renderiza como lista</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - Campo <code>conclusao</code> é uma lista (array), não texto
+  - Cada item é um bullet separado
+<ul><li><strong>Solução:</strong> Use lista de bullets, não texto corrido</li></ul>
+
+<h3>Erro: "Slug já existe"</h3>
+<ul><li><strong>Solução:</strong> Escolha um slug diferente</li>
+<li><strong>Dica:</strong> Adicione número ou palavra diferente</li>
+<li><strong>Exemplo:</strong> <code>petroleo-poder-oriente-medio-2</code></li></ul>
+
+<h3>Briefing não aparece na listagem</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - Data de publicação não está no futuro
+  - Draft Mode está desabilitado (se quiser publicar)
+  - Arquivo foi salvo corretamente
+  - Commit e push foram feitos (em produção)
+
+<h3>Imagens não aparecem</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - Caminho correto no upload
+  - Formato suportado (JPEG, PNG, WebP)
+  - Tamanho do arquivo (otimizar se necessário)
+
+<h3>PDF não gera corretamente</h3>
+<ul><li><strong>Verificar:</strong></li></ul>
+  - Abstract preenchido
+  - Keywords preenchidas (3 itens)
+  - DOI preenchido (se aplicável)
+  - Volume e Edição definidos
+
+<hr>
+
+<h2 id="1">📚 Recursos Adicionais</h2>
+
+<h3>Documentação</h3>
+<ul><li><a href="https://keystatic.com/docs">Keystatic Docs</a></li>
+<li><a href="https://nextjs.org/docs/app/api-reference/functions/draft-mode">Next.js Draft Mode</a></li>
+<li><a href="https://www.abnt.org.br">ABNT NBR 6023</a> - Referências Bibliográficas</li></ul>
+
+<h3>Ferramentas Úteis</h3>
+<ul><li><strong>Contador de Palavras:</strong> <a href="https://www.wordcounter.net">WordCounter</a></li>
+<li><strong>DOI:</strong> <a href="https://zenodo.org">Zenodo</a> - Repositório acadêmico gratuito</li>
+<li><strong>Otimização de Imagens:</strong> <a href="https://tinypng.com">TinyPNG</a></li></ul>
+
+<hr>
+
+<h2 id="1">📞 Suporte</h2>
+
+<p>Para dúvidas ou problemas:
+<ol><li>Consulte este manual primeiro</li></ol>
+<ol><li>Verifique a seção Troubleshooting</li></ol>
+<ol><li>Consulte a documentação do Keystatic</li></ol>
+<ol><li>Entre em contato com a equipe técnica</li></ol></p>
+
+<hr>
+
+<h2 id="1">🆕 Migração da Estrutura Legada</h2>
+
+<p>Se você tem briefings criados com a estrutura antiga e quer migrar para a nova estrutura "Big Tech":</p>
+
+<h3><strong>Passo a Passo:</strong></h3>
+
+<ol><li><strong>Acesse o briefing no Keystatic</strong> (<code>/keystatic</code>)</li></ol>
+
+<ol><li><strong>Copie o conteúdo:</strong></li></ol>
+   - <code>desenvolvimento</code> → Divida entre <code>introducao</code> e <code>resultados_discussao</code>
+   - <code>conclusao</code> (se for texto) → Converta para lista de bullets
+
+<ol><li><strong>Preencha os novos campos:</strong></li></ol>
+   - <strong>Introdução:</strong> Contexto e objetivos (parte inicial do desenvolvimento)
+   - <strong>Resultados e Discussão:</strong> Análise e resultados (parte final do desenvolvimento)
+   - <strong>Material e Método:</strong> Crie as três subseções
+   - <strong>Conclusão:</strong> Converta para lista de bullets
+
+<ol><li><strong>Salve e teste:</strong></li></ol>
+   - Verifique se tudo renderiza corretamente
+   - Teste o fluxograma de procedimentos
+   - Confirme que o mapa aparece em destaque
+
+<h3><strong>Nota Importante:</strong></h3>
+
+<ul><li>Briefings antigos continuam funcionando normalmente</li>
+<li>A migração é opcional</li>
+<li>Você pode usar a estrutura legada se preferir</li></ul>
+
+<hr>
+
+<strong>LandSpace Strategy Editorial</strong>  
+<em>Intelligence Division</em>  
+<strong>Versão:</strong> 3.0 - Estrutura "Big Tech"  
+Última atualização: Janeiro 2026
+        </main>
+        
+        <footer>
+            <p><strong>LandSpace Strategy Editorial</strong></p>
+            <p><em>Intelligence Division</em></p>
+            <p><strong>Versão:</strong> 3.0 - Estrutura "Big Tech"</p>
+            <p>Última atualização: Janeiro 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

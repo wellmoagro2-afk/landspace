@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Configuração - URLs Hotmart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #0f172a;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        h3 {
+            color: #334155;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #475569;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #475569;
+        }
+        
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #dc2626;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        pre code {
+            background: transparent;
+            color: #e2e8f0;
+            padding: 0;
+        }
+        
+        .checklist {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .checklist-item {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .checklist-item::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        
+        .checklist-item.checked::before {
+            content: "☑";
+            color: #10b981;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .course-section {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .step {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .print-button:hover {
+            background: #2563eb;
+        }
+        
+        @media print {
+            .print-button {
+                display: none;
+            }
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Imprimir</button>
+    
+    <div class="container">
+        <h1>✅ Checklist de Configuração - URLs Hotmart</h1>
+        <p>Este checklist ajuda você a configurar corretamente todas as URLs de checkout da Hotmart no site LandSpace.</p>
+
+        <h2>📋 Checklist Geral</h2>
+        
+        <div class="checklist">
+            <h3>Antes de Começar</h3>
+            <div class="checklist-item">Você tem uma conta ativa na Hotmart</div>
+            <div class="checklist-item">Todos os cursos estão criados na plataforma Hotmart</div>
+            <div class="checklist-item">Você tem as URLs de checkout de cada curso</div>
+            <div class="checklist-item">As URLs estão no formato correto: <code>https://pay.hotmart.com/[CODIGO]</code></div>
+        </div>
+
+        <h2>🔗 URLs de Checkout</h2>
+
+        <h3>Como Obter as URLs na Hotmart</h3>
+        <ol>
+            <li>Acesse sua conta na Hotmart</li>
+            <li>Vá em <strong>"Produtos"</strong> ou <strong>"Meus Produtos"</strong></li>
+            <li>Clique no curso desejado</li>
+            <li>Procure por <strong>"Link de Vendas"</strong> ou <strong>"Checkout"</strong></li>
+            <li>Copie a URL completa (formato: <code>https://pay.hotmart.com/[CODIGO]</code>)</li>
+        </ol>
+
+        <h3>Formato Correto das URLs</h3>
+        
+        <div class="success">
+            <strong>✅ Correto:</strong>
+            <pre><code>https://pay.hotmart.com/A12345678X
+https://pay.hotmart.com/B87654321Y</code></pre>
+        </div>
+
+        <div class="error">
+            <strong>❌ Incorreto:</strong>
+            <pre><code>https://pay.hotmart.com/SEU_CHECKOUT_AQUI
+pay.hotmart.com/A12345678X
+http://pay.hotmart.com/A12345678X (sem 's' no https)</code></pre>
+        </div>
+
+        <h2>📝 Configuração por Curso</h2>
+
+        <div class="course-section">
+            <h3>1. Transição de Uso e Cobertura da Terra</h3>
+            <p><strong>Arquivo:</strong> <code>src/app/cursos/data.ts</code><br>
+            <strong>Linha aproximada:</strong> 32</p>
+            
+            <pre><code>{
+  slug: "transicao-uso-cobertura",
+  // ... outros campos ...
+  hotmartCheckoutUrl: "https://pay.hotmart.com/SEU_CHECKOUT_AQUI", // ⚠️ SUBSTITUIR
+}</code></pre>
+
+            <div class="checklist">
+                <h4>Checklist:</h4>
+                <div class="checklist-item">URL obtida na Hotmart</div>
+                <div class="checklist-item">URL no formato correto (<code>https://pay.hotmart.com/...</code>)</div>
+                <div class="checklist-item">URL testada (abre corretamente)</div>
+                <div class="checklist-item">Substituída no arquivo <code>src/app/cursos/data.ts</code></div>
+                <div class="checklist-item">Testado no site (botão "Comprar na Hotmart" funciona)</div>
+            </div>
+
+            <p><strong>URL Configurada:</strong></p>
+            <input type="text" class="url-input" placeholder="Cole a URL aqui: https://pay.hotmart.com/...">
+        </div>
+
+        <div class="course-section">
+            <h3>2. Potencial de Uso Conservacionista</h3>
+            <p><strong>Arquivo:</strong> <code>src/app/cursos/data.ts</code><br>
+            <strong>Linha aproximada:</strong> 56</p>
+            
+            <pre><code>{
+  slug: "potencial-uso-conservacionista",
+  // ... outros campos ...
+  hotmartCheckoutUrl: "https://pay.hotmart.com/SEU_CHECKOUT_AQUI", // ⚠️ SUBSTITUIR
+}</code></pre>
+
+            <div class="checklist">
+                <h4>Checklist:</h4>
+                <div class="checklist-item">URL obtida na Hotmart</div>
+                <div class="checklist-item">URL no formato correto (<code>https://pay.hotmart.com/...</code>)</div>
+                <div class="checklist-item">URL testada (abre corretamente)</div>
+                <div class="checklist-item">Substituída no arquivo <code>src/app/cursos/data.ts</code></div>
+                <div class="checklist-item">Testado no site (botão "Comprar na Hotmart" funciona)</div>
+            </div>
+
+            <p><strong>URL Configurada:</strong></p>
+            <input type="text" class="url-input" placeholder="Cole a URL aqui: https://pay.hotmart.com/...">
+        </div>
+
+        <div class="course-section">
+            <h3>3. Modelagem de Perda de Solos com a RUSLE</h3>
+            <p><strong>Arquivo:</strong> <code>src/app/cursos/data.ts</code><br>
+            <strong>Linha aproximada:</strong> 80</p>
+            
+            <pre><code>{
+  slug: "modelagem-perda-solos-rusle",
+  // ... outros campos ...
+  hotmartCheckoutUrl: "https://pay.hotmart.com/SEU_CHECKOUT_AQUI", // ⚠️ SUBSTITUIR
+}</code></pre>
+
+            <div class="checklist">
+                <h4>Checklist:</h4>
+                <div class="checklist-item">URL obtida na Hotmart</div>
+                <div class="checklist-item">URL no formato correto (<code>https://pay.hotmart.com/...</code>)</div>
+                <div class="checklist-item">URL testada (abre corretamente)</div>
+                <div class="checklist-item">Substituída no arquivo <code>src/app/cursos/data.ts</code></div>
+                <div class="checklist-item">Testado no site (botão "Comprar na Hotmart" funciona)</div>
+            </div>
+
+            <p><strong>URL Configurada:</strong></p>
+            <input type="text" class="url-input" placeholder="Cole a URL aqui: https://pay.hotmart.com/...">
+        </div>
+
+        <h2>🔧 Passo a Passo de Configuração</h2>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Abra o Arquivo</strong>
+            <ul style="margin-top: 10px;">
+                <li>Abra o arquivo <code>src/app/cursos/data.ts</code> no seu editor</li>
+                <li>Localize o curso que deseja configurar</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Localize a URL</strong>
+            <p style="margin-top: 10px;">Procure pela linha:</p>
+            <pre><code>hotmartCheckoutUrl: "https://pay.hotmart.com/SEU_CHECKOUT_AQUI",</code></pre>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Substitua</strong>
+            <p style="margin-top: 10px;">Substitua <code>"https://pay.hotmart.com/SEU_CHECKOUT_AQUI"</code> pela URL real:</p>
+            <pre><code>hotmartCheckoutUrl: "https://pay.hotmart.com/A12345678X",</code></pre>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Salve e Teste</strong>
+            <ol style="margin-top: 10px;">
+                <li>Salve o arquivo</li>
+                <li>O servidor Next.js recarrega automaticamente</li>
+                <li>Navegue até a página do curso</li>
+                <li>Clique em "Comprar na Hotmart"</li>
+                <li>Verifique se redireciona corretamente</li>
+            </ol>
+        </div>
+
+        <h2>🧪 Testes de Validação</h2>
+
+        <div class="checklist">
+            <h3>Teste 1: Links nos Cards</h3>
+            <div class="checklist-item">Homepage: Card do curso → Popup → "Comprar na Hotmart" → Redireciona corretamente</div>
+            <div class="checklist-item">Página <code>/cursos</code>: Card do curso → Popup → "Comprar na Hotmart" → Redireciona corretamente</div>
+            <div class="checklist-item">Página <code>/favoritos</code>: Card favoritado → "Comprar na Hotmart" → Redireciona corretamente</div>
+
+            <h3>Teste 2: Páginas de Detalhes</h3>
+            <div class="checklist-item">Página <code>/cursos/transicao-uso-cobertura</code> → "Comprar na Hotmart" → Redireciona corretamente</div>
+            <div class="checklist-item">Página <code>/cursos/potencial-uso-conservacionista</code> → "Comprar na Hotmart" → Redireciona corretamente</div>
+            <div class="checklist-item">Página <code>/cursos/modelagem-perda-solos-rusle</code> → "Comprar na Hotmart" → Redireciona corretamente</div>
+
+            <h3>Teste 3: Páginas Específicas</h3>
+            <div class="checklist-item">Página dedicada "Transição de Uso e Cobertura" → Botão de compra → Redireciona corretamente</div>
+            <div class="checklist-item">Página dedicada "Potencial de Uso Conservacionista" → Botão de compra → Redireciona corretamente</div>
+            <div class="checklist-item">Página dedicada "Modelagem de Perda de Solos" → Botão de compra → Redireciona corretamente</div>
+
+            <h3>Teste 4: Verificação de URL</h3>
+            <div class="checklist-item">Todas as URLs começam com <code>https://</code></div>
+            <div class="checklist-item">Todas as URLs contêm <code>pay.hotmart.com</code></div>
+            <div class="checklist-item">Nenhuma URL contém <code>SEU_CHECKOUT_AQUI</code></div>
+            <div class="checklist-item">Todas as URLs abrem corretamente no navegador</div>
+        </div>
+
+        <h2>📍 Onde as URLs São Usadas</h2>
+        <p>As URLs de checkout aparecem em:</p>
+        <ol>
+            <li><strong>Cards de Curso</strong> (<code>src/components/CourseCard.tsx</code>)
+                <ul>
+                    <li>Popup ao passar o mouse</li>
+                    <li>Botão "Comprar na Hotmart"</li>
+                </ul>
+            </li>
+            <li><strong>Páginas de Detalhes</strong> (<code>src/app/cursos/[slug]/page.tsx</code>)
+                <ul>
+                    <li>Botão principal de compra</li>
+                    <li>Sidebar com informações</li>
+                </ul>
+            </li>
+            <li><strong>Páginas Dedicadas</strong>
+                <ul>
+                    <li><code>src/app/cursos/transicao-uso-cobertura/page.tsx</code></li>
+                    <li><code>src/app/cursos/potencial-uso-conservacionista/page.tsx</code></li>
+                    <li><code>src/app/cursos/modelagem-perda-solos-rusle/page.tsx</code></li>
+                </ul>
+            </li>
+            <li><strong>Página de Favoritos</strong> (<code>src/app/favoritos/page.tsx</code>)
+                <ul>
+                    <li>Cards de cursos favoritados</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>⚠️ Problemas Comuns e Soluções</h2>
+
+        <div class="warning">
+            <h4>Problema: URL não funciona</h4>
+            <p><strong>Solução:</strong></p>
+            <ul>
+                <li>Verifique se copiou a URL completa</li>
+                <li>Certifique-se de que começa com <code>https://</code></li>
+                <li>Teste a URL diretamente no navegador</li>
+                <li>Verifique se o produto está ativo na Hotmart</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <h4>Problema: URL abre mas mostra erro</h4>
+            <p><strong>Solução:</strong></p>
+            <ul>
+                <li>Verifique se o produto está publicado na Hotmart</li>
+                <li>Confirme se o código do checkout está correto</li>
+                <li>Verifique se há restrições de acesso no produto</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <h4>Problema: URL não aparece no site</h4>
+            <p><strong>Solução:</strong></p>
+            <ul>
+                <li>Verifique se salvou o arquivo <code>data.ts</code></li>
+                <li>Confirme que o servidor recarregou (veja o terminal)</li>
+                <li>Limpe o cache do navegador (Ctrl+Shift+R)</li>
+                <li>Verifique se não há erros de sintaxe no arquivo</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <h4>Problema: URL funciona mas não redireciona</h4>
+            <p><strong>Solução:</strong></p>
+            <ul>
+                <li>Verifique se a URL está entre aspas: <code>"https://..."</code></li>
+                <li>Confirme que não há espaços extras</li>
+                <li>Verifique se não há quebra de linha na URL</li>
+                <li>Teste em modo anônimo do navegador</li>
+            </ul>
+        </div>
+
+        <h2>📝 Template de Configuração Rápida</h2>
+        <p>Copie e cole este template, substituindo as URLs:</p>
+        <pre><code>export const COURSES: Course[] = [
+  {
+    slug: "transicao-uso-cobertura",
+    // ... outros campos ...
+    hotmartCheckoutUrl: "https://pay.hotmart.com/[CODIGO_CURSO_1]",
+  },
+  {
+    slug: "potencial-uso-conservacionista",
+    // ... outros campos ...
+    hotmartCheckoutUrl: "https://pay.hotmart.com/[CODIGO_CURSO_2]",
+  },
+  {
+    slug: "modelagem-perda-solos-rusle",
+    // ... outros campos ...
+    hotmartCheckoutUrl: "https://pay.hotmart.com/[CODIGO_CURSO_3]",
+  },
+];</code></pre>
+
+        <h2>✅ Checklist Final</h2>
+        <div class="checklist">
+            <p>Antes de considerar a configuração completa:</p>
+            <div class="checklist-item">Todas as URLs foram substituídas</div>
+            <div class="checklist-item">Nenhuma URL contém <code>SEU_CHECKOUT_AQUI</code></div>
+            <div class="checklist-item">Todas as URLs foram testadas manualmente</div>
+            <div class="checklist-item">Todos os botões "Comprar na Hotmart" funcionam</div>
+            <div class="checklist-item">Testado em diferentes páginas (homepage, listagem, detalhes)</div>
+            <div class="checklist-item">Testado em diferentes dispositivos (desktop, mobile)</div>
+            <div class="checklist-item">Verificado que o fluxo completo funciona: Site → Hotmart → Checkout</div>
+        </div>
+
+        <h2>🎯 Próximos Passos Após Configuração</h2>
+        <ol>
+            <li>✅ URLs configuradas</li>
+            <li>⏳ Testar fluxo completo de compra (teste real)</li>
+            <li>⏳ Verificar se os emails de confirmação da Hotmart estão funcionando</li>
+            <li>⏳ Monitorar conversões e ajustar se necessário</li>
+            <li>⏳ Adicionar tracking (Google Analytics, Facebook Pixel) se desejar</li>
+        </ol>
+
+        <h2>📞 Suporte</h2>
+        <p>Se tiver problemas:</p>
+        <ol>
+            <li>Verifique a documentação da Hotmart</li>
+            <li>Entre em contato com o suporte da Hotmart</li>
+            <li>Verifique os logs do console do navegador (F12)</li>
+        </ol>
+
+        <div class="footer">
+            <p><strong>Última atualização:</strong> Dezembro 2024</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
