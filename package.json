@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "npm run check:env && next build",
+    "build": "npm run check:env && next build --webpack",
     "start": "npm run check:env && next start",
     "lint": "eslint",
     "check:env": "node scripts/check-env.mjs",
