@@ -3,7 +3,21 @@ import { PrismaClient } from '@prisma/client';
 import { validateRuntimeGuards } from './runtime-guards';
 
 // Validar guards de runtime antes de criar Prisma Client
-validateRuntimeGuards();
+// IMPORTANTE: Se validação falhar, logar mas não quebrar importação (permite site funcionar sem banco em dev)
+// A validação será executada novamente quando Prisma for usado, mas não bloqueia importação do módulo
+try {
+  validateRuntimeGuards();
+} catch (error) {
+  // Em dev, permitir que o site funcione mesmo se validação falhar (ex: DATABASE_URL não configurado)
+  // Em prod, o erro será detectado quando Prisma for usado (fail-fast apropriado)
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('[Prisma] Validação de runtime guards falhou (não bloqueante em dev):', error instanceof Error ? error.message : 'Unknown error');
+    console.warn('[Prisma] O site continuará funcionando, mas operações de banco podem falhar.');
+  } else {
+    // Em produção, re-lançar o erro para fail-fast apropriado
+    throw error;
+  }
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

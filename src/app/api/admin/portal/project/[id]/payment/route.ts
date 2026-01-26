@@ -6,7 +6,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
-import { createPaymentSchema } from '@/lib/schemas';
+import { createPaymentSchema, updatePaymentSchema } from '@/lib/schemas';
 
 export async function POST(
   request: NextRequest,
@@ -116,6 +116,271 @@ export async function POST(
     return addRequestIdHeader(
       NextResponse.json(
         { error: 'Erro ao registrar pagamento' },
+        { status: 500 }
+      ),
+      requestId
+    );
+  }
+}
+
+/**
+ * Atualizar pagamento existente
+ */
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const requestId = getRequestId(request);
+  const clientIP = getClientIP(request);
+  const userAgent = request.headers.get('user-agent') || undefined;
+
+  try {
+    const isAdmin = await getAdminSession();
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return addRequestIdHeader(
+        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
+        requestId
+      );
+    }
+
+    // Extrair paymentId do body
+    const { paymentId, ...updateData } = body;
+    if (!paymentId) {
+      return addRequestIdHeader(
+        NextResponse.json({ error: 'paymentId é obrigatório' }, { status: 400 }),
+        requestId
+      );
+    }
+
+    const validation = updatePaymentSchema.safeParse(updateData);
+    if (!validation.success) {
+      return addRequestIdHeader(
+        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
+        requestId
+      );
+    }
+
+    // Buscar projeto e pagamento
+    const project = await prisma.project.findFirst({
+      where: {
+        OR: [
+          { id },
+          { protocol: id },
+        ],
+      },
+    });
+
+    if (!project) {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Projeto não encontrado' },
+          { status: 404 }
+        ),
+        requestId
+      );
+    }
+
+    const existingPayment = await prisma.payment.findFirst({
+      where: {
+        id: paymentId,
+        projectId: project.id,
+      },
+    });
+
+    if (!existingPayment) {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Pagamento não encontrado' },
+          { status: 404 }
+        ),
+        requestId
+      );
+    }
+
+    // Preparar dados de atualização
+    const updatePayload: any = {};
+    if (validation.data.method) updatePayload.method = validation.data.method;
+    if (validation.data.amount !== undefined) updatePayload.amount = new Decimal(validation.data.amount);
+    if (validation.data.note !== undefined) updatePayload.note = validation.data.note || null;
+    if (validation.data.status) {
+      updatePayload.status = validation.data.status;
+      updatePayload.confirmedAt = validation.data.status === 'CONFIRMED' ? new Date() : null;
+    }
+
+    const updatedPayment = await prisma.payment.update({
+      where: { id: paymentId },
+      data: updatePayload,
+    });
+
+    // Recalcular valores do projeto
+    await recalculateProjectBalance(project.id);
+
+    // Registrar auditoria
+    await auditLog({
+      requestId,
+      protocol: project.protocol,
+      action: AuditActions.ADMIN_PAYMENT_UPDATE,
+      entityType: 'Payment',
+      entityId: updatedPayment.id,
+      ipAddress: clientIP,
+      userAgent,
+      metadata: {
+        method: updatedPayment.method,
+        amount: updatedPayment.amount.toString(),
+        status: updatedPayment.status,
+        previousAmount: existingPayment.amount.toString(),
+        previousStatus: existingPayment.status,
+      },
+      success: true,
+    });
+
+    return addRequestIdHeader(
+      NextResponse.json({
+        success: true,
+        payment: {
+          ...updatedPayment,
+          amount: parseFloat(updatedPayment.amount.toString()),
+        },
+      }),
+      requestId
+    );
+  } catch (error) {
+    logStructured('error', 'Admin payment update: erro', {
+      requestId,
+      action: AuditActions.ADMIN_PAYMENT_UPDATE,
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+
+    return addRequestIdHeader(
+      NextResponse.json(
+        { error: 'Erro ao atualizar pagamento' },
+        { status: 500 }
+      ),
+      requestId
+    );
+  }
+}
+
+/**
+ * Excluir pagamento
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const requestId = getRequestId(request);
+  const clientIP = getClientIP(request);
+  const userAgent = request.headers.get('user-agent') || undefined;
+
+  try {
+    const isAdmin = await getAdminSession();
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const searchParams = request.nextUrl.searchParams;
+    const paymentId = searchParams.get('paymentId');
+
+    if (!paymentId) {
+      return addRequestIdHeader(
+        NextResponse.json({ error: 'paymentId é obrigatório' }, { status: 400 }),
+        requestId
+      );
+    }
+
+    // Buscar projeto e pagamento
+    const project = await prisma.project.findFirst({
+      where: {
+        OR: [
+          { id },
+          { protocol: id },
+        ],
+      },
+    });
+
+    if (!project) {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Projeto não encontrado' },
+          { status: 404 }
+        ),
+        requestId
+      );
+    }
+
+    const existingPayment = await prisma.payment.findFirst({
+      where: {
+        id: paymentId,
+        projectId: project.id,
+      },
+    });
+
+    if (!existingPayment) {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Pagamento não encontrado' },
+          { status: 404 }
+        ),
+        requestId
+      );
+    }
+
+    // Registrar auditoria ANTES de excluir
+    await auditLog({
+      requestId,
+      protocol: project.protocol,
+      action: AuditActions.ADMIN_PAYMENT_DELETE,
+      entityType: 'Payment',
+      entityId: existingPayment.id,
+      ipAddress: clientIP,
+      userAgent,
+      metadata: {
+        method: existingPayment.method,
+        amount: existingPayment.amount.toString(),
+        status: existingPayment.status,
+      },
+      success: true,
+    });
+
+    // Excluir pagamento
+    await prisma.payment.delete({
+      where: { id: paymentId },
+    });
+
+    // Recalcular valores do projeto
+    await recalculateProjectBalance(project.id);
+
+    return addRequestIdHeader(
+      NextResponse.json({
+        success: true,
+      }),
+      requestId
+    );
+  } catch (error) {
+    logStructured('error', 'Admin payment delete: erro', {
+      requestId,
+      action: AuditActions.ADMIN_PAYMENT_DELETE,
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+
+    return addRequestIdHeader(
+      NextResponse.json(
+        { error: 'Erro ao excluir pagamento' },
         { status: 500 }
       ),
       requestId

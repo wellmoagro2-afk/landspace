@@ -49,6 +49,11 @@ export async function PATCH(
     const validatedData = validation.data;
     const updateData: any = {};
 
+    // Incluir title no updateData se fornecido
+    // O erro será capturado no try-catch do update se o campo não existir
+    if (validatedData.title !== undefined) {
+      updateData.title = validatedData.title && validatedData.title.trim() ? validatedData.title.trim() : null;
+    }
     if (validatedData.clientName) updateData.clientName = validatedData.clientName;
     if (validatedData.clientEmail !== undefined) updateData.clientEmail = validatedData.clientEmail || null;
     if (validatedData.clientPhone !== undefined) updateData.clientPhone = validatedData.clientPhone || null;
@@ -98,10 +103,77 @@ export async function PATCH(
       });
     }
 
-    const project = await prisma.project.update({
-      where: { id: existingProject.id },
-      data: updateData,
-    });
+    // Se tentar atualizar title mas o campo não existe, remover do updateData
+    let project;
+    try {
+      project = await prisma.project.update({
+        where: { id: existingProject.id },
+        data: updateData,
+      });
+    } catch (updateError: any) {
+      // Log detalhado do erro para diagnóstico
+      logStructured('error', 'Admin Update Project: erro no update', {
+        requestId,
+        error: updateError?.message || 'Unknown',
+        errorCode: updateError?.code || 'N/A',
+        errorName: updateError?.name || 'N/A',
+        updateDataKeys: Object.keys(updateData),
+        stack: updateError?.stack?.substring(0, 500),
+      });
+      
+      // Se o erro for relacionado ao campo title não existir, tratar adequadamente
+      const errorMessage = (updateError?.message || '').toLowerCase();
+      const errorCode = updateError?.code || '';
+      
+      // Detectar vários tipos de erro relacionados a coluna não existir
+      const isColumnNotFoundError = 
+        errorCode === 'P2021' || // Prisma: Table does not exist
+        errorCode === '42703' || // PostgreSQL: column does not exist
+        errorCode === 'P2011' || // Prisma: Null constraint violation
+        errorMessage.includes('unknown column') ||
+        errorMessage.includes('column "title"') ||
+        errorMessage.includes('column title') ||
+        errorMessage.includes('does not exist') ||
+        errorMessage.includes('column not found') ||
+        errorMessage.includes('no such column') ||
+        errorMessage.includes('syntax error') && errorMessage.includes('title') ||
+        (errorMessage.includes('title') && 
+         (errorMessage.includes('not found') || 
+          errorMessage.includes('unknown')));
+      
+      if (isColumnNotFoundError && updateData.title !== undefined) {
+        logStructured('warn', 'Admin Update Project: campo title não existe, removendo do update', {
+          requestId,
+          error: errorMessage,
+          errorCode,
+        });
+        
+        // Remover title do updateData e tentar novamente
+        const { title, ...updateDataWithoutTitle } = updateData;
+        if (Object.keys(updateDataWithoutTitle).length === 0) {
+          // Se só estava tentando atualizar title, retornar erro específico
+          return addRequestIdHeader(
+            NextResponse.json(
+              { 
+                error: 'Campo "title" ainda não está disponível. Por favor, execute a migration do banco de dados primeiro.',
+                hint: 'Execute: npm run db:migrate'
+              },
+              { status: 400 }
+            ),
+            requestId
+          );
+        }
+        
+        // Tentar atualizar sem o campo title
+        project = await prisma.project.update({
+          where: { id: existingProject.id },
+          data: updateDataWithoutTitle,
+        });
+      } else {
+        // Outro tipo de erro - propagar
+        throw updateError;
+      }
+    }
 
     // Recalcular balance se valores financeiros mudaram
     if (validatedData.totalValue !== undefined || validatedData.entryValue !== undefined) {
@@ -133,10 +205,35 @@ export async function PATCH(
       requestId
     );
   } catch (error) {
-    logStructured('error', 'Admin Update Project: erro', {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown';
+    const errorCode = (error as any)?.code || 'N/A';
+    
+    logStructured('error', 'Admin Update Project: erro geral', {
       requestId,
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: errorMessage,
+      errorCode,
+      errorName: error instanceof Error ? error.name : 'Unknown',
+      stack: error instanceof Error ? error.stack?.substring(0, 500) : undefined,
     });
+    
+    // Se o erro for relacionado ao campo title, retornar mensagem mais específica
+    const errorMsgLower = errorMessage.toLowerCase();
+    if (errorMsgLower.includes('title') || 
+        errorMsgLower.includes('column') || 
+        errorMsgLower.includes('migration') ||
+        errorCode === '42703' || 
+        errorCode === 'P2021') {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { 
+            error: 'Campo "title" ainda não está disponível no banco de dados. Por favor, execute a migration primeiro.',
+            hint: 'Execute: npm run db:migrate ou npx prisma migrate deploy'
+          },
+          { status: 400 }
+        ),
+        requestId
+      );
+    }
     
     return addRequestIdHeader(
       NextResponse.json(

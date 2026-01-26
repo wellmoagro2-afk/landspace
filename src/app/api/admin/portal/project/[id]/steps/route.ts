@@ -5,7 +5,8 @@ import { z } from 'zod';
 
 const updateStepSchema = z.object({
   stepId: z.string().min(1, 'stepId é obrigatório'),
-  state: z.enum(['PENDING', 'ACTIVE', 'DONE']),
+  state: z.enum(['PENDING', 'ACTIVE', 'DONE']).optional(),
+  title: z.string().min(1).optional(), // Permitir renomear step (ex: Revisão -> R1, R2, R3)
   startedAt: z.string().datetime().nullable().optional(),
   finishedAt: z.string().datetime().nullable().optional(),
 });
@@ -35,18 +36,26 @@ export async function POST(
       return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
     }
 
-    const { stepId, state, startedAt, finishedAt } = validation.data;
+    const { stepId, state, title, startedAt, finishedAt } = validation.data;
 
-    const updateData: any = {
-      state,
-    };
+    const updateData: any = {};
 
-    if (state === 'ACTIVE' && !startedAt) {
-      updateData.startedAt = new Date();
+    // Atualizar state se fornecido
+    if (state !== undefined) {
+      updateData.state = state;
+      
+      if (state === 'ACTIVE' && !startedAt) {
+        updateData.startedAt = new Date();
+      }
+
+      if (state === 'DONE' && !finishedAt) {
+        updateData.finishedAt = new Date();
+      }
     }
 
-    if (state === 'DONE' && !finishedAt) {
-      updateData.finishedAt = new Date();
+    // Atualizar title se fornecido (permite renomear steps, ex: Revisão -> R1, R2, R3)
+    if (title !== undefined) {
+      updateData.title = title;
     }
 
     if (startedAt) updateData.startedAt = new Date(startedAt);
