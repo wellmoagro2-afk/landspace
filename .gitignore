@@ -65,3 +65,12 @@ tsc-errors.txt
 uploads/
 
 .vercel
+
+# local dev artifacts
+.build.log
+.lint*.txt
+.lint*.json
+.lint_issues.csv
+.lint_top_rules.txt
+.diff_*.txt
+.security_changed_files.txt
