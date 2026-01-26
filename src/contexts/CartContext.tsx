@@ -16,16 +16,20 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [favorites, setFavorites] = useState<string[]>([]);
-
-  // Carregar do localStorage ao montar
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem("landspace_favorites");
-    
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    // Lazy initializer: carregar do localStorage
+    if (typeof window !== 'undefined') {
+      const savedFavorites = localStorage.getItem("landspace_favorites");
+      if (savedFavorites) {
+        try {
+          return JSON.parse(savedFavorites);
+        } catch {
+          return [];
+        }
+      }
     }
-  }, []);
+    return [];
+  });
 
   // Salvar no localStorage quando mudar
   useEffect(() => {

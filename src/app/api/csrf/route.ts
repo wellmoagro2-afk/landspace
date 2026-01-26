@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { base64url } from 'jose';
 import { cookies } from 'next/headers';
 import { isProduction } from '@/lib/env';
-import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 /**
  * Endpoint para obter token CSRF
@@ -14,8 +14,6 @@ import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const requestId = getOrCreateRequestId(request);
-  
   try {
     // Gerar token forte usando Web Crypto
     const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -31,24 +29,15 @@ export async function GET(request: NextRequest) {
       path: '/',
     });
 
-    // Headers anti-cache explícitos
-    return jsonWithRequestId(
-      { token },
-      {
-        headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
-      },
-      requestId
-    );
+    return jsonOk(request, { token });
   } catch (error) {
-    console.error('Erro ao gerar token CSRF:', error instanceof Error ? error.message : 'Erro desconhecido', { requestId });
-    return jsonWithRequestId(
-      { error: 'Erro ao gerar token CSRF' },
-      { status: 500 },
-      requestId
-    );
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro ao gerar token CSRF:', errorMessage);
+    
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao gerar token CSRF',
+    });
   }
 }

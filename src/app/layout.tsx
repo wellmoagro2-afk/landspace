@@ -33,6 +33,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: branding.seo.home.title,
   description: branding.seo.home.description,
   keywords: [
@@ -148,7 +149,7 @@ export default async function RootLayout({
   // mas o primeiro render do client DEVE ter o mesmo valor do SSR para evitar warnings.
   // Usamos "global" como padrão determinístico, que será sincronizado pelo VariantProvider
   // no primeiro render do client (via prop initialVariant), garantindo SSR = CSR.
-  const initialVariant: string = "global";
+  const initialVariant: "tech" | "studio" | "strategy" | "academy" | "labs" | "global" = "global";
 
   return (
     <html lang="pt-BR">

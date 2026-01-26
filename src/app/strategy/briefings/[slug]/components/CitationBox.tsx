@@ -31,14 +31,13 @@ export default function CitationBox({
   createdAt,
 }: CitationBoxProps) {
   const [copied, setCopied] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState("");
-
-  useEffect(() => {
-    // Capturar URL atual da página (window.location.href)
+  const [currentUrl] = useState(() => {
+    // Lazy initializer: capturar URL atual da página
     if (typeof window !== 'undefined') {
-      setCurrentUrl(window.location.href);
+      return window.location.href;
     }
-  }, []);
+    return "";
+  });
 
   // Formatar data de acesso (hoje) no formato ABNT
   // Nota: Maio não abrevia conforme ABNT

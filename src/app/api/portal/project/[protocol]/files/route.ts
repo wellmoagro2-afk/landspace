@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPortalSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
-import { canDownloadPreview, canDownloadFinal } from '@/lib/portal-utils';
+import { canDownloadFinal } from '@/lib/portal-utils';
 
 export async function GET(
   request: NextRequest,

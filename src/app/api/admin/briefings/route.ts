@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createBriefingSchema } from '@/lib/schemas/briefings';
 import { logSafe } from '@/lib/logger';
 import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';
+import { ContentStatus } from '@prisma/client';
 
 // GET - Listar briefings
 export async function GET(request: NextRequest) {
@@ -17,9 +18,15 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '20');
   const skip = (page - 1) * limit;
 
-  const where: any = {};
-  if (status && status !== 'all') {
-    where.status = status;
+  const where: {
+    status?: ContentStatus;
+    OR?: Array<{
+      title?: { contains: string; mode: 'insensitive' };
+      summary?: { contains: string; mode: 'insensitive' };
+    }>;
+  } = {};
+  if (status && status !== 'all' && (status === 'draft' || status === 'published' || status === 'archived')) {
+    where.status = status as ContentStatus;
   }
   if (search) {
     where.OR = [

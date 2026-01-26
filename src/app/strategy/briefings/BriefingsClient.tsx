@@ -1,41 +1,27 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import FilterBar from "@/components/strategy/FilterBar";
 import ContentGrid from "@/components/strategy/ContentGrid";
 import StrategyNewsletterCTA from "@/components/strategy/StrategyNewsletterCTA";
 import { ArrowLeft } from "lucide-react";
-
-interface Briefing {
-  slug: string;
-  title: string;
-  summary: string;
-  date: string;
-  tags: string[];
-  readingTime: string;
-  coverImage?: string;
-}
+import type { Briefing } from "@/content/strategy/briefings";
 
 interface BriefingsClientProps {
-  initialBriefings: Briefing[];
+  initialBriefings: Array<Pick<Briefing, "slug" | "title" | "summary" | "date" | "tags" | "readingTime" | "coverImage"> & Partial<Omit<Briefing, "slug" | "title" | "summary" | "date" | "tags" | "readingTime" | "coverImage">>>;
 }
 
 export default function BriefingsClient({ initialBriefings }: BriefingsClientProps) {
   const searchParams = useSearchParams();
   const tagFromUrl = searchParams.get('tag');
   
-  const [selectedTags, setSelectedTags] = useState<string[]>(tagFromUrl ? [tagFromUrl] : []);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Atualizar tags quando a URL mudar
-  useEffect(() => {
-    const tag = searchParams.get('tag');
-    if (tag) {
-      setSelectedTags([tag]);
-    }
-  }, [searchParams]);
+  // Derivar effectiveSelectedTags: prioriza tag da URL, senão usa state
+  const effectiveSelectedTags = tagFromUrl ? [tagFromUrl] : selectedTags;
 
   const allTags = useMemo(() => {
     const tagsSet = new Set<string>();
@@ -45,11 +31,11 @@ export default function BriefingsClient({ initialBriefings }: BriefingsClientPro
     return Array.from(tagsSet).sort();
   }, [initialBriefings]);
 
-  const filteredBriefings = useMemo(() => {
+  const filteredBriefings = useMemo<Briefing[]>(() => {
     return initialBriefings.filter((briefing) => {
-      // Filtro por tags
-      if (selectedTags.length > 0 && !selectedTags.includes("all")) {
-        const hasSelectedTag = briefing.tags.some((tag) => selectedTags.includes(tag));
+      // Filtro por tags (usa effectiveSelectedTags que deriva da URL ou state)
+      if (effectiveSelectedTags.length > 0 && !effectiveSelectedTags.includes("all")) {
+        const hasSelectedTag = briefing.tags.some((tag) => effectiveSelectedTags.includes(tag));
         if (!hasSelectedTag) return false;
       }
 
@@ -65,8 +51,8 @@ export default function BriefingsClient({ initialBriefings }: BriefingsClientPro
       }
 
       return true;
-    });
-  }, [initialBriefings, selectedTags, searchQuery]);
+    }) as Briefing[];
+  }, [initialBriefings, effectiveSelectedTags, searchQuery]);
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
@@ -106,14 +92,14 @@ export default function BriefingsClient({ initialBriefings }: BriefingsClientPro
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             tags={allTags}
-            selectedTags={selectedTags}
+            selectedTags={effectiveSelectedTags}
             onTagToggle={handleTagToggle}
             searchPlaceholder="Buscar briefings..."
           />
 
           {/* Grid */}
           <ContentGrid
-            items={filteredBriefings as any}
+            items={filteredBriefings}
             variant="briefing"
             columns={3}
           />

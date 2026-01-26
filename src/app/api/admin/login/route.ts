@@ -82,7 +82,7 @@ async function handleAdminLogin(request: NextRequest): Promise<NextResponse> {
     }
 
     // 3. Parse JSON
-    let body: any;
+    let body: Record<string, unknown>;
     try {
       body = JSON.parse(rawBody);
     } catch (parseError) {

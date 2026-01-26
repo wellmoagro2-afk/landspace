@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
+import { ProjectStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,14 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: {
+      OR?: Array<{
+        protocol?: { contains: string; mode: 'insensitive' };
+        clientName?: { contains: string; mode: 'insensitive' };
+        clientEmail?: { contains: string; mode: 'insensitive' };
+      }>;
+      status?: ProjectStatus;
+    } = {};
 
     if (search) {
       where.OR = [
@@ -32,8 +40,8 @@ export async function GET(request: NextRequest) {
       // where.OR.push({ title: { contains: search, mode: 'insensitive' } });
     }
 
-    if (status) {
-      where.status = status;
+    if (status && (status === 'TRIAGEM' || status === 'VALIDACAO_DADOS' || status === 'PROPOSTA' || status === 'ENTRADA_PAGA' || status === 'EM_PRODUCAO' || status === 'QA_INTERNO' || status === 'FINAL_PRONTO' || status === 'SALDO_PENDENTE' || status === 'LIBERADO' || status === 'ENCERRADO')) {
+      where.status = status as ProjectStatus;
     }
 
     // Usar findMany sem select explícito para evitar erro se campo title não existir ainda
@@ -55,7 +63,7 @@ export async function GET(request: NextRequest) {
       projects: projects.map(p => ({
         id: p.id,
         protocol: p.protocol,
-        title: (p as any).title || null, // title pode não existir se migration não foi aplicada
+        title: ('title' in p && p.title) ? String(p.title) : null, // title pode não existir se migration não foi aplicada
         clientName: p.clientName,
         clientEmail: p.clientEmail,
         serviceType: p.serviceType,

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { logout } from '@/lib/auth';
 import { logSafe } from '@/lib/logger';
 import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';

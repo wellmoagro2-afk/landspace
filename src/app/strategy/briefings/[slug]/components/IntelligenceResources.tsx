@@ -38,7 +38,7 @@ export default function IntelligenceResources({
   return (
     <div className="war-room-glass p-5 rounded-lg">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 war-room-section-title">
-        // RECURSOS DE INTELIGÊNCIA
+        {/* RECURSOS DE INTELIGÊNCIA */}
       </h3>
       
       <div className="space-y-3">

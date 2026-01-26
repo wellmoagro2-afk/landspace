@@ -46,6 +46,15 @@ export default function AcademyCourseCard({ course, index = 0 }: AcademyCourseCa
   const isFavorited = isFavorite(course.slug);
   const IconComponent = iconMap[course.iconName] || Layers;
 
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+
+  // Helper para requestAnimationFrame (casos de DOM/layout)
+  const raf = (cb: () => void) => requestAnimationFrame(cb);
+
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     // Não navegar se clicou em botão, link, ou popup
@@ -57,7 +66,7 @@ export default function AcademyCourseCard({ course, index = 0 }: AcademyCourseCa
   };
 
   useEffect(() => {
-    setMounted(true);
+    defer(() => setMounted(true));
   }, []);
 
   const updatePopupPosition = useCallback(() => {
@@ -122,7 +131,7 @@ export default function AcademyCourseCard({ course, index = 0 }: AcademyCourseCa
 
   useEffect(() => {
     if (isHovered) {
-      updatePopupPosition();
+      raf(() => updatePopupPosition());
       window.addEventListener("scroll", updatePopupPosition, true);
       window.addEventListener("resize", updatePopupPosition);
       return () => {

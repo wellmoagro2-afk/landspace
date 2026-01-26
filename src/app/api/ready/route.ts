@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 /**
  * Readiness Check Endpoint
@@ -8,8 +8,6 @@ import { getOrCreateRequestId, jsonWithRequestId } from '@/lib/http/request-id';
  * Verifica dependências (banco de dados) e retorna 200/503 conforme disponibilidade
  */
 export async function GET(request: NextRequest) {
-  const requestId = getOrCreateRequestId(request);
-  
   try {
     // Verificar conectividade com banco de dados com timeout curto
     await Promise.race([
@@ -19,36 +17,25 @@ export async function GET(request: NextRequest) {
       ),
     ]);
 
-    return jsonWithRequestId(
-      {
-        ok: true,
-        status: 'ready',
-        ts: new Date().toISOString(),
-      },
-      {
-        status: 200,
-        headers: {
-          'Cache-Control': 'no-store',
-        },
-      },
-      requestId
-    );
+    return jsonOk(request, {
+      ok: true,
+      status: 'ready',
+      ts: new Date().toISOString(),
+    });
   } catch (error) {
     // Não expor stack trace em produção
-    console.error('Readiness check falhou:', error instanceof Error ? error.message : 'Erro desconhecido', { requestId });
-    return jsonWithRequestId(
-      {
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Readiness check falhou:', errorMessage);
+    
+    return jsonError(request, {
+      status: 503,
+      code: 'not_ready',
+      message: 'Serviço não está pronto',
+      details: {
         ok: false,
         status: 'not ready',
         ts: new Date().toISOString(),
       },
-      {
-        status: 503,
-        headers: {
-          'Cache-Control': 'no-store',
-        },
-      },
-      requestId
-    );
+    });
   }
 }

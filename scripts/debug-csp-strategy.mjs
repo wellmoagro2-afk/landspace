@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { chromium } from 'playwright';
 
 const URL = process.argv[2] || 'http://localhost:3001/strategy';

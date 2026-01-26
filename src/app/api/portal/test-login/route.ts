@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyPin } from '@/lib/portal-auth';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 /**
  * Endpoint de teste para debug do login
@@ -40,27 +41,32 @@ export async function POST(request: NextRequest) {
     }
 
     if (!project) {
-      return NextResponse.json({
-        success: false,
-        error: 'PROTOCOL_NOT_FOUND',
-        debug: {
-          protocolBuscado: normalizedProtocol,
-          protocolBuscadoLength: normalizedProtocol.length,
-          protocolBuscadoChars: normalizedProtocol.split('').map((c: string, i: number) => ({
-            char: c,
-            code: c.charCodeAt(0),
-            position: i,
-          })),
-          projetosNoBanco: allProjects.map(p => ({
-            protocol: p.protocol,
-            protocolLength: p.protocol.length,
-            protocolChars: p.protocol.split('').map((c: string, i: number) => ({
+      return jsonError(request, {
+        status: 404,
+        code: 'not_found',
+        message: 'Protocolo não encontrado',
+        details: {
+          success: false,
+          error: 'PROTOCOL_NOT_FOUND',
+          debug: {
+            protocolBuscado: normalizedProtocol,
+            protocolBuscadoLength: normalizedProtocol.length,
+            protocolBuscadoChars: normalizedProtocol.split('').map((c: string, i: number) => ({
               char: c,
               code: c.charCodeAt(0),
               position: i,
             })),
-            clientName: p.clientName,
-          })),
+            projetosNoBanco: allProjects.map(p => ({
+              protocol: p.protocol,
+              protocolLength: p.protocol.length,
+              protocolChars: p.protocol.split('').map((c: string, i: number) => ({
+                char: c,
+                code: c.charCodeAt(0),
+                position: i,
+              })),
+              clientName: p.clientName,
+            })),
+          },
         },
       });
     }
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Verificar PIN
     const isValid = await verifyPin(normalizedPin, project.pinHash);
 
-    return NextResponse.json({
+    return jsonOk(request, {
       success: isValid,
       error: isValid ? undefined : 'INVALID_PIN',
       debug: {
@@ -90,15 +96,17 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Test Login] Erro:', error);
-    return NextResponse.json(
-      {
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro interno',
+      details: {
         success: false,
         error: 'UNKNOWN_ERROR',
         debug: {
           errorMessage: error instanceof Error ? error.message : 'Unknown error',
         },
       },
-      { status: 500 }
-    );
+    });
   }
 }

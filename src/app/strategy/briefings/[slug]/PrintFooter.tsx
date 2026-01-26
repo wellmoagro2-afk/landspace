@@ -8,13 +8,13 @@ interface PrintFooterProps {
 }
 
 export default function PrintFooter({ url, date }: PrintFooterProps) {
-  const [currentUrl, setCurrentUrl] = useState(url);
-
-  useEffect(() => {
+  const [currentUrl] = useState(() => {
+    // Lazy initializer: usar window.location.href se disponível, senão usar prop url
     if (typeof window !== "undefined") {
-      setCurrentUrl(window.location.href);
+      return window.location.href;
     }
-  }, []);
+    return url;
+  });
 
   return (
     <div className="editorial-print-footer no-print">

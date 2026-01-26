@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 /**
  * Pipeline automatizado de QA para CSP no Windows
  * 
@@ -59,7 +58,7 @@ function resolveNextBin() {
   return nextBinJs;
 }
 
-let serverProcess = null;
+let serverProcess = null; // Processo do servidor Next.js
 let serverPid = null;
 let createdPlaceholderFiles = []; // Lista de arquivos placeholder criados (para cleanup)
 
@@ -437,7 +436,7 @@ async function waitForHealth() {
       try {
         data = await response.json();
         bodyPreview = JSON.stringify(data).substring(0, 80);
-      } catch (e) {
+      } catch {
         bodyPreview = '(não foi possível parsear JSON)';
       }
       
@@ -639,7 +638,7 @@ async function main() {
     
     try {
       await runCspRoutesCheck();
-    } catch (error) {
+    } catch {
       console.error('\n❌ CSP routes check falhou!');
       cspCheckFailed = true;
       

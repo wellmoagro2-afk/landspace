@@ -24,7 +24,7 @@ export default function ConsultancyCTACard() {
             <div className="inline-flex items-center gap-3 mb-6">
               <Shield className="w-8 h-8 text-[#00B86B] consultancy-icon-glow" />
               <h2 className="text-2xl md:text-3xl font-mono font-semibold tracking-wider text-[#00B86B] consultancy-title-glow">
-                // SOLICITAR ANÁLISE GEOESPACIAL CUSTOMIZADA
+                {/* SOLICITAR ANÁLISE GEOESPACIAL CUSTOMIZADA */}
               </h2>
             </div>
           </div>

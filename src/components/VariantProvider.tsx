@@ -33,6 +33,12 @@ export function VariantProvider({
   // render do client tenha o mesmo data-variant do SSR (já definido no <body> pelo layout.tsx)
   const [currentVariant, setCurrentVariant] = useState<Variant>(initialVariant);
   
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+  
   // ROOT CAUSE FIX: Atualizar data-variant APENAS após hydration estar completa
   // O body já tem data-variant={initialVariant} do SSR, então o primeiro render do client
   // deve manter esse valor. Qualquer mudança baseada na rota acontece após hydration.
@@ -59,8 +65,10 @@ export function VariantProvider({
     // Atualizar apenas se mudou E se for diferente do valor inicial do SSR
     // Isso garante que o primeiro render do client mantenha o valor do SSR
     if (newVariant !== currentVariant) {
-      setCurrentVariant(newVariant);
-      body.setAttribute("data-variant", newVariant);
+      defer(() => {
+        setCurrentVariant(newVariant);
+        body.setAttribute("data-variant", newVariant);
+      });
     }
   }, [pathname, currentVariant]);
 

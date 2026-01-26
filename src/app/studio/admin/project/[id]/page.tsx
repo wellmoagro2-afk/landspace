@@ -24,11 +24,13 @@ interface Project {
   payments: Payment[];
 }
 
+type StepState = "PENDING" | "ACTIVE" | "DONE";
+
 interface Step {
   id: string;
   stepKey: string;
   title: string;
-  state: "PENDING" | "ACTIVE" | "DONE";
+  state: StepState;
   order: number;
 }
 
@@ -85,7 +87,17 @@ export default function AdminProjectPage() {
     fetchProject();
   }, [projectId, router]);
 
-  const handleUpdateStep = async (stepId: string, state: "PENDING" | "ACTIVE" | "DONE") => {
+  /**
+   * Converte uma string para StepState de forma segura
+   */
+  function toStepState(value: string): StepState | null {
+    if (value === "PENDING" || value === "ACTIVE" || value === "DONE") {
+      return value;
+    }
+    return null;
+  }
+
+  const handleUpdateStep = async (stepId: string, state: StepState) => {
     try {
       const response = await fetch(`/api/admin/portal/project/${projectId}/steps`, {
         method: "POST",
@@ -692,7 +704,12 @@ export default function AdminProjectPage() {
                     </div>
                     <select
                       value={step.state}
-                      onChange={(e) => handleUpdateStep(step.id, e.target.value as any)}
+                      onChange={(e) => {
+                        const next = toStepState(e.target.value);
+                        if (next) {
+                          handleUpdateStep(step.id, next);
+                        }
+                      }}
                       className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm"
                     >
                       <option value="PENDING">Pendente</option>

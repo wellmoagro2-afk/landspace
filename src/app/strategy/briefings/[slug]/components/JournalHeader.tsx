@@ -25,14 +25,13 @@ export default function JournalHeader({
   doi,
   slug
 }: JournalHeaderProps) {
-  const [canonicalUrl, setCanonicalUrl] = useState("");
-  
-  useEffect(() => {
+  const [canonicalUrl] = useState(() => {
+    // Lazy initializer: calcular URL canônica
     if (typeof window !== "undefined") {
-      const url = getCanonicalBriefingUrl(slug);
-      setCanonicalUrl(url);
+      return getCanonicalBriefingUrl(slug);
     }
-  }, [slug]);
+    return "";
+  });
 
   const journalTitle = "LandSpace Strategy Editorial: Insights geopolíticos orientados por mapas";
   const journalHomepage = "https://www.landspace.io/strategy";

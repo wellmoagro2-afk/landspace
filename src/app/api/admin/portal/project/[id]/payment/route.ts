@@ -7,6 +7,7 @@ import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observabi
 import { auditLog, AuditActions } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
 import { createPaymentSchema, updatePaymentSchema } from '@/lib/schemas';
+import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
 export async function POST(
   request: NextRequest,
@@ -208,12 +209,20 @@ export async function PATCH(
     }
 
     // Preparar dados de atualização
-    const updatePayload: any = {};
-    if (validation.data.method) updatePayload.method = validation.data.method;
+    const updatePayload: {
+      method?: PaymentMethod;
+      amount?: Decimal;
+      note?: string | null;
+      status?: PaymentStatus;
+      confirmedAt?: Date | null;
+    } = {};
+    if (validation.data.method && (validation.data.method === 'PIX' || validation.data.method === 'BOLETO' || validation.data.method === 'CARTAO' || validation.data.method === 'AJUSTE')) {
+      updatePayload.method = validation.data.method as PaymentMethod;
+    }
     if (validation.data.amount !== undefined) updatePayload.amount = new Decimal(validation.data.amount);
     if (validation.data.note !== undefined) updatePayload.note = validation.data.note || null;
-    if (validation.data.status) {
-      updatePayload.status = validation.data.status;
+    if (validation.data.status && (validation.data.status === 'PENDING' || validation.data.status === 'CONFIRMED' || validation.data.status === 'CANCELED')) {
+      updatePayload.status = validation.data.status as PaymentStatus;
       updatePayload.confirmedAt = validation.data.status === 'CONFIRMED' ? new Date() : null;
     }
 

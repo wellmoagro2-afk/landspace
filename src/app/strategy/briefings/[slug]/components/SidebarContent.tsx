@@ -40,7 +40,7 @@ export default function SidebarContent({
       {takeaways && takeaways.length > 0 && (
         <div className="war-room-glass p-5 rounded-lg">
           <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 war-room-section-title">
-            // PONTOS CHAVE
+            {/* PONTOS CHAVE */}
           </h3>
           <ul className="space-y-2">
             {takeaways.slice(0, 5).map((item, index) => (

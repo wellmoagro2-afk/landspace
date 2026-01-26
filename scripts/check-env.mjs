@@ -82,7 +82,7 @@ if (existsSync(envLocalPath)) {
   });
 }
 
-// Tentar importar e validar env.ts
+  // Validar variáveis de ambiente diretamente usando process.env
 try {
   // Detectar provider do Prisma (fail-fast antes de validar env)
   const schemaPath = join(projectRoot, 'prisma', 'schema.prisma');
@@ -96,7 +96,7 @@ try {
       if (providerMatch && providerMatch[1]) {
         prismaProvider = providerMatch[1].toLowerCase();
       }
-    } catch (e) {
+    } catch {
       console.warn('⚠️  Não foi possível ler prisma/schema.prisma, usando validação padrão');
     }
   }
@@ -146,71 +146,57 @@ try {
     process.exit(1);
   }
 
-  // Importar e validar env.ts
-  // Nota: Em produção, isso pode falhar se env.ts não estiver compilado
-  // Mas serve como validação pré-build
-  let ENV;
-  try {
-    // Tentar importar como módulo TypeScript (requer tsx ou ts-node)
-    // Se falhar, vamos validar manualmente
-    const envModule = await import('../src/lib/env.ts');
-    ENV = envModule.ENV;
-  } catch (e) {
-    // Fallback: validar manualmente as variáveis obrigatórias
-    const required = ['SESSION_SECRET', 'DATABASE_URL', 'PREVIEW_SECRET', 'ADMIN_PASSWORD'];
-    const missing = required.filter(key => !process.env[key] || process.env[key].trim() === '');
-    
-    if (missing.length > 0) {
-      console.error('\n❌ Variáveis obrigatórias faltando:\n');
-      missing.forEach(key => {
-        console.error(`   - ${key}`);
-      });
-      console.error('\n');
-      if (isCI) {
-        console.error('💡 Em CI/Vercel, configure essas variáveis nas Environment Variables do projeto.\n');
-      } else {
-        console.error('💡 Configure essas variáveis no arquivo .env.local\n');
-      }
-      process.exit(1);
+  // Validar variáveis obrigatórias diretamente usando process.env
+  const required = ['SESSION_SECRET', 'DATABASE_URL', 'PREVIEW_SECRET', 'ADMIN_KEY', 'DRAFT_MODE_SECRET'];
+  const missing = required.filter(key => !process.env[key] || process.env[key].trim() === '');
+  
+  if (missing.length > 0) {
+    console.error('\n❌ Variáveis obrigatórias faltando:\n');
+    missing.forEach(key => {
+      console.error(`   - ${key}`);
+    });
+    console.error('\n');
+    if (isCI) {
+      console.error('💡 Em CI/Vercel, configure essas variáveis nas Environment Variables do projeto.\n');
+    } else {
+      console.error('💡 Configure essas variáveis no arquivo .env.local\n');
     }
-    
-    // Validar comprimentos mínimos
-    if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) {
-      console.error('\n❌ SESSION_SECRET deve ter no mínimo 32 caracteres\n');
-      process.exit(1);
-    }
-    
-    if (process.env.PREVIEW_SECRET && process.env.PREVIEW_SECRET.length < 32) {
-      console.error('\n❌ PREVIEW_SECRET deve ter no mínimo 32 caracteres\n');
-      process.exit(1);
-    }
-    
-    if (process.env.ADMIN_KEY && process.env.ADMIN_KEY.length < 24) {
-      console.error('\n❌ ADMIN_KEY deve ter no mínimo 24 caracteres se configurado\n');
-      process.exit(1);
-    }
-    
-    if (process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length === 0) {
-      console.error('\n❌ ADMIN_PASSWORD não pode estar vazio\n');
-      process.exit(1);
-    }
-    
-    console.log('\n✅ Variáveis obrigatórias validadas!\n');
-    process.exit(0);
+    process.exit(1);
+  }
+  
+  // Validar comprimentos mínimos
+  if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) {
+    console.error('\n❌ SESSION_SECRET deve ter no mínimo 32 caracteres\n');
+    process.exit(1);
+  }
+  
+  if (process.env.PREVIEW_SECRET && process.env.PREVIEW_SECRET.length < 32) {
+    console.error('\n❌ PREVIEW_SECRET deve ter no mínimo 32 caracteres\n');
+    process.exit(1);
+  }
+  
+  if (process.env.ADMIN_KEY && process.env.ADMIN_KEY.length < 24) {
+    console.error('\n❌ ADMIN_KEY deve ter no mínimo 24 caracteres\n');
+    process.exit(1);
+  }
+  
+  if (process.env.DRAFT_MODE_SECRET && process.env.DRAFT_MODE_SECRET.length < 32) {
+    console.error('\n❌ DRAFT_MODE_SECRET deve ter no mínimo 32 caracteres\n');
+    process.exit(1);
   }
 
   console.log('\n✅ Variáveis de ambiente validadas com sucesso!\n');
   
   // Listar variáveis configuradas (sem mostrar valores)
   console.log('📋 Variáveis configuradas:');
-  console.log(`   - SESSION_SECRET: ${ENV.SESSION_SECRET ? '✅' : '❌'}`);
-  console.log(`   - DATABASE_URL: ${ENV.DATABASE_URL ? '✅' : '❌'} (provider: ${prismaProvider})`);
-  console.log(`   - PREVIEW_SECRET: ${ENV.PREVIEW_SECRET ? '✅' : '❌'}`);
-  if (ENV.ADMIN_KEY) console.log(`   - ADMIN_KEY: ✅`);
-  if (ENV.DRAFT_MODE_SECRET) console.log(`   - DRAFT_MODE_SECRET: ✅`);
-  if (ENV.REDIS_URL) console.log(`   - REDIS_URL: ✅`);
-  if (ENV.NEXT_PUBLIC_MAPBOX_TOKEN) console.log(`   - NEXT_PUBLIC_MAPBOX_TOKEN: ✅`);
-  if (ENV.NEXT_PUBLIC_SITE_URL) console.log(`   - NEXT_PUBLIC_SITE_URL: ✅`);
+  console.log(`   - SESSION_SECRET: ✅`);
+  console.log(`   - DATABASE_URL: ✅ (provider: ${prismaProvider})`);
+  console.log(`   - PREVIEW_SECRET: ✅`);
+  console.log(`   - ADMIN_KEY: ✅`);
+  console.log(`   - DRAFT_MODE_SECRET: ✅`);
+  if (process.env.REDIS_URL) console.log(`   - REDIS_URL: ✅`);
+  if (process.env.NEXT_PUBLIC_MAPBOX_TOKEN) console.log(`   - NEXT_PUBLIC_MAPBOX_TOKEN: ✅`);
+  if (process.env.NEXT_PUBLIC_SITE_URL) console.log(`   - NEXT_PUBLIC_SITE_URL: ✅`);
   
   console.log('\n🚀 Pronto para build/start!\n');
   

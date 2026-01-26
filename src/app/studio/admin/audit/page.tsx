@@ -13,7 +13,7 @@ interface AuditLog {
   action: string;
   entityType: string | null;
   entityId: string | null;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   ipAddress: string | null;
   userAgent: string | null;
   success: boolean;
@@ -175,16 +175,19 @@ export default function AdminAuditPage() {
                   </div>
                 )}
 
-                {log.metadata && Object.keys(log.metadata).length > 0 && (
-                  <details className="mt-2">
-                    <summary className="text-sm text-slate-400 cursor-pointer hover:text-slate-300">
-                      Ver detalhes
-                    </summary>
-                    <pre className="mt-2 p-2 bg-slate-800/50 rounded text-xs text-slate-300 overflow-x-auto">
-                      {JSON.stringify(log.metadata, null, 2)}
-                    </pre>
-                  </details>
-                )}
+                {log.metadata &&
+                  typeof log.metadata === "object" &&
+                  !Array.isArray(log.metadata) &&
+                  Object.keys(log.metadata).length > 0 && (
+                    <details className="mt-2">
+                      <summary className="text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                        Ver detalhes
+                      </summary>
+                      <pre className="mt-2 p-2 bg-slate-800/50 rounded text-xs text-slate-300 overflow-x-auto">
+                        {JSON.stringify(log.metadata, null, 2)}
+                      </pre>
+                    </details>
+                  )}
               </div>
             ))}
           </div>

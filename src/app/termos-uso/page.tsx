@@ -53,8 +53,8 @@ export default function TermosUsoPage() {
           <h2 className="text-2xl font-bold text-slate-900 mb-4">5. Limitação de Responsabilidade</h2>
           <p className="text-slate-700 leading-relaxed">
             A LandSpace não se responsabiliza por danos diretos, indiretos, incidentais, especiais ou consequenciais 
-            resultantes do uso ou incapacidade de usar nossos serviços. Nossos serviços são fornecidos "como estão" e 
-            "conforme disponível".
+            resultantes do uso ou incapacidade de usar nossos serviços. Nossos serviços são fornecidos &quot;como estão&quot; e 
+            &quot;conforme disponível&quot;.
           </p>
         </section>
 

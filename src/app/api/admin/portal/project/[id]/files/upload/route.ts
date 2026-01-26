@@ -3,7 +3,7 @@ import { getAdminSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
 import { FileKind } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
-import { join, resolve, normalize } from 'path';
+import { join, resolve } from 'path';
 import { validateFileExtension, validateFileSize, generateSafeFilename } from '@/lib/upload-validation';
 import { scanFile } from '@/lib/virus-scan';
 import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';

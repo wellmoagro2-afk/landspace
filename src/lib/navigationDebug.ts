@@ -24,13 +24,13 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   });
 }
 
-export const logNavEvent = (event: string, data?: any) => {
+export const logNavEvent = (event: string, data?: unknown) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`[Nav Debug] ${event}`, data || '');
   }
 };
 
-export const logNavError = (error: Error | string, context?: any) => {
+export const logNavError = (error: Error | string, context?: unknown) => {
   if (process.env.NODE_ENV === 'development') {
     // Não logar como erro se for apenas um elemento não encontrado (pode ser normal)
     const errorStr = typeof error === 'string' ? error : error.message;

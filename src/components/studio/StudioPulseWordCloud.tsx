@@ -95,7 +95,7 @@ export default function StudioPulseWordCloud() {
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 mb-3">
             <h2 className="text-2xl md:text-3xl font-mono font-semibold text-indigo-400 tracking-wider">
-              // LANDSPACE STUDIO PULSE
+              {"// LANDSPACE STUDIO PULSE"}
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-indigo-400/30 bg-indigo-400/5">
               <span className="relative flex h-2 w-2">
@@ -195,7 +195,7 @@ export default function StudioPulseWordCloud() {
             Dados do GDELT Project • Atualizado a cada 1 hora
           </p>
           <p className="text-xs text-slate-300 font-mono mt-2">
-            // Studio Intelligence • Processamento em Tempo Real
+            {/* Studio Intelligence • Processamento em Tempo Real */}
           </p>
         </div>
       </div>

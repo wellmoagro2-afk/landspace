@@ -80,10 +80,16 @@ export default function ProtocoloPericialPage() {
   const [protocolId, setProtocolId] = useState<string | null>(null);
   const [protocolSummary, setProtocolSummary] = useState<string>('');
 
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+
   useEffect(() => {
     const serviceId = searchParams.get('service');
     if (serviceId && serviceOptions.find(s => s.id === serviceId)) {
-      setFormData(prev => ({ ...prev, demandType: serviceId }));
+      defer(() => setFormData(prev => ({ ...prev, demandType: serviceId })));
     }
   }, [searchParams]);
 

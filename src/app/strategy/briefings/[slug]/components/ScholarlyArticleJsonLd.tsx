@@ -7,6 +7,44 @@
 import Script from 'next/script';
 import { headers } from 'next/headers';
 
+type ScholarlyArticleJsonLd = {
+  '@context': 'https://schema.org';
+  '@type': 'ScholarlyArticle';
+  headline: string;
+  author: { '@type': 'Person'; name: string };
+  datePublished: string;
+  publisher: { '@type': 'Organization'; name: string };
+  inLanguage: string;
+  url: string;
+
+  description?: string;
+  abstract?: string;
+  keywords?: string;
+
+  identifier?: {
+    '@type': 'PropertyValue';
+    propertyID: 'DOI';
+    value: string;
+  };
+
+  isPartOf?:
+    | {
+        '@type': 'PublicationVolume';
+        volumeNumber: string;
+        isPartOf?: { '@type': 'PublicationIssue'; issueNumber: string };
+      }
+    | {
+        '@type': 'PublicationIssue';
+        issueNumber: string;
+      };
+
+  encoding?: {
+    '@type': 'MediaObject';
+    encodingFormat: 'application/pdf';
+    contentUrl: string;
+  };
+};
+
 interface ScholarlyArticleJsonLdProps {
   title: string;
   author: string;
@@ -39,21 +77,29 @@ export default async function ScholarlyArticleJsonLd({
   description,
 }: ScholarlyArticleJsonLdProps) {
   // Construir estrutura de publicação (volume/issue)
-  let publicationVolume = null;
+  let publicationVolume: ScholarlyArticleJsonLd['isPartOf'] | undefined;
+
   if (volume) {
     publicationVolume = {
       "@type": "PublicationVolume",
-      volumeNumber: volume.toString(),
-      ...(issue && {
-        isPartOf: {
-          "@type": "PublicationIssue",
-          issueNumber: issue.toString(),
-        },
-      }),
+      volumeNumber: String(volume),
+      ...(issue
+        ? {
+            isPartOf: {
+              "@type": "PublicationIssue",
+              issueNumber: String(issue),
+            },
+          }
+        : {}),
+    };
+  } else if (issue) {
+    publicationVolume = {
+      "@type": "PublicationIssue",
+      issueNumber: String(issue),
     };
   }
 
-  const structuredData: any = {
+  const structuredData: ScholarlyArticleJsonLd = {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
     headline: title,

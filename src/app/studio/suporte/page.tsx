@@ -124,7 +124,7 @@ export default function SuportePage() {
             <div className="text-center mb-16">
               <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-white bg-clip-text text-transparent">
-                  // SUPORTE TÉCNICO
+                  {/* SUPORTE TÉCNICO */}
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto">

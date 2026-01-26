@@ -10,10 +10,11 @@ interface PDFButtonProps {
 }
 
 export default function PDFButton({ pdfUrl, variant = "primary", showOpen = true }: PDFButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!pdfUrl) {
     return null;
   }
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleDownload = async () => {
     setIsLoading(true);

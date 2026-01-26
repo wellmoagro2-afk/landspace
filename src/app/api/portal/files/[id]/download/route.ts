@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPortalSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
-import { canDownloadPreview, canDownloadFinal } from '@/lib/portal-utils';
-import { createReadStream } from 'fs';
-import { join, resolve, normalize } from 'path';
+import { canDownloadFinal } from '@/lib/portal-utils';
+import { createReadStream, type ReadStream } from 'fs';
+import { resolve } from 'path';
 import { stat } from 'fs/promises';
 import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
@@ -159,7 +159,7 @@ export async function GET(
       });
       
       return addRequestIdHeader(
-        new NextResponse(fileStream as any, {
+        new NextResponse(fileStream as unknown as ReadableStream, {
         headers: {
           'Content-Type': contentType,
           'Content-Disposition': `attachment; filename="${safeFilename}"; filename*=UTF-8''${encodeURIComponent(file.filename)}`,

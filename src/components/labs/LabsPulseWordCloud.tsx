@@ -105,7 +105,7 @@ export default function LabsPulseWordCloud() {
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 mb-3">
             <h2 className="text-2xl md:text-3xl font-mono font-semibold text-amber-400 tracking-wider">
-              // LANDSPACE LABS PULSE
+              {/* LANDSPACE LABS PULSE */}
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-amber-400/30 bg-amber-400/5">
               <span className="relative flex h-2 w-2">

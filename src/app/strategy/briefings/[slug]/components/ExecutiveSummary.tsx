@@ -17,7 +17,7 @@ export default function ExecutiveSummary({ items }: ExecutiveSummaryProps) {
   return (
     <div className="war-room-glass my-8 p-6 rounded-lg">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 war-room-section-title">
-        // PONTOS CHAVE DE INTELIGÊNCIA
+        {/* PONTOS CHAVE DE INTELIGÊNCIA */}
       </h3>
       <ul className="space-y-3">
         {items.map((item, index) => (

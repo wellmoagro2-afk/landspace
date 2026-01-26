@@ -30,7 +30,7 @@ export interface LogContext {
   userId?: string;
   protocol?: string;
   action?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export function logStructured(

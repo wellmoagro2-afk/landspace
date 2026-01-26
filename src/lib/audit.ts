@@ -12,7 +12,7 @@ export interface AuditLogData {
   action: string;
   entityType?: string;
   entityId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   success?: boolean;

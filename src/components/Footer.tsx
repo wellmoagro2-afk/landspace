@@ -223,7 +223,7 @@ export default function Footer({ variant = 'global', hideCTA = false }: FooterPr
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-sm font-mono text-slate-300 uppercase tracking-wider mb-3">
-              // COMPROMISSO SOCIAL
+              {"// COMPROMISSO SOCIAL"}
             </p>
             <p className="text-sm font-mono text-white/70 leading-relaxed max-w-3xl mx-auto">
               LandSpace orgulhosamente apoia as iniciativas da <span className="font-semibold text-white/90">UNICEF Brasil</span> (Ref: S0683692BCO) e do <span className="font-semibold text-white/90">Hospital do Câncer - Rio Verde</span>.

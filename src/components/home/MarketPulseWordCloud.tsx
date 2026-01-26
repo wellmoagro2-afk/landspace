@@ -121,7 +121,7 @@ export default function MarketPulseWordCloud() {
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 mb-3">
             <h2 className="text-2xl md:text-3xl font-mono font-semibold tracking-wider text-neutral-live">
-              // LANDSPACE MARKET PULSE
+              {/* LANDSPACE MARKET PULSE */}
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-[rgba(159,183,201,0.3)] bg-neutral-soft">
               <span className="relative flex h-2 w-2">
@@ -193,7 +193,7 @@ export default function MarketPulseWordCloud() {
             Dados do GDELT Project • Atualizado a cada 1 hora
           </p>
           <p className="text-xs text-slate-300 font-mono mt-2">
-            // Market Intelligence • Processamento em Tempo Real
+            {/* Market Intelligence • Processamento em Tempo Real */}
           </p>
         </div>
       </div>

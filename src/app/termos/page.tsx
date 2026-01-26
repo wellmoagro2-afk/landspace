@@ -56,7 +56,7 @@ export default function TermosPage() {
 
             <h3 className="text-white">5. Ferramentas e automações</h3>
             <p className="text-slate-300">
-              As ferramentas são fornecidas "como estão" para fins operacionais e de produtividade. <strong className="text-white">Você é responsável por validar resultados, parâmetros e conformidade com normas e políticas do seu ambiente.</strong> A LandSpace não se responsabiliza por perdas decorrentes de uso indevido ou fora das recomendações técnicas.
+              As ferramentas são fornecidas &quot;como estão&quot; para fins operacionais e de produtividade. <strong className="text-white">Você é responsável por validar resultados, parâmetros e conformidade com normas e políticas do seu ambiente.</strong> A LandSpace não se responsabiliza por perdas decorrentes de uso indevido ou fora das recomendações técnicas.
             </p>
 
             <h3 className="text-white">6. Natureza do serviço</h3>

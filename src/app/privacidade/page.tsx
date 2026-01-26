@@ -36,7 +36,7 @@ export default function PrivacidadePage() {
 
             <h3 className="text-white">1. Quem somos</h3>
             <p className="text-slate-300">
-              Esta Política de Privacidade descreve como a LandSpace ("LandSpace", "nós") trata dados pessoais em seus sites, páginas e comunicações.<br />
+              Esta Política de Privacidade descreve como a LandSpace (&quot;LandSpace&quot;, &quot;nós&quot;) trata dados pessoais em seus sites, páginas e comunicações.<br />
               Responsável pelo tratamento: <strong className="text-white">Wellmo Alves / LandSpace Education</strong>.
             </p>
 

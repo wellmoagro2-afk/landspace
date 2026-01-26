@@ -8,6 +8,7 @@ import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observabi
 import { auditLog, AuditActions } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
 import { createProjectSchema } from '@/lib/schemas';
+import { ServiceType, ProjectStatus } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   const requestId = getRequestId(request);
@@ -62,18 +63,31 @@ export async function POST(request: NextRequest) {
     });
 
     // Preparar dados para criação
-    const projectData: any = {
+    const projectData: {
+      protocol: string;
+      pinHash: string;
+      clientName: string;
+      clientEmail: string | null;
+      clientPhone: string | null;
+      serviceType: ServiceType;
+      totalValue: Decimal;
+      entryValue: Decimal;
+      paidValue: Decimal;
+      balanceValue: Decimal;
+      status: ProjectStatus;
+      title?: string | null;
+    } = {
       protocol,
       pinHash,
       clientName,
-      clientEmail,
-      clientPhone,
-      serviceType,
+      clientEmail: clientEmail || null,
+      clientPhone: clientPhone || null,
+      serviceType: serviceType as ServiceType,
       totalValue: new Decimal(totalValue),
       entryValue: new Decimal(entryValue),
       paidValue: new Decimal(0),
       balanceValue: new Decimal(totalValue),
-      status: 'TRIAGEM',
+      status: 'TRIAGEM' as ProjectStatus,
     };
 
     // Adicionar title apenas se a migration foi aplicada
@@ -87,10 +101,14 @@ export async function POST(request: NextRequest) {
       project = await prisma.project.create({
         data: projectData,
       });
-    } catch (createError: any) {
+    } catch (createError: unknown) {
       // Se o erro for relacionado ao campo title não existir, tentar criar sem ele
-      const errorMessage = (createError?.message || '').toLowerCase();
-      const errorCode = createError?.code || '';
+      const errorMessage = (createError && typeof createError === 'object' && 'message' in createError) 
+        ? String(createError.message).toLowerCase() 
+        : '';
+      const errorCode = (createError && typeof createError === 'object' && 'code' in createError)
+        ? String(createError.code)
+        : '';
       
       const isColumnNotFoundError = 
         errorCode === 'P2021' ||
@@ -114,7 +132,8 @@ export async function POST(request: NextRequest) {
         });
         
         // Remover title e tentar criar novamente
-        const { title: _, ...projectDataWithoutTitle } = projectData;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { title: _title, ...projectDataWithoutTitle } = projectData;
         project = await prisma.project.create({
           data: projectDataWithoutTitle,
         });
@@ -201,7 +220,9 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown';
-    const errorCode = (error as any)?.code || 'N/A';
+    const errorCode = (error && typeof error === 'object' && 'code' in error)
+      ? String(error.code)
+      : 'N/A';
     
     logStructured('error', 'Admin project create: erro geral', {
       requestId,

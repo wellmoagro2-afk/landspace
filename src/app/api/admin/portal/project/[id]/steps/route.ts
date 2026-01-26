@@ -15,7 +15,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  await params; // id não usado, mas params precisa ser awaited
   try {
     const isAdmin = await getAdminSession();
 
@@ -38,7 +38,12 @@ export async function POST(
 
     const { stepId, state, title, startedAt, finishedAt } = validation.data;
 
-    const updateData: any = {};
+    const updateData: {
+      state?: 'PENDING' | 'ACTIVE' | 'DONE';
+      title?: string;
+      startedAt?: Date;
+      finishedAt?: Date | null;
+    } = {};
 
     // Atualizar state se fornecido
     if (state !== undefined) {
