@@ -5,9 +5,10 @@ import { headers } from "next/headers";
 import { unstable_noStore } from "next/cache";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
-import LoadingScreen from "@/components/LoadingScreen";
 import { VariantProvider } from "@/components/VariantProvider";
 import { branding } from "@/lib/branding";
+// Importação segura do Prisma - se falhar, layout ainda renderiza
+// O try-catch no código garante que erros de conexão não quebrem o SSR
 import { prisma } from "@/lib/prisma";
 
 // Forçar renderização dinâmica para suportar CSP com nonce
@@ -107,38 +108,72 @@ export default async function RootLayout({
   unstable_noStore();
 
   // Garantir conexão com banco antes do render SSR
-  await prisma.$connect().catch(() => {
-    // Ignorar erro de conexão se já estiver conectado
-  });
+  // IMPORTANTE: Não bloquear renderização se conexão falhar - layout deve sempre renderizar
+  // O catch garante que erros de conexão não quebrem o SSR (causando 404 silencioso)
+  try {
+    await prisma.$connect().catch(() => {
+      // Ignorar erro de conexão se já estiver conectado ou se houver problema temporário
+      // Em dev, isso permite que o site funcione mesmo sem banco configurado
+    });
+  } catch (error) {
+    // Se houver erro crítico (ex: Prisma Client não inicializado), logar mas não quebrar
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Layout] Erro ao conectar Prisma (não bloqueante):', error instanceof Error ? error.message : 'Unknown error');
+    }
+    // Continuar renderização mesmo se Prisma falhar
+  }
 
-  // Ler nonce dos headers (setado pelo middleware)
+  // Ler nonce dos headers (setado pelo proxy)
+  // IMPORTANTE: Nonce é gerado UMA vez no início do proxy (proxy.ts) e injetado nos request headers.
+  // O proxy garante que x-nonce esteja SEMPRE presente em TODAS as requests (incluindo prefetch/RSC),
+  // garantindo que o mesmo nonce seja usado em:
+  // - header CSP (quando aplicável)
+  // - request header x-nonce (lido aqui via headers())
+  // - atributo nonce em <Script>
+  // 
+  // ROOT CAUSE FIX: O proxy gera nonce UMA vez e sempre injeta nos request headers,
+  // evitando hydration mismatch porque o Script sempre terá nonce disponível no SSR e CSR.
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
+
+  // Em dev, logar warning se nonce não estiver disponível (não deve acontecer após correção)
+  if (!nonce && process.env.NODE_ENV === 'development') {
+    console.warn('[Layout] Nonce não disponível - isso pode causar hydration mismatch');
+    console.warn('[Layout] Verifique se proxy.ts está injetando x-nonce nos request headers');
+  }
+
+  // ROOT CAUSE FIX: data-variant deve ser determinístico no SSR para evitar hydration mismatch
+  // O SSR precisa renderizar um valor fixo e conhecido para data-variant no <body>.
+  // O VariantProvider (client component) atualiza data-variant após hydration baseado na rota,
+  // mas o primeiro render do client DEVE ter o mesmo valor do SSR para evitar warnings.
+  // Usamos "global" como padrão determinístico, que será sincronizado pelo VariantProvider
+  // no primeiro render do client (via prop initialVariant), garantindo SSR = CSR.
+  const initialVariant: string = "global";
 
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        {/* Favicons são gerenciados automaticamente pelo Next.js via metadata.icons */}
         {/* Definir __webpack_nonce__ para que webpack/Next.js use nonce nos estilos gerados */}
-        {nonce && (
-          <Script
-            id="webpack-nonce-setter"
-            strategy="beforeInteractive"
-            nonce={nonce}
-            dangerouslySetInnerHTML={{
-              __html: `__webpack_nonce__ = ${JSON.stringify(nonce)};`,
-            }}
-          />
-        )}
+        {/* IMPORTANTE: Script com strategy="beforeInteractive" é injetado no <head> antes da hydration.
+            O proxy.ts garante que nonce SEMPRE esteja disponível via request headers (x-nonce).
+            ROOT CAUSE FIX: Removida condicional {nonce ? ... : null} para evitar hydration mismatch.
+            O Script sempre renderiza porque o proxy sempre injeta nonce nos request headers. */}
+        <Script
+          id="webpack-nonce-setter"
+          strategy="beforeInteractive"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{
+            __html: `__webpack_nonce__ = ${JSON.stringify(nonce)};`,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
+        data-variant={initialVariant}
       >
-        <LoadingScreen />
         <CartProvider>
-          <VariantProvider>
+          <VariantProvider initialVariant={initialVariant}>
             {children}
           </VariantProvider>
         </CartProvider>

@@ -18,6 +18,7 @@ import {
 interface Project {
   id: string;
   protocol: string;
+  title?: string | null;
   clientName: string;
   clientEmail?: string;
   clientPhone?: string;
@@ -107,8 +108,7 @@ export default function PortalDashboardPage() {
       ENTRADA_PAGA: "bg-green-500/20 text-green-300 border-green-500/30",
       EM_PRODUCAO: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
       QA_INTERNO: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-      PREVIA_ENTREGUE: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-      AJUSTES: "bg-orange-500/20 text-orange-300 border-orange-500/30",
+      // REMOVIDOS: PREVIA_ENTREGUE e AJUSTES
       FINAL_PRONTO: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
       SALDO_PENDENTE: "bg-red-500/20 text-red-300 border-red-500/30",
       LIBERADO: "bg-green-500/20 text-green-300 border-green-500/30",
@@ -163,6 +163,9 @@ export default function PortalDashboardPage() {
             <div>
               <h1 className="text-xl font-bold text-white">Portal do Cliente</h1>
               <p className="text-sm text-slate-400">Protocolo: {project.protocol}</p>
+              {project.title && (
+                <p className="text-sm text-slate-300 mt-1 font-medium">{project.title}</p>
+              )}
             </div>
             <button
               onClick={handleLogout}
@@ -221,35 +224,39 @@ export default function PortalDashboardPage() {
             <div className="bg-slate-900/60 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6">
               <h3 className="text-lg font-bold text-white mb-6">Andamento do Projeto</h3>
               <div className="space-y-4">
-                {steps.map((step, index) => (
-                  <div key={step.id} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1">
-                      {getStepIcon(step.state)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <h4 className={`font-semibold ${
-                          step.state === "DONE" ? "text-green-400" :
-                          step.state === "ACTIVE" ? "text-indigo-400" :
-                          "text-slate-400"
-                        }`}>
-                          {step.title}
-                        </h4>
-                        {step.finishedAt && (
-                          <span className="text-xs text-slate-500">
-                            {new Date(step.finishedAt).toLocaleDateString("pt-BR")}
-                          </span>
+                {/* Filtrar steps removidos: PREVIA_ENTREGUE e AJUSTES */}
+                {(() => {
+                  const filteredSteps = steps.filter((step) => step.stepKey !== 'PREVIA_ENTREGUE' && step.stepKey !== 'AJUSTES');
+                  return filteredSteps.map((step, index) => (
+                    <div key={step.id} className="flex items-start gap-4">
+                      <div className="flex-shrink-0 mt-1">
+                        {getStepIcon(step.state)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className={`font-semibold ${
+                            step.state === "DONE" ? "text-green-400" :
+                            step.state === "ACTIVE" ? "text-indigo-400" :
+                            "text-slate-400"
+                          }`}>
+                            {step.title}
+                          </h4>
+                          {step.finishedAt && (
+                            <span className="text-xs text-slate-500">
+                              {new Date(step.finishedAt).toLocaleDateString("pt-BR")}
+                            </span>
+                          )}
+                        </div>
+                        {step.description && (
+                          <p className="text-sm text-slate-400">{step.description}</p>
                         )}
                       </div>
-                      {step.description && (
-                        <p className="text-sm text-slate-400">{step.description}</p>
+                      {index < filteredSteps.length - 1 && (
+                        <div className="absolute left-6 mt-8 w-0.5 h-8 bg-slate-700/50"></div>
                       )}
                     </div>
-                    {index < steps.length - 1 && (
-                      <div className="absolute left-6 mt-8 w-0.5 h-8 bg-slate-700/50"></div>
-                    )}
-                  </div>
-                ))}
+                  ));
+                })()}
               </div>
             </div>
           </div>
@@ -290,7 +297,17 @@ export default function PortalDashboardPage() {
                   <p className="text-sm text-amber-300 mb-2">
                     Saldo pendente para liberar entrega final
                   </p>
-                  <button className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-semibold transition-colors">
+                  <button 
+                    onClick={() => {
+                      alert(
+                        `Instruções de Pagamento\n\n` +
+                        `Saldo pendente: ${formatCurrency(project.balanceValue)}\n\n` +
+                        `Para realizar o pagamento, entre em contato com nossa equipe através do e-mail ou telefone cadastrado no projeto.\n\n` +
+                        `Após a confirmação do pagamento, os arquivos finais serão liberados automaticamente.`
+                      );
+                    }}
+                    className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-semibold transition-colors"
+                  >
                     Ver Instruções de Pagamento
                   </button>
                 </div>

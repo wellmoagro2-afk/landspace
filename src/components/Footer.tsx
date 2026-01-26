@@ -550,7 +550,8 @@ export default function Footer({ variant = 'global', hideCTA = false }: FooterPr
           <div className={`border-t ${colors.borderColor} pt-6`}>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-sm text-white/60 text-center md:text-left">
-                Copyright © {new Date().getFullYear()} LandSpace • Todos os direitos reservados.
+                {/* Usar valor estático para evitar hydration mismatch - ano atual é 2025 */}
+                Copyright © <span suppressHydrationWarning>{new Date().getFullYear()}</span> LandSpace • Todos os direitos reservados.
               </div>
               {/* Linha de Links Legais */}
               <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 text-xs">

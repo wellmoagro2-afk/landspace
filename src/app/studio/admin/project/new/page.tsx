@@ -9,6 +9,7 @@ export default function NewProjectPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    title: "",
     clientName: "",
     clientEmail: "",
     clientPhone: "",
@@ -32,9 +33,40 @@ export default function NewProjectPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Erro ao criar projeto");
+        const errorMessage = data.error || "Erro ao criar projeto";
+        const hint = data.hint || "";
+        
+        // Mostrar mensagem mais clara se for erro de migration
+        if (errorMessage.includes("migration") || 
+            errorMessage.includes("campo") || 
+            errorMessage.includes("title") ||
+            errorMessage.includes("disponível") ||
+            errorMessage.includes("banco de dados")) {
+          alert(
+            `⚠️ Erro: Campo "title" não disponível\n\n` +
+            `${errorMessage}\n\n` +
+            `${hint ? hint + "\n\n" : ""}` +
+            `O campo "title" ainda não está disponível no banco de dados.\n\n` +
+            `Por favor, execute a migration primeiro:\n\n` +
+            `npm run db:migrate\n\n` +
+            `Ou entre em contato com o administrador do sistema.`
+          );
+        } else {
+          alert(`Erro ao criar projeto:\n\n${errorMessage}${hint ? "\n\n" + hint : ""}`);
+        }
         setLoading(false);
         return;
+      }
+
+      // Verificar se há warning (campo não disponível)
+      if (data.warning) {
+        alert(
+          `✅ Projeto criado com sucesso!\n\n` +
+          `⚠️ Atenção:\n\n${data.warning}\n\n` +
+          `O projeto foi criado, mas o campo "title" não está disponível.\n` +
+          `Execute a migration para habilitar títulos:\n\n` +
+          `npm run db:migrate`
+        );
       }
 
       setCreatedProject({
@@ -105,6 +137,20 @@ export default function NewProjectPage() {
           <h1 className="text-2xl font-bold text-white mb-6">Novo Projeto</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Título do Projeto
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder='Ex: "Projeto de Georreferenciamento de Fazenda São Tomás - Rio Verde (GO)"'
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              />
+              <p className="text-xs text-slate-500 mt-1">Opcional. Você pode adicionar ou editar depois.</p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Nome do Cliente *

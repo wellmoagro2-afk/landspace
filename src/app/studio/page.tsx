@@ -334,7 +334,7 @@ export default function StudioPage() {
             </div>
             
             <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Cartografia técnica para
+              Geointeligência e soluções geoespaciais para
               <br />
               <span className="bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
                 decisão pública, ambiental e agro
