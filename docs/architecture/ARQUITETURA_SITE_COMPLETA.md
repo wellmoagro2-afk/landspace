@@ -3,7 +3,7 @@
 **Mapa Mental e Descrição Detalhada de Páginas**
 
 - **Data:** Janeiro 2025
-- **Versão:** 2.0 (Atualizada com Portal do Cliente e 5 Pilares)
+- **Versão:** 3.0 (Atualizada com Hardening de Segurança Big Tech)
 
 ---
 
@@ -734,16 +734,36 @@ Pilar Labs apresentando engenharia de produto geoespacial e validação.
 
 ### 12.4. Contato - `/api/contato/route.ts`
 - POST para processar formulário de contato
+- Rate limiting: 10 tentativas/minuto por IP
+- Request ID padronizado
 
-### 12.5. Strategy Pulse - `/api/strategy/pulse/*`
-- Dados do GDELT para briefings
-- Cache com TTL de 1 hora
-- Fallback para mock em caso de erro
+### 12.5. Strategy Pulse - `/api/strategy/pulse/route.ts`
+- GET para dados do GDELT
+- Rate limiting: 100 tentativas/minuto por IP + 20/min por identidade
+- SSRF protection: `safeFetchJson()` com allowlist `api.gdeltproject.org`
+- Cache com TTL de 1 hora (`src/lib/gdelt/cache.ts`)
+- Fallback para mock em caso de erro (determinístico com `QA_CSP=1`)
+- Request ID padronizado
+
+### 12.6. Strategy Consultancy - `/api/strategy/consultancy/route.ts`
+- POST para formulário de consultoria
+- Rate limiting: 10 tentativas/minuto por IP
+- Request ID padronizado
+
+### 12.7. Health/Ready Checks - `/api/health`, `/api/ready`
+- `/api/health`: Liveness check (sempre 200)
+- `/api/ready`: Readiness check (200 se DB OK, 503 se não)
+- Request ID padronizado
+
+### 12.8. CSRF Token - `/api/csrf/route.ts`
+- GET para obter token CSRF
+- Request ID padronizado
 
 ### Observabilidade
-- Request ID: `x-request-id` em todas as requisições
-- Logs estruturados em JSON (produção)
-- Header `x-request-id` incluído em todas as respostas
+- **Request ID:** `x-request-id` em todas as requisições e respostas
+- **Helper centralizado:** `src/lib/http/request-id.ts`
+- **Logs estruturados:** `src/lib/logger.ts` com redaction de dados sensíveis
+- **Correlação:** Request ID propagado em todas as rotas de API
 
 ---
 
@@ -756,43 +776,140 @@ Pilar Labs apresentando engenharia de produto geoespacial e validação.
 - **Expiração:** 7 dias
 - **Validação:** middleware verifica exp e protocol na rota
 - **PIN:** hash bcrypt (nunca em texto puro)
+- **Path:** `/api/admin` (restrito ao path do cookie)
 
 ### 13.2. Admin Portal
 - **Método:** Cookie httpOnly + JWT (HMAC)
 - **Cookie:** `ls_admin_session`
 - **Token contém:** authenticated, exp, nonce
-- **Senha:** hash bcrypt armazenado em AdminConfig
-- **Fallback:** ADMIN_KEY (env var) se não houver senha no banco
+- **Senha:** armazenada em `process.env.ADMIN_PASSWORD` (comparação com `crypto.timingSafeEqual`)
+- **Runtime:** Node.js (forçado via `export const runtime = 'nodejs'`)
+- **Path:** `/api/admin` (restrito ao path do cookie)
+- **Rate Limiting:** 5 tentativas/minuto por IP (específico para `/api/admin/login`)
 
-### 13.3. Middleware (`src/middleware.ts`)
-- Protege rotas `/studio/portal/[protocol]*`
-- Protege rotas `/studio/admin/*`
-- Protege rotas `/strategy/admin/*`
-- Validação de expiração
-- Validação de protocol (portal)
-- Redireciona para login se não autenticado
+### 13.3. Middleware (`middleware.ts`)
+- **Proteção de rotas:**
+  - `/api/admin/*` → retorna 401 JSON (não redirect) se não autenticado
+  - `/api/admin/login` e `/api/admin/logout` → bypass (acessíveis sem sessão)
+  - `/studio/portal/[protocol]*` → redireciona para login se não autenticado
+  - `/studio/admin/*` → redireciona para login se não autenticado
+- **Validação:** JWT Edge-safe usando `jose.jwtVerify`
+- **Request ID:** sempre presente em respostas 401 (reutiliza `x-request-id` do cliente ou gera novo)
+- **Cache-Control:** `no-store` + `Pragma: no-cache` em todas as respostas 401
 
-### 13.4. Rate Limiting
-- Portal login: 5 tentativas / 15 min (por IP + protocol)
-- Admin login: 5 tentativas / 15 min (por IP)
-- Redis opcional (REDIS_URL)
-- Fallback: in-memory store
-- Header Retry-After em caso de bloqueio
+### 13.4. Rate Limiting (`src/lib/security/rateLimit.ts`)
+- **Estratégia:** Fixed window (janela de tempo) com Map in-memory
+- **Persistência:** `globalThis.__lsRateLimitStore` (sobrevive HMR em dev)
+- **Aplicado em:**
+  - `/api/admin/login`: 5 tentativas/minuto por IP
+  - `/api/portal/login`: 5 tentativas/15min por IP + protocol
+  - `/api/admin/portal/login`: 5 tentativas/15min por IP
+  - `/api/strategy/pulse`: 100 tentativas/minuto por IP + 20/min por identidade
+  - `/api/strategy/consultancy`: 10 tentativas/minuto por IP
+  - `/api/contato`: 10 tentativas/minuto por IP
+- **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`
+- **Resposta 429:** JSON com `{ error: 'rate_limited', requestId, ... }` + `x-request-id`
+- **Bypass:** `QA_CSP=1` em dev (para testes determinísticos)
 
-### 13.5. Upload Security
-- Validação de extensão de arquivo
-- Validação de tamanho máximo
-- Bloqueio de executáveis
-- Nome de arquivo seguro (sanitização)
-- Scan de vírus opcional (ClamAV)
-- Path traversal prevention
+### 13.5. SSRF Protection (`src/lib/security/ssrf.ts`)
+- **Funções:**
+  - `assertAllowedUrl()`: valida URL contra allowlist de hosts
+  - `safeFetchJson()`: fetch seguro com timeout, validação de Content-Type e limite de tamanho
+- **Proteções:**
+  - HTTPS only
+  - Allowlist de hosts (`api.gdeltproject.org`)
+  - Bloqueio de credenciais embutidas em URL
+  - Bloqueio de portas não padrão (apenas 443)
+  - Bloqueio de IPs privados
+  - Timeout com `AbortController` (5s padrão)
+  - `redirect: 'error'` (não segue redirects)
+  - Validação de `Content-Type: application/json`
+  - Limite de payload: 1MB
+- **Aplicado em:** `src/lib/gdelt/fetch.ts`
 
-### 13.6. Download Security
-- Validação de sessão
-- Validação de permissões (regras de liberação)
-- Validação de protocol (arquivo pertence ao projeto)
-- Streaming (nunca expor storagePath)
-- Headers: Content-Disposition, Cache-Control: no-store
+### 13.6. HTML Sanitization (`src/lib/sanitize-html.ts`)
+- **Biblioteca:** `sanitize-html` (allowlist robusta)
+- **Tags permitidas:** `p`, `br`, `strong`, `em`, `ul`, `ol`, `li`, `blockquote`, `code`, `pre`, `h1-h6`, `a`, `hr`, `span`
+- **Atributos permitidos:** `a: ['href', 'name', 'target', 'rel']`
+- **Esquemas permitidos:** `http`, `https`, `mailto`
+- **Bloqueios:**
+  - `javascript:`, `vbscript:`, `data:text/html`
+  - Tags perigosas: `script`, `iframe`, `object`, `embed`, `svg`, `math`, `form`, `input`
+  - Atributos perigosos: `on*`, `style`, `srcdoc`, `formaction`, `xlink:href`
+- **Transformações:** `rel="noopener noreferrer"` em links externos com `target="_blank"`
+
+### 13.7. MDX Security (`src/lib/mdx-security.ts`)
+- **Wrapper:** `SafeMDXRemote` (`src/components/security/SafeMDXRemote.tsx`)
+- **Validações (fail-fast):**
+  - Bloqueia `import/export` (ESM)
+  - Bloqueia expressões MDX `{...}`
+  - Bloqueia tags perigosas: `script`, `iframe`, `object`, `embed`, `svg`, `math`, `form`, `input`, `style`, `link`, `meta`
+  - Bloqueia atributos de evento (`on*`)
+  - Bloqueia URLs perigosas: `javascript:`, `vbscript:`, `data:text/html`
+  - Limite de tamanho: 200KB (DoS protection)
+- **Redução de falsos positivos:** `stripCode()` remove code blocks antes de validar
+- **Aplicado em:** Todos os usos de `MDXRemote` substituídos por `SafeMDXRemote`
+
+### 13.8. Content Security Policy (`src/lib/security/csp.ts`, `src/proxy.ts`)
+- **Nonce por request:** Base64URL gerado com Web Crypto
+- **CSP strict:**
+  - `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'` (prod) + `'unsafe-eval'` (dev)
+  - `style-src 'self' 'nonce-${nonce}'` (sem `unsafe-inline`)
+  - `style-src-attr 'unsafe-hashes'` com hashes SHA256 específicos
+  - `default-src 'self'`
+  - `frame-ancestors 'none'`
+  - `upgrade-insecure-requests` (prod)
+- **Aplicação:** Via `src/proxy.ts` (matcher global) e `src/app/layout.tsx` (renderização dinâmica)
+
+### 13.9. Request ID e Observabilidade (`src/lib/http/request-id.ts`)
+- **Helper centralizado:**
+  - `getOrCreateRequestId()`: reutiliza `x-request-id` do cliente ou gera UUID
+  - `jsonWithRequestId()`: cria NextResponse JSON com `x-request-id` no header e `requestId` no body (erros >=400)
+  - `withRequestIdHeaders()`: adiciona `x-request-id` a qualquer Response
+  - `setNoStore()`: adiciona `Cache-Control: no-store` + `Pragma: no-cache`
+- **Aplicado em:** Todas as rotas de API (públicas e admin)
+- **Logs estruturados:** `src/lib/logger.ts` com redaction de dados sensíveis
+
+### 13.10. Upload Security
+- **Validação:** `src/lib/upload-validation.ts`
+  - Extensão de arquivo (allowlist)
+  - Tamanho máximo
+  - Bloqueio de executáveis
+  - Nome de arquivo seguro (sanitização)
+  - Path traversal prevention
+- **Scan de vírus:** Opcional via ClamAV (`src/lib/virus-scan.ts`)
+- **Storage:** Arquivos em `/uploads` (não em `/public` para evitar acesso direto)
+
+### 13.11. Download Security
+- **Validação de sessão:** JWT válido e não expirado
+- **Validação de permissões:** Regras de liberação (Preview/Final)
+- **Validação de protocol:** Arquivo pertence ao projeto da sessão
+- **Streaming:** Nunca expor `storagePath` diretamente
+- **Headers:** `Content-Disposition`, `Cache-Control: no-store`, `Pragma: no-cache`
+
+### 13.12. Cache-Control Anti-Cache
+- **Helper:** `setNoStore()` em `src/lib/http/request-id.ts`
+- **Aplicado em:**
+  - Todas as respostas de `/api/admin/login` (200/400/401/429/500)
+  - Todas as respostas 429 do rate limiter
+  - Todas as respostas 401 do middleware
+- **Headers:** `Cache-Control: no-store` + `Pragma: no-cache`
+
+### 13.13. Validação de Input (Zod)
+- **Schemas:** `src/lib/schemas/` (admin, portal, contato, briefings)
+- **Aplicado em:** Endpoints de API para validação de body/query params
+- **Sanitização:** HTML sanitizado antes de armazenar (briefings, conteúdo MDX)
+
+### 13.14. Timing Attack Protection
+- **Admin Login:** `crypto.timingSafeEqual()` para comparação de senha
+- **CSRF:** `constantTimeEqual()` (XOR em charCodeAt) em `src/lib/csrf-guard.ts`
+- **PIN:** `bcrypt.compare()` (já é timing-safe)
+
+### 13.15. Environment Variables (`src/lib/env.ts`)
+- **Validação centralizada:** Sem fallbacks inseguros
+- **Obrigatórias:** `SESSION_SECRET` (>=32), `PREVIEW_SECRET` (>=32), `DATABASE_URL`, `ADMIN_PASSWORD`
+- **Opcionais:** `ADMIN_KEY` (>=24), `DRAFT_MODE_SECRET` (>=32), `REDIS_URL`, etc.
+- **Fail-fast:** Lança erro se obrigatória faltar (nunca usa valor padrão inseguro)
 
 ---
 
@@ -884,17 +1001,49 @@ Pilar Labs apresentando engenharia de produto geoespacial e validação.
 - `canDownloadPreview()`: verifica permissão de download Preview
 - `canDownloadFinal()`: verifica permissão de download Final
 
-### 16.3. RATE LIMITING - `src/lib/rate-limit/*`
-- `checkRateLimitRedis()`: rate limiting com Redis ou fallback
-- `getClientIP()`: obtém IP do cliente
-- `RateLimitStore`: interface para stores
-- `RedisRateLimitStore`: implementação Redis
-- `MemoryRateLimitStore`: implementação in-memory
+### 16.3. RATE LIMITING - `src/lib/security/rateLimit.ts`
+- `withRateLimit()`: HOC para aplicar rate limiting em handlers
+- `getClientIp()`: obtém IP do cliente (x-forwarded-for, x-real-ip, cf-connecting-ip)
+- `checkRateLimit()`: lógica de fixed window
+- `parseIdentityFromBody()`: extrai identidade (email/username) do body
+- **Store:** Map in-memory com `globalThis` para persistir em HMR
+- **Bypass:** `QA_CSP=1` em dev (para testes determinísticos)
 
-### 16.4. OBSERVABILITY - `src/lib/observability.ts`
-- `getRequestId()`: obtém ou gera request ID
-- `addRequestIdHeader()`: adiciona header x-request-id
+### 16.4. SSRF PROTECTION - `src/lib/security/ssrf.ts`
+- `assertAllowedUrl()`: valida URL contra allowlist de hosts
+- `safeFetchJson()`: fetch seguro com timeout, validação de Content-Type e limite de tamanho
+- **Proteções:** HTTPS only, allowlist, bloqueio de credenciais/portas/IPs privados, timeout, redirect blocking
+
+### 16.5. HTML SANITIZATION - `src/lib/sanitize-html.ts`
+- `sanitizeHtml()`: sanitização robusta usando `sanitize-html` com allowlist estrita
+- **Bloqueios:** javascript:, vbscript:, data: perigosos, tags/atributos perigosos
+- **Transformações:** `rel="noopener noreferrer"` em links externos
+
+### 16.6. MDX SECURITY - `src/lib/mdx-security.ts`
+- `assertSafeMdx()`: validação fail-fast de conteúdo MDX
+- `stripCode()`: remove code blocks para reduzir falsos positivos
+- **Bloqueios:** import/export, expressões MDX, tags/atributos perigosos, URLs perigosas
+- **Limite:** 200KB (DoS protection)
+
+### 16.7. CSP - `src/lib/security/csp.ts`
+- `generateNonce()`: gera nonce Base64URL
+- `applyCSPHeaders()`: aplica CSP com nonce por request
+- **Aplicação:** Via `src/proxy.ts` (matcher global)
+
+### 16.8. REQUEST ID - `src/lib/http/request-id.ts`
+- `getOrCreateRequestId()`: obtém ou cria Request ID
+- `jsonWithRequestId()`: cria NextResponse JSON com request ID
+- `withRequestIdHeaders()`: adiciona `x-request-id` a Response
+- `setNoStore()`: adiciona headers anti-cache
+
+### 16.9. OBSERVABILITY - `src/lib/observability.ts`
+- `getRequestId()`: obtém ou gera request ID (legado, usar `getOrCreateRequestId`)
+- `addRequestIdHeader()`: adiciona header x-request-id (legado, usar helpers de `request-id.ts`)
 - `logStructured()`: log estruturado em JSON
+
+### 16.10. LOGGER - `src/lib/logger.ts`
+- `logSafe()`: log estruturado com redaction automática de dados sensíveis
+- `redactSensitive()`: mascaramento de PINs, senhas, tokens
 
 ### 16.5. AUDIT - `src/lib/audit.ts`
 - `auditLog()`: registra evento de auditoria
@@ -930,15 +1079,21 @@ Pilar Labs apresentando engenharia de produto geoespacial e validação.
 ## 17. Variáveis de Ambiente
 
 ### Obrigatórias
-- `DATABASE_URL`: URL do banco (SQLite dev / Postgres prod)
-- `SESSION_SECRET`: Secret para JWT (mínimo 32 caracteres)
-- `ADMIN_KEY`: Chave admin (fallback se não houver senha no banco)
+- `DATABASE_URL`: URL do banco (PostgreSQL gerenciado em prod, SQLite apenas dev local)
+- `DIRECT_URL`: URL direta para migrations (geralmente igual a DATABASE_URL, exceto em Neon que separa pooler vs direto)
+- `SESSION_SECRET`: Secret para JWT (mínimo 32 caracteres, obrigatório)
+- `PREVIEW_SECRET`: Secret para preview mode (mínimo 32 caracteres, obrigatório)
+- `ADMIN_PASSWORD`: Senha admin para `/api/admin/login` (obrigatório, comparado com `crypto.timingSafeEqual`)
 
-### Opcionais (Enterprise)
-- `REDIS_URL`: URL do Redis (para rate limiting persistente)
-- `CLAMAV_ENABLED`: true/false (habilitar scan de vírus)
-- `CLAMAV_SOCKET`: Caminho do socket ClamAV
+### Opcionais
+- `ADMIN_KEY`: Chave admin (>=24 caracteres, opcional, não usado mais no login)
+- `DRAFT_MODE_SECRET`: Secret para Draft Mode (>=32 caracteres, opcional mas recomendado)
+- `REDIS_URL`: URL do Redis (para rate limiting persistente, opcional)
+- `CLAMAV_ENABLED`: true/false (habilitar scan de vírus, opcional)
+- `CLAMAV_SOCKET`: Caminho do socket ClamAV (opcional)
 - `NODE_ENV`: development/production
+- `USE_MOCK_GDELT`: true/false (usar mock do GDELT em dev/test, opcional)
+- `QA_CSP`: 1 (habilitar modo QA determinístico, opcional)
 
 ---
 
@@ -1493,5 +1648,99 @@ npm run cleanup:uploads        # Limpa arquivos antigos (futuro)
 ---
 
 **Última atualização:** Janeiro 2025  
-**Versão:** 2.0  
+**Versão:** 3.0  
 **Próxima revisão:** Após implementação de melhorias críticas
+
+---
+
+## 25. Hardening de Segurança Implementado (Big Tech Standard)
+
+### ✅ Implementações Recentes (2025)
+
+#### Rate Limiting
+- ✅ Aplicado em todos os endpoints públicos (`/api/strategy/pulse`, `/api/strategy/consultancy`, `/api/contato`)
+- ✅ Aplicado em todos os endpoints de login (admin, portal)
+- ✅ Headers `X-RateLimit-*` e `Retry-After` padronizados
+- ✅ Request ID incluído em respostas 429
+
+#### SSRF Protection
+- ✅ `assertAllowedUrl()` e `safeFetchJson()` implementados
+- ✅ Aplicado em `src/lib/gdelt/fetch.ts`
+- ✅ Allowlist de hosts, timeout, validação de Content-Type, limite de tamanho
+
+#### HTML Sanitization
+- ✅ Substituído regex por `sanitize-html` com allowlist robusta
+- ✅ Bloqueio de `javascript:`, `vbscript:`, `data:` perigosos
+- ✅ Bloqueio de tags/atributos perigosos
+- ✅ `rel="noopener noreferrer"` em links externos
+
+#### MDX Security
+- ✅ `SafeMDXRemote` wrapper implementado
+- ✅ Bloqueio de import/export, expressões MDX, tags/atributos perigosos
+- ✅ Limite de tamanho (200KB)
+- ✅ Redução de falsos positivos com `stripCode()`
+
+#### CSP (Content Security Policy)
+- ✅ Nonce por request (Base64URL)
+- ✅ CSP strict sem `unsafe-inline` em scripts/styles
+- ✅ `style-src-attr` com hashes SHA256 específicos
+- ✅ Aplicado via `src/proxy.ts` e `src/app/layout.tsx`
+
+#### Request ID Padronizado
+- ✅ Helper centralizado em `src/lib/http/request-id.ts`
+- ✅ Aplicado em todas as rotas de API (públicas e admin)
+- ✅ `x-request-id` sempre presente em headers
+- ✅ `requestId` no body de erros (>=400)
+
+#### Cache-Control Anti-Cache
+- ✅ `setNoStore()` helper implementado
+- ✅ Aplicado em todas as respostas sensíveis (login, admin, rate limit)
+- ✅ `Cache-Control: no-store` + `Pragma: no-cache`
+
+#### Admin Login Hardening
+- ✅ Runtime Node.js forçado (`export const runtime = 'nodejs'`)
+- ✅ Validação robusta de body (text → JSON parse)
+- ✅ `crypto.timingSafeEqual()` para comparação de senha
+- ✅ `ADMIN_PASSWORD` de `process.env` (não mais do banco)
+- ✅ Status codes corretos: 400 (bad request), 401 (credenciais inválidas), 500 (erro interno)
+
+#### Middleware Admin API
+- ✅ Rotas `/api/admin/*` retornam 401 JSON (não redirect)
+- ✅ `/api/admin/login` e `/api/admin/logout` com bypass (acessíveis sem sessão)
+- ✅ Request ID sempre presente
+- ✅ Cache-Control: no-store em respostas 401
+
+#### Environment Variables
+- ✅ Validação centralizada em `src/lib/env.ts`
+- ✅ Sem fallbacks inseguros
+- ✅ Fail-fast se obrigatória faltar
+- ✅ Validação de comprimentos mínimos
+
+#### CI/CD Security
+- ✅ GitHub Actions workflow (`.github/workflows/security.yml`)
+- ✅ `npm audit --audit-level=high` como gate
+- ✅ Dependency Review para pull requests
+- ✅ Prisma Client generation no CI
+- ✅ Validação de env vars no CI
+
+### ⚠️ Pendências (Backlog)
+
+#### P0 (Crítico)
+- ❌ CSRF protection em todos os endpoints mutáveis (parcial - existe `csrf-guard.ts` mas não aplicado em todos)
+- ❌ Rate limiting distribuído (Redis) em produção (atualmente in-memory)
+
+#### P1 (Alto)
+- ❌ Rotação de sessão (JWT fixo por 7 dias, sem refresh token)
+- ❌ WAF/CDN em produção (Vercel tem básico, mas pode melhorar)
+- ❌ Monitoramento de segurança (alertas, SIEM)
+
+#### P2 (Médio)
+- ❌ Lockout progressivo (exponencial) no rate limiting
+- ❌ 2FA para admin (opcional)
+- ❌ Criptografia de dados sensíveis no banco
+
+---
+
+**Documentação de Segurança:**
+- `docs/SECURITY_AUDIT_BIGTECH.md`: Auditoria completa Big Tech
+- `docs/SECURITY_BACKLOG.md`: Backlog priorizado de segurança

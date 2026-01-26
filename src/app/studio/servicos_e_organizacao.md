@@ -32,7 +32,7 @@ Use como base para **Next.js/MDX**, CMS ou páginas estáticas.
 # --- ROUTE: /geostudio ---
 
 ## Hero
-**Headline:** Cartografia técnica para decisão pública, ambiental e agro.  
+**Headline:** Geointeligência e soluções geoespaciais para decisão pública, ambiental e agro.  
 **Subheadline:** Mapas, modelos e relatórios prontos para planejamento territorial, gestão ambiental, bacias hidrográficas e agricultura de precisão — com base geoespacial organizada e padrão de qualidade auditável.  
 **CTA Primary:** Solicitar orçamento  
 **CTA Secondary:** Ver pacotes
