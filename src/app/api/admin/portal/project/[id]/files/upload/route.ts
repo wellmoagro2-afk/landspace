@@ -23,9 +23,17 @@ export async function POST(
     const isAdmin = await getAdminSession();
 
     if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Não autorizado' },
-        { status: 401 }
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Não autorizado' },
+          { 
+            status: 401,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        requestId
       );
     }
 
@@ -48,9 +56,17 @@ export async function POST(
       version: rawVersion || 'v1' 
     });
     if (!validation.success) {
-      return NextResponse.json(
-        { error: 'invalid_input' },
-        { status: 400 }
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'invalid_input' },
+          { 
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        requestId
       );
     }
 
@@ -60,17 +76,33 @@ export async function POST(
     const extensionCheck = validateFileExtension(file.name);
     if (!extensionCheck.valid) {
       console.warn(`[Upload] Extensão bloqueada: ${extensionCheck.extension} (${file.name})`);
-      return NextResponse.json(
-        { error: `Tipo de arquivo não permitido: ${extensionCheck.extension || 'sem extensão'}` },
-        { status: 400 }
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: `Tipo de arquivo não permitido: ${extensionCheck.extension || 'sem extensão'}` },
+          { 
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        requestId
       );
     }
 
     // Validar tamanho
     if (!validateFileSize(file.size)) {
-      return NextResponse.json(
-        { error: 'Arquivo muito grande. Tamanho máximo: 100 MB' },
-        { status: 400 }
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Arquivo muito grande. Tamanho máximo: 100 MB' },
+          { 
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        requestId
       );
     }
 
@@ -88,7 +120,12 @@ export async function POST(
       return addRequestIdHeader(
         NextResponse.json(
           { error: 'Projeto não encontrado' },
-          { status: 404 }
+          { 
+            status: 404,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
         ),
         requestId
       );
@@ -107,9 +144,17 @@ export async function POST(
     // Validar que o caminho está dentro do diretório permitido (prevenir path traversal)
     if (!fullPath.startsWith(uploadsBaseDir)) {
       console.error(`[Upload] Tentativa de path traversal detectada: ${fullPath}`);
-      return NextResponse.json(
-        { error: 'Caminho inválido' },
-        { status: 400 }
+      return addRequestIdHeader(
+        NextResponse.json(
+          { error: 'Caminho inválido' },
+          { 
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        requestId
       );
     }
 
@@ -206,13 +251,20 @@ export async function POST(
     });
 
     return addRequestIdHeader(
-      NextResponse.json({
-        success: true,
-        file: {
-          ...projectFile,
-          storagePath: undefined, // Nunca expor storagePath
+      NextResponse.json(
+        {
+          success: true,
+          file: {
+            ...projectFile,
+            storagePath: undefined, // Nunca expor storagePath
+          },
         },
-      }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ),
       requestId
     );
   } catch (error) {
@@ -226,7 +278,12 @@ export async function POST(
     return addRequestIdHeader(
       NextResponse.json(
         { error: 'Erro ao fazer upload' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       ),
       requestId
     );
