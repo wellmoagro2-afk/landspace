@@ -65,7 +65,10 @@ export const AuditActions = {
   ADMIN_PROJECT_DELETE: 'admin_project_delete',
   ADMIN_PIN_RESET: 'admin_pin_reset',
   ADMIN_PAYMENT_CREATE: 'admin_payment_create',
+  ADMIN_PAYMENT_UPDATE: 'admin_payment_update',
+  ADMIN_PAYMENT_DELETE: 'admin_payment_delete',
   ADMIN_FILE_UPLOAD: 'admin_file_upload',
+  ADMIN_FILE_DELETE: 'admin_file_delete',
   ADMIN_FINAL_RELEASE: 'admin_final_release',
   
   // Sistema
