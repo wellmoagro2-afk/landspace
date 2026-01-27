@@ -179,7 +179,14 @@ try {
     console.error('\n❌ ADMIN_KEY deve ter no mínimo 24 caracteres\n');
     process.exit(1);
   }
-  
+
+  // Aviso sobre ADMIN_PASSWORD legacy (não falha, apenas avisa)
+  if (process.env.ADMIN_PASSWORD && !process.env.ADMIN_KEY) {
+    console.warn('\n⚠️  ADMIN_PASSWORD está configurado mas ADMIN_KEY não está.');
+    console.warn('   ADMIN_PASSWORD é legacy e será removido no futuro.');
+    console.warn('   Configure ADMIN_KEY para migrar.\n');
+  }
+
   if (process.env.DRAFT_MODE_SECRET && process.env.DRAFT_MODE_SECRET.length < 32) {
     console.error('\n❌ DRAFT_MODE_SECRET deve ter no mínimo 32 caracteres\n');
     process.exit(1);
