@@ -7,6 +7,9 @@ import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observabi
 import { auditLog, AuditActions } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
 import { updateProjectSchema } from '@/lib/schemas';
+import { ServiceType, ProjectStatus } from '@prisma/client';
+import { resolve } from 'path';
+import { rmdir } from 'fs/promises';
 
 export async function PATCH(
   request: NextRequest,
@@ -47,13 +50,32 @@ export async function PATCH(
     }
 
     const validatedData = validation.data;
-    const updateData: any = {};
+    const updateData: {
+      title?: string | null;
+      clientName?: string;
+      clientEmail?: string;
+      clientPhone?: string;
+      serviceType?: ServiceType;
+      status?: ProjectStatus;
+      totalValue?: Decimal;
+      entryValue?: Decimal;
+      finalRelease?: boolean;
+    } = {};
 
+    // Incluir title no updateData se fornecido
+    // O erro será capturado no try-catch do update se o campo não existir
+    if (validatedData.title !== undefined) {
+      updateData.title = validatedData.title && validatedData.title.trim() ? validatedData.title.trim() : null;
+    }
     if (validatedData.clientName) updateData.clientName = validatedData.clientName;
-    if (validatedData.clientEmail !== undefined) updateData.clientEmail = validatedData.clientEmail || null;
-    if (validatedData.clientPhone !== undefined) updateData.clientPhone = validatedData.clientPhone || null;
-    if (validatedData.serviceType) updateData.serviceType = validatedData.serviceType;
-    if (validatedData.status) updateData.status = validatedData.status;
+    if (validatedData.clientEmail !== undefined) updateData.clientEmail = validatedData.clientEmail || undefined;
+    if (validatedData.clientPhone !== undefined) updateData.clientPhone = validatedData.clientPhone || undefined;
+    if (validatedData.serviceType) {
+      updateData.serviceType = validatedData.serviceType as ServiceType;
+    }
+    if (validatedData.status) {
+      updateData.status = validatedData.status as ProjectStatus;
+    }
     if (validatedData.totalValue !== undefined) updateData.totalValue = new Decimal(validatedData.totalValue);
     if (validatedData.entryValue !== undefined) updateData.entryValue = new Decimal(validatedData.entryValue);
     if (validatedData.finalRelease !== undefined) {
@@ -98,10 +120,81 @@ export async function PATCH(
       });
     }
 
-    const project = await prisma.project.update({
-      where: { id: existingProject.id },
-      data: updateData,
-    });
+    // Se tentar atualizar title mas o campo não existe, remover do updateData
+    let project;
+    try {
+      project = await prisma.project.update({
+        where: { id: existingProject.id },
+        data: updateData,
+      });
+    } catch (updateError: unknown) {
+      // Log detalhado do erro para diagnóstico
+      const errorMessage = updateError instanceof Error ? updateError.message : 'Unknown';
+      const errorCode = updateError && typeof updateError === 'object' && 'code' in updateError ? String(updateError.code) : 'N/A';
+      const errorName = updateError instanceof Error ? updateError.name : 'N/A';
+      const errorStack = updateError instanceof Error ? updateError.stack?.substring(0, 500) : undefined;
+      logStructured('error', 'Admin Update Project: erro no update', {
+        requestId,
+        error: errorMessage,
+        errorCode,
+        errorName,
+        updateDataKeys: Object.keys(updateData),
+        stack: errorStack,
+      });
+      
+      // Se o erro for relacionado ao campo title não existir, tratar adequadamente
+      const errorMessageLower = errorMessage.toLowerCase();
+      
+      // Detectar vários tipos de erro relacionados a coluna não existir
+      const isColumnNotFoundError = 
+        errorCode === 'P2021' || // Prisma: Table does not exist
+        errorCode === '42703' || // PostgreSQL: column does not exist
+        errorCode === 'P2011' || // Prisma: Null constraint violation
+        errorMessageLower.includes('unknown column') ||
+        errorMessageLower.includes('column "title"') ||
+        errorMessageLower.includes('column title') ||
+        errorMessageLower.includes('does not exist') ||
+        errorMessageLower.includes('column not found') ||
+        errorMessageLower.includes('no such column') ||
+        errorMessageLower.includes('syntax error') && errorMessageLower.includes('title') ||
+        (errorMessageLower.includes('title') && 
+         (errorMessageLower.includes('not found') || 
+          errorMessageLower.includes('unknown')));
+      
+      if (isColumnNotFoundError && updateData.title !== undefined) {
+        logStructured('warn', 'Admin Update Project: campo title não existe, removendo do update', {
+          requestId,
+          error: errorMessage,
+          errorCode,
+        });
+        
+        // Remover title do updateData e tentar novamente
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { title: _title, ...updateDataWithoutTitle } = updateData;
+        if (Object.keys(updateDataWithoutTitle).length === 0) {
+          // Se só estava tentando atualizar title, retornar erro específico
+          return addRequestIdHeader(
+            NextResponse.json(
+              { 
+                error: 'Campo "title" ainda não está disponível. Por favor, execute a migration do banco de dados primeiro.',
+                hint: 'Execute: npm run db:migrate'
+              },
+              { status: 400 }
+            ),
+            requestId
+          );
+        }
+        
+        // Tentar atualizar sem o campo title
+        project = await prisma.project.update({
+          where: { id: existingProject.id },
+          data: updateDataWithoutTitle,
+        });
+      } else {
+        // Outro tipo de erro - propagar
+        throw updateError;
+      }
+    }
 
     // Recalcular balance se valores financeiros mudaram
     if (validatedData.totalValue !== undefined || validatedData.entryValue !== undefined) {
@@ -133,10 +226,37 @@ export async function PATCH(
       requestId
     );
   } catch (error) {
-    logStructured('error', 'Admin Update Project: erro', {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown';
+    const errorCode = (error && typeof error === 'object' && 'code' in error) 
+      ? String(error.code) 
+      : 'N/A';
+    
+    logStructured('error', 'Admin Update Project: erro geral', {
       requestId,
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: errorMessage,
+      errorCode,
+      errorName: error instanceof Error ? error.name : 'Unknown',
+      stack: error instanceof Error ? error.stack?.substring(0, 500) : undefined,
     });
+    
+    // Se o erro for relacionado ao campo title, retornar mensagem mais específica
+    const errorMsgLower = errorMessage.toLowerCase();
+    if (errorMsgLower.includes('title') || 
+        errorMsgLower.includes('column') || 
+        errorMsgLower.includes('migration') ||
+        errorCode === '42703' || 
+        errorCode === 'P2021') {
+      return addRequestIdHeader(
+        NextResponse.json(
+          { 
+            error: 'Campo "title" ainda não está disponível no banco de dados. Por favor, execute a migration primeiro.',
+            hint: 'Execute: npm run db:migrate ou npx prisma migrate deploy'
+          },
+          { status: 400 }
+        ),
+        requestId
+      );
+    }
     
     return addRequestIdHeader(
       NextResponse.json(
@@ -380,14 +500,14 @@ export async function DELETE(
     });
 
     // Excluir arquivos físicos
-    const { unlink, rmdir } = await import('fs/promises');
-    const { resolve, join } = await import('path');
+    const { unlink } = await import('fs/promises');
+    const { resolve } = await import('path');
     
     for (const file of project.files) {
       try {
         const filePath = resolve(process.cwd(), file.storagePath);
         await unlink(filePath);
-      } catch (err) {
+      } catch {
         // Ignorar erros de arquivo não encontrado
         logStructured('warn', 'Admin delete project: arquivo não encontrado', {
           requestId,
@@ -400,7 +520,7 @@ export async function DELETE(
     try {
       const projectDir = resolve(process.cwd(), 'uploads', 'portal', project.protocol);
       await rmdir(projectDir);
-    } catch (err) {
+    } catch {
       // Ignorar se diretório não estiver vazio ou não existir
     }
 

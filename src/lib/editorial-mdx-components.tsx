@@ -1,3 +1,4 @@
+import type React from "react";
 import KeyTakeaways from "@/components/strategy/editorial/KeyTakeaways";
 import PullQuote from "@/components/strategy/editorial/PullQuote";
 import Callout from "@/components/strategy/editorial/Callout";
@@ -10,7 +11,7 @@ import Link from "next/link";
 
 export const editorialMdxComponents = {
   // Headings
-  h2: ({ children, id, ...props }: any) => {
+  h2: ({ children, id, ...props }: React.ComponentPropsWithoutRef<"h2">) => {
     const headingId = id || (typeof children === "string"
       ? children.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")
       : "");
@@ -20,7 +21,7 @@ export const editorialMdxComponents = {
       </h2>
     );
   },
-  h3: ({ children, id, ...props }: any) => {
+  h3: ({ children, id, ...props }: React.ComponentPropsWithoutRef<"h3">) => {
     const headingId = id || (typeof children === "string"
       ? children.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")
       : "");
@@ -30,12 +31,12 @@ export const editorialMdxComponents = {
       </h3>
     );
   },
-  p: ({ children, ...props }: any) => (
+  p: ({ children, ...props }: React.ComponentPropsWithoutRef<"p">) => (
     <p className="editorial-paragraph" {...props}>
       {children}
     </p>
   ),
-  a: ({ href, children, ...props }: any) => {
+  a: ({ href, children, ...props }: React.ComponentPropsWithoutRef<"a">) => {
     // Validar href
     if (!href || typeof href !== 'string') {
       // Sem href válido, renderizar como span
@@ -81,47 +82,47 @@ export const editorialMdxComponents = {
       </Link>
     );
   },
-  ul: ({ children, ...props }: any) => (
+  ul: ({ children, ...props }: React.ComponentPropsWithoutRef<"ul">) => (
     <ul className="editorial-list" {...props}>
       {children}
     </ul>
   ),
-  ol: ({ children, ...props }: any) => (
+  ol: ({ children, ...props }: React.ComponentPropsWithoutRef<"ol">) => (
     <ol className="editorial-list" {...props}>
       {children}
     </ol>
   ),
-  li: ({ children, ...props }: any) => (
+  li: ({ children, ...props }: React.ComponentPropsWithoutRef<"li">) => (
     <li className="editorial-list-item" {...props}>
       {children}
     </li>
   ),
-  strong: ({ children, ...props }: any) => (
+  strong: ({ children, ...props }: React.ComponentPropsWithoutRef<"strong">) => (
     <strong className="editorial-strong" {...props}>
       {children}
     </strong>
   ),
-  em: ({ children, ...props }: any) => (
+  em: ({ children, ...props }: React.ComponentPropsWithoutRef<"em">) => (
     <em className="editorial-em" {...props}>
       {children}
     </em>
   ),
-  blockquote: ({ children, ...props }: any) => (
+  blockquote: ({ children, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote className="editorial-blockquote" {...props}>
       {children}
     </blockquote>
   ),
-  code: ({ children, ...props }: any) => (
+  code: ({ children, ...props }: React.ComponentPropsWithoutRef<"code">) => (
     <code className="editorial-code" {...props}>
       {children}
     </code>
   ),
-  pre: ({ children, ...props }: any) => (
+  pre: ({ children, ...props }: React.ComponentPropsWithoutRef<"pre">) => (
     <pre className="editorial-pre" {...props}>
       {children}
     </pre>
   ),
-  img: ({ src, alt, ...props }: any) => {
+  img: ({ src, alt, ...props }: React.ComponentPropsWithoutRef<"img">) => {
     // Validar src
     if (!src || typeof src !== 'string') {
       return null;

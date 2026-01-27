@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getAdminSession } from '@/lib/portal-auth';
 import { setAdminPassword, isFirstTimeSetup, hasAdminPassword, verifyAdminPassword } from '@/lib/admin-config';
-import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
-import { auditLog, AuditActions } from '@/lib/audit';
+import { getRequestId, logStructured } from '@/lib/observability';
+import { auditLog } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
 import { z } from 'zod';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 const passwordUpdateSchema = z.object({
   password: z.string().min(24, 'Senha deve ter no mínimo 24 caracteres'),
@@ -21,26 +22,21 @@ export async function GET(request: NextRequest) {
     const isFirstTime = await isFirstTimeSetup();
     const hasPassword = await hasAdminPassword();
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        isFirstTime,
-        hasPassword,
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      isFirstTime,
+      hasPassword,
+    });
   } catch (error) {
     logStructured('error', 'Admin password check: erro', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown',
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao verificar configuração' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao verificar configuração',
+    });
   }
 }
 
@@ -56,18 +52,20 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) {
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const validation = passwordUpdateSchema.safeParse(body);
     if (!validation.success) {
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const { password, currentPassword } = validation.data;
@@ -78,36 +76,30 @@ export async function POST(request: NextRequest) {
     // Se não é primeiro acesso, requer sessão admin E senha atual
     if (!isFirstTime) {
       if (!isAdmin) {
-        return addRequestIdHeader(
-          NextResponse.json(
-            { error: 'Não autorizado. É necessário estar logado para alterar a senha.' },
-            { status: 401 }
-          ),
-          requestId
-        );
+        return jsonError(request, {
+          status: 401,
+          code: 'unauthorized',
+          message: 'Não autorizado. É necessário estar logado para alterar a senha.',
+        });
       }
 
       if (!currentPassword) {
-        return addRequestIdHeader(
-          NextResponse.json(
-            { error: 'Senha atual é obrigatória para alterar a senha' },
-            { status: 400 }
-          ),
-          requestId
-        );
+        return jsonError(request, {
+          status: 400,
+          code: 'invalid_input',
+          message: 'Senha atual é obrigatória para alterar a senha',
+        });
       }
 
       // Verificar senha atual
       const isValid = await verifyAdminPassword(currentPassword!);
 
       if (!isValid) {
-        return addRequestIdHeader(
-          NextResponse.json(
-            { error: 'Senha atual incorreta' },
-            { status: 401 }
-          ),
-          requestId
-        );
+        return jsonError(request, {
+          status: 401,
+          code: 'unauthorized',
+          message: 'Senha atual incorreta',
+        });
       }
     }
 
@@ -132,27 +124,22 @@ export async function POST(request: NextRequest) {
       success: true,
     });
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        success: true,
-        message: isFirstTime 
-          ? 'Senha configurada com sucesso. Você pode fazer login agora.' 
-          : 'Senha alterada com sucesso.',
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      success: true,
+      message: isFirstTime 
+        ? 'Senha configurada com sucesso. Você pode fazer login agora.' 
+        : 'Senha alterada com sucesso.',
+    });
   } catch (error) {
     logStructured('error', 'Admin password set: erro', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown',
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao configurar senha' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao configurar senha',
+    });
   }
 }

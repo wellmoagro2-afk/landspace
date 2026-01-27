@@ -7,11 +7,45 @@ interface StrategyMapProps {
   map: StrategyMapType;
 }
 
+// Tipos mínimos locais para MapLibre/Mapbox sem dependência de tipos externos
+type MapOptions = {
+  container: HTMLElement;
+  style: string;
+  center: [number, number];
+  zoom: number;
+};
+
+type MapInstance = {
+  on(event: string, cb: () => void): void;
+  addSource(id: string, source: Record<string, unknown>): void;
+  addLayer(layer: Record<string, unknown>): void;
+  addControl(control: unknown, position?: string): void;
+  remove(): void;
+};
+
+type MapLib = {
+  Map: new (opts: MapOptions) => MapInstance;
+  NavigationControl?: new () => unknown;
+  FullscreenControl?: new () => unknown;
+  GeolocateControl?: new () => unknown;
+};
+
+/**
+ * Type guard para validar se um valor é MapLib
+ */
+function isMapLib(v: unknown): v is MapLib {
+  if (!v || typeof v !== "object") {
+    return false;
+  }
+  const obj = v as Record<string, unknown>;
+  return typeof obj.Map === "function";
+}
+
 export default function StrategyMap({ map }: StrategyMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const mapInstanceRef = useRef<any>(null);
+  const mapInstanceRef = useRef<MapInstance | null>(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -19,7 +53,7 @@ export default function StrategyMap({ map }: StrategyMapProps) {
     const initMap = async () => {
       try {
         // Carregar MapLibre GL (padrão, sem dependência de Mapbox)
-        let maplibregl: any;
+        let maplibregl: unknown;
 
         try {
           const maplibreModule = await import("maplibre-gl");
@@ -31,11 +65,16 @@ export default function StrategyMap({ map }: StrategyMapProps) {
           return;
         }
 
-        const mapLib = maplibregl;
-        if (!mapLib || !mapLib.Map) {
+        if (!isMapLib(maplibregl)) {
           throw new Error("SDK de mapa não encontrado");
         }
 
+        const mapLib = maplibregl;
+        
+        if (!mapContainerRef.current) {
+          throw new Error("Container do mapa não encontrado");
+        }
+        
         // Inicializar mapa
         const mapInstance = new mapLib.Map({
           container: mapContainerRef.current,
@@ -100,9 +139,10 @@ export default function StrategyMap({ map }: StrategyMapProps) {
         }
 
         mapInstanceRef.current = mapInstance;
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erro ao inicializar mapa:", err);
-        setError(err.message || "Erro ao carregar mapa");
+        const message = err instanceof Error ? err.message : "Erro ao carregar mapa";
+        setError(message);
         setIsLoading(false);
       }
     };

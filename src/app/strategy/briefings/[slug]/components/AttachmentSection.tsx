@@ -113,7 +113,7 @@ export default function AttachmentSection({
   return (
     <div className="attachment-section mt-16 pt-8 border-t war-room-border">
       <h2 className="text-sm font-sans font-semibold uppercase tracking-wider mb-4 war-room-section-title opacity-90">
-        // RECURSOS DE INTELIGÊNCIA
+        {/* RECURSOS DE INTELIGÊNCIA */}
       </h2>
 
       {/* Lista elegante de recursos - Aparece apenas na impressão */}

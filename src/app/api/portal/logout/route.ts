@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { clearPortalSession } from '@/lib/portal-auth';
+import { jsonOk } from '@/lib/api-response';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   await clearPortalSession();
-  return NextResponse.json({ success: true });
+  return jsonOk(request, { success: true });
 }

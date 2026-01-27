@@ -14,29 +14,38 @@ export default function WhatsAppButton({
   message = "Olá, gostaria de saber mais sobre as soluções de automação da LandSpace."
 }: WhatsAppButtonProps) {
   const [showBubble, setShowBubble] = useState(false);
-  const [isBubbleClosed, setIsBubbleClosed] = useState(false);
+  const [isBubbleClosed, setIsBubbleClosed] = useState(() => {
+    // Lazy initializer: verifica se o balão já foi mostrado nas últimas 24h
+    if (typeof window !== 'undefined') {
+      const bubbleShown = localStorage.getItem('whatsapp-bubble-shown');
+      if (bubbleShown) {
+        const shownTime = parseInt(bubbleShown, 10);
+        const now = Date.now();
+        const twentyFourHours = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
+        
+        // Se ainda não passaram 24h, não mostra o balão
+        if (now - shownTime < twentyFourHours) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   useEffect(() => {
-    // Verifica se o balão já foi mostrado nas últimas 24h (localStorage)
-    const bubbleShown = localStorage.getItem('whatsapp-bubble-shown');
-    if (bubbleShown) {
-      const shownTime = parseInt(bubbleShown, 10);
-      const now = Date.now();
-      const twentyFourHours = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
-      
-      // Se ainda não passaram 24h, não mostra o balão
-      if (now - shownTime < twentyFourHours) {
-        setIsBubbleClosed(true);
-        return;
-      }
+    // Pular se já foi fechado (detectado no lazy initializer)
+    if (isBubbleClosed) {
+      return;
     }
 
     // Mostra o balão após 4 segundos
     const showTimer = setTimeout(() => {
       setShowBubble(true);
       // Salva o timestamp atual no localStorage
-      localStorage.setItem('whatsapp-bubble-shown', Date.now().toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('whatsapp-bubble-shown', Date.now().toString());
+      }
     }, 4000);
 
     // Auto-hide após 10 segundos (4s delay + 10s visível = 14s total)
@@ -49,7 +58,7 @@ export default function WhatsAppButton({
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
     };
-  }, []);
+  }, [isBubbleClosed]);
 
   const handleCloseBubble = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,7 +66,9 @@ export default function WhatsAppButton({
     setShowBubble(false);
     setIsBubbleClosed(true);
     // Salva o timestamp para não mostrar novamente por 24h
-    localStorage.setItem('whatsapp-bubble-shown', Date.now().toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('whatsapp-bubble-shown', Date.now().toString());
+    }
   };
 
   const handleBubbleClick = () => {

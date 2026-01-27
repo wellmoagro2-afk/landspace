@@ -69,7 +69,7 @@ const pillars = [
   {
     name: branding.pillars.studio.uiName,
     icon: Layers,
-    result: "Cartografia, relatórios e serviços especializados",
+    result: "Geointeligência e soluções geoespaciais",
     href: branding.pillars.studio.href,
     microtag: branding.pillars.studio.microtag,
     color: "indigo",
@@ -78,7 +78,7 @@ const pillars = [
   {
     name: branding.pillars.strategy.uiName,
     icon: Map,
-    result: "Mapas estratégicos e análises geopolíticas globais",
+    result: "Geoinformações estratégicas e análises geopolíticas",
     microtag: branding.pillars.strategy.microtag,
     href: branding.pillars.strategy.href,
     color: "emerald",
@@ -96,7 +96,7 @@ const pillars = [
   {
     name: branding.pillars.labs.uiName,
     icon: ValidationSealIcon,
-    result: "Engenharia de Produto Geoespacial & Validação.",
+    result: "Pesquisa, desenvolvimento e inovação (P&D&I).",
     href: branding.pillars.labs.href,
     microtag: branding.pillars.labs.microtag,
     color: "amber",

@@ -15,12 +15,13 @@ export default function ReaderTOC() {
   const [activeId, setActiveId] = useState<string>("");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const mutationObserverRef = useRef<MutationObserver | null>(null);
 
-  useEffect(() => {
+  // Função pura para construir TOC items
+  const buildTocItems = (): TOCItem[] => {
     const article = document.getElementById("briefing-article");
-    if (!article) return;
+    if (!article) return [];
 
-    // Capturar headings e garantir IDs
     const headings = article.querySelectorAll("h2, h3");
     const tocItems: TOCItem[] = [];
 
@@ -45,29 +46,65 @@ export default function ReaderTOC() {
       });
     });
 
-    setItems(tocItems);
+    return tocItems;
+  };
 
-    // IntersectionObserver para detectar heading ativo
-    const observerOptions = {
-      rootMargin: "-20% 0px -70% 0px",
-      threshold: 0,
+  useEffect(() => {
+    const article = document.getElementById("briefing-article");
+    if (!article) return;
+
+    // Função para aplicar items (chamada via callback assíncrono)
+    const applyItems = () => {
+      const tocItems = buildTocItems();
+      setItems(tocItems);
+
+      // Atualizar IntersectionObserver com novos headings
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+
+      const headings = article.querySelectorAll("h2, h3");
+      const observerOptions = {
+        rootMargin: "-20% 0px -70% 0px",
+        threshold: 0,
+      };
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            setActiveId(id);
+          }
+        });
+      }, observerOptions);
+
+      headings.forEach((heading) => {
+        observerRef.current?.observe(heading);
+      });
     };
 
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          setActiveId(id);
-        }
-      });
-    }, observerOptions);
+    // Chamar applyItems via callback assíncrono
+    requestAnimationFrame(() => {
+      applyItems();
+    });
 
-    headings.forEach((heading) => {
-      observerRef.current?.observe(heading);
+    // MutationObserver para detectar mudanças no conteúdo
+    mutationObserverRef.current = new MutationObserver(() => {
+      // Chamar applyItems quando o conteúdo mudar (via callback assíncrono)
+      requestAnimationFrame(() => {
+        applyItems();
+      });
+    });
+
+    mutationObserverRef.current.observe(article, {
+      childList: true,
+      subtree: true,
+      characterData: true,
     });
 
     return () => {
       observerRef.current?.disconnect();
+      mutationObserverRef.current?.disconnect();
     };
   }, []);
 

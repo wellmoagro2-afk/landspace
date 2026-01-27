@@ -98,18 +98,18 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
       }
     }
 
-    // Fallback: usar ADMIN_KEY do env (compatibilidade)
-    // ADMIN_KEY é opcional, mas se presente deve ser válido (validado em env.ts)
-    if (!ENV.ADMIN_KEY) {
-      // Sem senha no banco e sem ADMIN_KEY, acesso negado
+    // Fallback: usar ADMIN_KEY do env (com fallback para ADMIN_PASSWORD legacy)
+    const secret = process.env.ADMIN_KEY ?? process.env.ADMIN_PASSWORD;
+    if (!secret) {
+      // Sem senha no banco e sem ADMIN_KEY/ADMIN_PASSWORD, acesso negado
       // Executar comparação dummy para mitigar timing attack
       return await constantTimeFail(password);
     }
     
-    // Comparar com ADMIN_KEY do env (comparação em memória, não precisa dummy)
-    const isValid = password === ENV.ADMIN_KEY;
+    // Comparar com secret do env (comparação em memória, não precisa dummy)
+    const isValid = password === secret;
     if (!isValid) {
-      // Senha não bate com ADMIN_KEY - executar comparação dummy para timing
+      // Senha não bate com secret - executar comparação dummy para timing
       await constantTimeFail(password);
       return false;
     }
@@ -130,16 +130,17 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
     if (isTableMissing) {
       // Tabela inexistente = ambiente não migrado ou config não criada ainda
       // Tratar como "config não encontrada" e seguir para fallback do ENV (não é erro interno)
-      console.warn('[verifyAdminPassword] Tabela AdminConfig não encontrada, usando fallback ENV.ADMIN_KEY');
+      console.warn('[verifyAdminPassword] Tabela AdminConfig não encontrada, usando fallback ADMIN_KEY/ADMIN_PASSWORD');
       
-      // Fallback para ENV.ADMIN_KEY
-      if (!ENV.ADMIN_KEY) {
-        // Sem tabela e sem ADMIN_KEY, acesso negado
+      // Fallback para ADMIN_KEY (com fallback para ADMIN_PASSWORD legacy)
+      const secret = process.env.ADMIN_KEY ?? process.env.ADMIN_PASSWORD;
+      if (!secret) {
+        // Sem tabela e sem ADMIN_KEY/ADMIN_PASSWORD, acesso negado
         return await constantTimeFail(password);
       }
       
-      // Comparar com ADMIN_KEY do env
-      const isValid = password === ENV.ADMIN_KEY;
+      // Comparar com secret do env
+      const isValid = password === secret;
       if (!isValid) {
         await constantTimeFail(password);
         return false;

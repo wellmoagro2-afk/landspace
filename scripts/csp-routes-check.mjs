@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { chromium } from 'playwright';
 
 const BASE_URL = process.env.BASE_URL || process.env.CSP_CHECK_URL || 'http://localhost:3000';

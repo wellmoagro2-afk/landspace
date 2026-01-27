@@ -96,7 +96,7 @@ export default function LegalPageLayout({ title, lastUpdated, version, children 
               LandSpace
             </Link>
             {" • "}
-            <span>Copyright © {new Date().getFullYear()} Todos os direitos reservados.</span>
+            <span>Copyright © <span suppressHydrationWarning>{new Date().getFullYear()}</span> Todos os direitos reservados.</span>
           </div>
         </div>
       </footer>

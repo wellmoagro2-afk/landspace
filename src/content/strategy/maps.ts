@@ -2,8 +2,8 @@ export interface MapLayer {
   id: string;
   type: "fill" | "line" | "circle" | "symbol" | "raster";
   sourceId: string;
-  paint?: Record<string, any>;
-  layout?: Record<string, any>;
+  paint?: Record<string, unknown>;
+  layout?: Record<string, unknown>;
 }
 
 export interface MapSource {

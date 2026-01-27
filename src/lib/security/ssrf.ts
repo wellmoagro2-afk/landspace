@@ -87,7 +87,7 @@ export interface SafeFetchJsonOptions {
  * @returns JSON parseado
  * @throws Error se URL não for permitida, timeout, ou resposta inválida
  */
-export async function safeFetchJson<T = any>(
+export async function safeFetchJson<T = unknown>(
   url: string | URL,
   opts: SafeFetchJsonOptions
 ): Promise<T> {

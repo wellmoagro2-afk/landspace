@@ -82,7 +82,7 @@ export default function ArticleHeader({
       <div className="intelligence-meta flex flex-wrap items-center gap-3 text-xs mb-6 uppercase tracking-wider war-room-meta">
         <span>[ CLASSIFICAÇÃO: ESTRATÉGICO</span>
         {tags && tags.length > 0 && (
-          <span>// REF: {tags.map(t => t.toUpperCase()).join(' / ')}</span>
+          <span>{/* REF: */} {tags.map(t => t.toUpperCase()).join(' / ')}</span>
         )}
         <span>]</span>
       </div>
@@ -117,8 +117,9 @@ export default function ArticleHeader({
           />
         </div>
       ) : (
-        // Placeholder War Room
-        <div className="relative w-full aspect-video mt-8 mb-12 rounded-sm overflow-hidden border flex items-center justify-center war-room-border bg-[rgba(2,4,10,0.5)] war-room-accent-glow-single">
+        <>
+          {/* Placeholder War Room */}
+          <div className="relative w-full aspect-video mt-8 mb-12 rounded-sm overflow-hidden border flex items-center justify-center war-room-border bg-[rgba(2,4,10,0.5)] war-room-accent-glow-single">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center border bg-[rgba(16,185,129,0.1)] war-room-border war-room-accent-glow-single">
               <svg
@@ -138,6 +139,7 @@ export default function ArticleHeader({
             <p className="text-sm font-sans war-room-text">Sem imagem de capa</p>
           </div>
         </div>
+        </>
       )}
     </header>
   );

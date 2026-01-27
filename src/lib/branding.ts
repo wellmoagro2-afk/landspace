@@ -18,7 +18,7 @@ export const branding = {
     studio: {
       uiName: "Studio",
       seoName: "LandSpace Studio",
-      tagline: "Cartografia técnica para decisão pública, ambiental e agro.",
+      tagline: "Geointeligência e soluções geoespaciais para decisão pública, ambiental e agro.",
       microtag: "Serviços",
       cta: "Explorar Studio",
       href: "/studio",

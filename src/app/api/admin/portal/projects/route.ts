@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
+import { ProjectStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,14 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: {
+      OR?: Array<{
+        protocol?: { contains: string; mode: 'insensitive' };
+        clientName?: { contains: string; mode: 'insensitive' };
+        clientEmail?: { contains: string; mode: 'insensitive' };
+      }>;
+      status?: ProjectStatus;
+    } = {};
 
     if (search) {
       where.OR = [
@@ -28,43 +36,44 @@ export async function GET(request: NextRequest) {
         { clientName: { contains: search, mode: 'insensitive' } },
         { clientEmail: { contains: search, mode: 'insensitive' } },
       ];
+      // Adicionar busca por title apenas se o campo existir (após migration)
+      // where.OR.push({ title: { contains: search, mode: 'insensitive' } });
     }
 
-    if (status) {
-      where.status = status;
+    if (status && (status === 'TRIAGEM' || status === 'VALIDACAO_DADOS' || status === 'PROPOSTA' || status === 'ENTRADA_PAGA' || status === 'EM_PRODUCAO' || status === 'QA_INTERNO' || status === 'FINAL_PRONTO' || status === 'SALDO_PENDENTE' || status === 'LIBERADO' || status === 'ENCERRADO')) {
+      where.status = status as ProjectStatus;
     }
 
+    // Usar findMany sem select explícito para evitar erro se campo title não existir ainda
+    // (será incluído automaticamente após migration ser aplicada)
     const [projects, total] = await Promise.all([
       prisma.project.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
-        select: {
-          id: true,
-          protocol: true,
-          clientName: true,
-          clientEmail: true,
-          serviceType: true,
-          status: true,
-          totalValue: true,
-          paidValue: true,
-          balanceValue: true,
-          finalRelease: true,
-          createdAt: true,
-          updatedAt: true,
-        },
+        // Não usar select explícito - deixar Prisma retornar todos os campos disponíveis
+        // Isso evita erro se migration ainda não foi aplicada
       }),
       prisma.project.count({ where }),
     ]);
 
-    // Serializar Decimal para number
+    // Serializar Decimal para number e remover campos não necessários
     return NextResponse.json({
       projects: projects.map(p => ({
-        ...p,
+        id: p.id,
+        protocol: p.protocol,
+        title: ('title' in p && p.title) ? String(p.title) : null, // title pode não existir se migration não foi aplicada
+        clientName: p.clientName,
+        clientEmail: p.clientEmail,
+        serviceType: p.serviceType,
+        status: p.status,
         totalValue: parseFloat(p.totalValue.toString()),
         paidValue: parseFloat(p.paidValue.toString()),
         balanceValue: parseFloat(p.balanceValue.toString()),
+        finalRelease: p.finalRelease,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
       })),
       pagination: {
         page,

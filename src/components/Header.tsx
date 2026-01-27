@@ -33,6 +33,12 @@ export default function Header({ variant = 'global', minimal = false }: HeaderPr
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { getFavoriteAcademyCourses, getFavoriteCourses } = useCart();
   
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+  
   // Contar favoritos baseado no variant
   const favoriteCount = variant === 'academy' 
     ? getFavoriteAcademyCourses().length 
@@ -118,7 +124,7 @@ export default function Header({ variant = 'global', minimal = false }: HeaderPr
       };
     } else {
       // Reset hash quando não está em /strategy
-      setActiveHash("");
+      defer(() => setActiveHash(""));
     }
   }, [variant, pathname, activeHash]);
 

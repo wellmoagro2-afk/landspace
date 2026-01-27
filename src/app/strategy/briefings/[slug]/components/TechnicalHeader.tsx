@@ -34,7 +34,7 @@ export default function TechnicalHeader({
     <div className="mb-6">
       <div className="text-xs uppercase tracking-wider war-room-technical-text opacity-90">
         {edition ? (
-          <>[ VOL. {volume} // ED. {edition} // ID: {referenceId} ]</>
+          <>[ VOL. {volume} {'//'} ED. {edition} {'//'} ID: {referenceId} ]</>
         ) : (
           <>[ ID: {referenceId} ]</>
         )}

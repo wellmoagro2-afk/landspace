@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { loginPortal, createPortalSession } from '@/lib/portal-auth';
 import { getClientIP } from '@/lib/rate-limit/utils';
-import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
+import { getRequestId, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
 import { portalLoginSchema } from '@/lib/schemas';
 import { withRateLimit } from '@/lib/security/rateLimit';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 async function handlePortalLogin(request: NextRequest) {
   const requestId = getRequestId(request);
@@ -15,10 +16,11 @@ async function handlePortalLogin(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) {
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const validation = portalLoginSchema.safeParse(body);
@@ -33,10 +35,11 @@ async function handlePortalLogin(request: NextRequest) {
           message: issue.message,
         })),
       });
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const { protocol, pin } = validation.data;
@@ -95,16 +98,14 @@ async function handlePortalLogin(request: NextRequest) {
         },
       });
 
-      return addRequestIdHeader(
-        NextResponse.json(
-          { 
-            error: errorMessage,
-            errorType: loginResult.error, // Para o frontend saber qual campo está errado
-          },
-          { status: 401 }
-        ),
-        requestId
-      );
+      return jsonError(request, {
+        status: 401,
+        code: 'unauthorized',
+        message: errorMessage,
+        details: {
+          errorType: loginResult.error, // Para o frontend saber qual campo está errado
+        },
+      });
     }
 
     // Usar o protocol do resultado (pode ser diferente se foi encontrado por case-insensitive)
@@ -137,13 +138,10 @@ async function handlePortalLogin(request: NextRequest) {
       path: '/',
     });
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        success: true,
-        protocol: finalProtocol,
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      success: true,
+      protocol: finalProtocol,
+    });
   } catch (error) {
     logStructured('error', 'Portal login: erro interno', {
       requestId,
@@ -152,13 +150,11 @@ async function handlePortalLogin(request: NextRequest) {
       ipAddress: clientIP,
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao fazer login' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao fazer login',
+    });
   }
 }
 

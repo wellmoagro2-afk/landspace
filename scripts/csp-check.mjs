@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import http from "node:http";
 
 const URL = process.env.CSP_URL || "http://localhost:3000/";

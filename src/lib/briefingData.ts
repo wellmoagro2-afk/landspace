@@ -6,9 +6,63 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { getBriefingBySlug as getMDXBriefing } from "@/lib/briefings";
-import { getBriefingBySlug as getStaticBriefing } from "@/content/strategy/briefings";
+import { getBriefingBySlug as getStaticBriefing, type Briefing as StaticBriefing } from "@/content/strategy/briefings";
 import { getKeystaticBriefing } from "@/lib/keystatic/briefings";
 import { generateBriefingId } from "@/lib/strategy/briefingId";
+
+// Tipo estendido para briefings estáticos que podem ter campos opcionais adicionais
+interface StaticBriefingExtended extends StaticBriefing {
+  briefingId?: string;
+  volume?: number;
+  edition?: number;
+  doi?: string;
+  relatedPodcast?: string;
+}
+
+// Type guard para verificar se um briefing estático tem briefingId
+function hasBriefingId(briefing: StaticBriefing): briefing is StaticBriefingExtended {
+  return 'briefingId' in briefing;
+}
+
+// Helper para obter briefingId de um briefing estático
+function getBriefingIdFromStatic(briefing: StaticBriefing, slug: string, year: number): string {
+  if (hasBriefingId(briefing) && briefing.briefingId) {
+    return briefing.briefingId;
+  }
+  return generateBriefingId(slug, year);
+}
+
+// Helper para obter volume de um briefing estático
+function getVolumeFromStatic(briefing: StaticBriefing): number {
+  if (hasBriefingId(briefing) && typeof briefing.volume === 'number') {
+    return briefing.volume;
+  }
+  return 1;
+}
+
+// Helper para obter edition de um briefing estático
+function getEditionFromStatic(briefing: StaticBriefing): number | undefined {
+  if (hasBriefingId(briefing) && typeof briefing.edition === 'number') {
+    return briefing.edition;
+  }
+  return undefined;
+}
+
+// Helper para obter doi de um briefing estático
+function getDoiFromStatic(briefing: StaticBriefing): string | undefined {
+  if (hasBriefingId(briefing) && typeof briefing.doi === 'string') {
+    return briefing.doi;
+  }
+  return undefined;
+}
+
+// Helper para obter relatedPodcast de um briefing estático
+function getRelatedPodcastFromStatic(briefing: StaticBriefing): string | null {
+  if (hasBriefingId(briefing) && typeof briefing.relatedPodcast === 'string') {
+    return briefing.relatedPodcast;
+  }
+  return null;
+}
 
 export interface BriefingData {
   id: string;
@@ -185,7 +239,7 @@ export async function getBriefingData(
       const publishedDate = new Date(mdxBriefing.meta.publishedAt);
       // Usar 2026 como ano padrão se a data for anterior
       const year = publishedDate.getFullYear() < 2026 ? 2026 : publishedDate.getFullYear();
-      const briefingId = (mdxBriefing.meta as any).briefingId || generateBriefingId(mdxBriefing.slug, year);
+      const briefingId = mdxBriefing.meta.briefingId || generateBriefingId(mdxBriefing.slug, year);
       
       return {
         id: "",
@@ -232,7 +286,7 @@ export async function getBriefingData(
       const publishedDate = new Date(staticBriefing.date);
       // Usar 2026 como ano padrão se a data for anterior
       const year = publishedDate.getFullYear() < 2026 ? 2026 : publishedDate.getFullYear();
-      const briefingId = (staticBriefing as any).briefingId || generateBriefingId(staticBriefing.slug, year);
+      const briefingId = getBriefingIdFromStatic(staticBriefing, staticBriefing.slug, year);
       
       return {
         id: "",
@@ -240,10 +294,10 @@ export async function getBriefingData(
         title: staticBriefing.title,
         subtitle: null,
         summary: staticBriefing.summary,
-        volume: (staticBriefing as any).volume || 1,
-        edition: (staticBriefing as any).edition,
+        volume: getVolumeFromStatic(staticBriefing),
+        edition: getEditionFromStatic(staticBriefing),
         briefingId,
-        doi: (staticBriefing as any).doi,
+        doi: getDoiFromStatic(staticBriefing),
         tags: JSON.stringify(staticBriefing.tags),
         coverImageUrl: staticBriefing.coverImage || null,
         readingTime: staticBriefing.readingTime,
@@ -259,7 +313,7 @@ export async function getBriefingData(
         relatedMaps: staticBriefing.relatedMaps
           ? JSON.stringify(staticBriefing.relatedMaps)
           : null,
-        relatedPodcast: (staticBriefing as any).relatedPodcast || null,
+        relatedPodcast: getRelatedPodcastFromStatic(staticBriefing),
       };
     }
   } catch (error) {

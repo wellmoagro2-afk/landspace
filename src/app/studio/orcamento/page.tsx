@@ -54,6 +54,12 @@ export default function OrcamentoPage() {
   const [areaFilePreview, setAreaFilePreview] = useState<string | null>(null);
   const [dataFilesPreview, setDataFilesPreview] = useState<string | null>(null);
 
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+
   // Pré-selecionar serviço via querystring
   useEffect(() => {
     const serviceId = searchParams.get('service');
@@ -61,7 +67,7 @@ export default function OrcamentoPage() {
       // Verificar se o serviceId existe nas opções
       const service = allServiceOptions.find(s => s.id === serviceId);
       if (service) {
-        setFormData(prev => ({ ...prev, serviceType: serviceId }));
+        defer(() => setFormData(prev => ({ ...prev, serviceType: serviceId })));
       }
     }
   }, [searchParams]);

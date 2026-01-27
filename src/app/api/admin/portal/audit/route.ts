@@ -1,22 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getAdminSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
-import { getRequestId, addRequestIdHeader } from '@/lib/observability';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 export async function GET(request: NextRequest) {
-  const requestId = getRequestId(request);
-
   try {
     const isAdmin = await getAdminSession();
 
     if (!isAdmin) {
-      return addRequestIdHeader(
-        NextResponse.json(
-          { error: 'Não autorizado' },
-          { status: 401 }
-        ),
-        requestId
-      );
+      return jsonError(request, {
+        status: 401,
+        code: 'unauthorized',
+        message: 'Não autorizado',
+      });
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -26,7 +22,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: {
+      action?: string;
+      protocol?: string;
+    } = {};
 
     if (action) {
       where.action = action;
@@ -52,26 +51,21 @@ export async function GET(request: NextRequest) {
       metadata: log.metadata ? JSON.parse(log.metadata) : null,
     }));
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        logs: logsWithParsedMetadata,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      logs: logsWithParsedMetadata,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error('[Admin Audit] Erro:', error);
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao buscar logs de auditoria' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao buscar logs de auditoria',
+    });
   }
 }

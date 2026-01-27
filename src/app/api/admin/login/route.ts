@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { isProduction } from '@/lib/env';
 import { setNoStore } from '@/lib/http/request-id';
+import { jsonError } from '@/lib/api-response';
 
 // Forçar runtime Node.js para garantir acesso a process.env
 export const runtime = 'nodejs';
@@ -82,7 +83,7 @@ async function handleAdminLogin(request: NextRequest): Promise<NextResponse> {
     }
 
     // 3. Parse JSON
-    let body: any;
+    let body: Record<string, unknown>;
     try {
       body = JSON.parse(rawBody);
     } catch (parseError) {
@@ -115,21 +116,20 @@ async function handleAdminLogin(request: NextRequest): Promise<NextResponse> {
 
     const password = body.password;
 
-    // 5. Ler senha do env (ADMIN_PASSWORD)
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) {
-      console.error('[admin-login] missing ADMIN_PASSWORD');
-      const response = NextResponse.json(
-        { error: 'server_misconfigured', requestId },
-        { status: 500 }
-      );
-      response.headers.set('x-request-id', requestId);
-      setNoStore(response);
-      return response;
+    // 5. Ler credencial do env (ADMIN_KEY com fallback para ADMIN_PASSWORD)
+    const secret = process.env.ADMIN_KEY ?? process.env.ADMIN_PASSWORD;
+    if (!secret) {
+      console.error('[admin-login] missing admin credential');
+      logSafe('error', 'Admin login: credencial não configurada', { requestId });
+      return jsonError(request, {
+        status: 503,
+        code: 'misconfigured',
+        message: 'Serviço indisponível.',
+      });
     }
 
     // 6. Comparação em tempo constante
-    const isValid = safeEqual(password, adminPassword);
+    const isValid = safeEqual(password, secret);
 
     if (!isValid) {
       // Credenciais inválidas (caso esperado, não é erro)

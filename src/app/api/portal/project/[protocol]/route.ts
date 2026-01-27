@@ -47,6 +47,7 @@ export async function GET(
       project: {
         id: project.id,
         protocol: project.protocol,
+        title: project.title,
         clientName: project.clientName,
         clientEmail: project.clientEmail,
         clientPhone: project.clientPhone,

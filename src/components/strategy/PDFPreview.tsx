@@ -205,4 +205,6 @@ const PDFPreview = forwardRef<PDFPreviewHandle, PDFPreviewProps>(
   );
 });
 
+PDFPreview.displayName = 'PDFPreview';
+
 export default PDFPreview;

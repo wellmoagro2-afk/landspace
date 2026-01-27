@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPortalSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
-import { canDownloadPreview, canDownloadFinal } from '@/lib/portal-utils';
+import { canDownloadFinal } from '@/lib/portal-utils';
 
 export async function GET(
   request: NextRequest,
@@ -20,6 +20,14 @@ export async function GET(
 
     const project = await prisma.project.findUnique({
       where: { protocol },
+      include: {
+        steps: {
+          select: {
+            stepKey: true,
+            state: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -34,32 +42,30 @@ export async function GET(
       orderBy: { uploadedAt: 'desc' },
     });
 
-    const canPreview = canDownloadPreview(project);
-    const canFinal = canDownloadFinal(project);
+    // Passar steps para verificar se estão concluídos antes de liberar arquivos
+    // IMPORTANTE: Não há mais arquivos PREVIEW - todos são FINAL agora
+    const canFinal = canDownloadFinal(project, project.steps);
 
-    const previewFiles = files.filter((f) => f.kind === 'PREVIEW' && canPreview);
-    const finalFiles = files.filter((f) => f.kind === 'FINAL' && canFinal && !f.isLocked);
+    // IMPORTANTE: Mostrar TODOS os arquivos para o cliente (liberados ou bloqueados)
+    // O cliente vê todos os arquivos, mas só pode baixar os que estão liberados
+    // Não filtrar por isLocked - mostrar todos os arquivos FINAL
+    const allFiles = files.filter((f) => f.kind === 'FINAL');
 
     // Nunca expor storagePath no front
     return NextResponse.json({
       preview: {
-        canDownload: canPreview,
-        files: previewFiles.map(f => ({
-          id: f.id,
-          kind: f.kind,
-          filename: f.filename,
-          version: f.version,
-          uploadedAt: f.uploadedAt,
-          // storagePath nunca exposto
-        })),
+        canDownload: false, // Não há mais preview
+        files: [], // Sempre vazio
       },
       final: {
         canDownload: canFinal,
-        files: finalFiles.map(f => ({
+        // Mostrar TODOS os arquivos (liberados ou bloqueados)
+        // O frontend controla se o botão de download está habilitado baseado em canDownload
+        files: allFiles.map(f => ({
           id: f.id,
           kind: f.kind,
           filename: f.filename,
-          version: f.version,
+          version: f.version, // Nome do projeto (ex: Projeto Final, Projeto Final R1, etc)
           uploadedAt: f.uploadedAt,
           // storagePath nunca exposto
         })),

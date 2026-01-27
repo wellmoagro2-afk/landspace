@@ -123,7 +123,7 @@ export default function PulseWordCloud() {
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 mb-3">
             <h2 className="text-2xl md:text-3xl font-mono font-semibold text-[#10b981] tracking-wider">
-              // LANDSPACE GLOBAL PULSE
+              {/* LANDSPACE GLOBAL PULSE */}
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-[#10b981]/30 bg-[#10b981]/5">
               <span className="relative flex h-2 w-2">
@@ -195,7 +195,7 @@ export default function PulseWordCloud() {
             Dados do GDELT Project • Atualizado a cada 1 hora
           </p>
           <p className="text-xs text-slate-300 font-mono mt-2">
-            // Global Intelligence • Processamento em Tempo Real
+            {/* Global Intelligence • Processamento em Tempo Real */}
           </p>
         </div>
       </div>

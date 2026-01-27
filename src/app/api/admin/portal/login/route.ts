@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { createAdminSession } from '@/lib/portal-auth';
 import { getClientIP } from '@/lib/rate-limit/utils';
-import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
+import { getRequestId, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
 import { verifyAdminPassword } from '@/lib/admin-config';
 import { adminLoginSchema } from '@/lib/schemas';
 import { withRateLimit } from '@/lib/security/rateLimit';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 async function handleAdminPortalLogin(request: NextRequest) {
   const requestId = getRequestId(request);
@@ -16,18 +17,20 @@ async function handleAdminPortalLogin(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) {
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const validation = adminLoginSchema.safeParse(body);
     if (!validation.success) {
-      return addRequestIdHeader(
-        NextResponse.json({ error: 'invalid_input' }, { status: 400 }),
-        requestId
-      );
+      return jsonError(request, {
+        status: 400,
+        code: 'invalid_input',
+        message: 'Dados inválidos',
+      });
     }
 
     const { adminKey } = validation.data;
@@ -51,13 +54,11 @@ async function handleAdminPortalLogin(request: NextRequest) {
         errorMessage: 'Senha inválida',
       });
 
-      return addRequestIdHeader(
-        NextResponse.json(
-          { error: 'Senha inválida' },
-          { status: 401 }
-        ),
-        requestId
-      );
+      return jsonError(request, {
+        status: 401,
+        code: 'unauthorized',
+        message: 'Senha inválida',
+      });
     }
 
     const token = await createAdminSession();
@@ -85,12 +86,9 @@ async function handleAdminPortalLogin(request: NextRequest) {
       success: true,
     });
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        success: true,
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      success: true,
+    });
   } catch (error) {
     logStructured('error', 'Admin login: erro interno', {
       requestId,
@@ -99,13 +97,11 @@ async function handleAdminPortalLogin(request: NextRequest) {
       ipAddress: clientIP,
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao fazer login' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao fazer login',
+    });
   }
 }
 

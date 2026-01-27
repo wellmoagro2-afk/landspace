@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, Upload, DollarSign, CheckCircle2, Clock, Circle, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Plus, Upload, DollarSign, CheckCircle2, Clock, Circle, Trash2, Edit2 } from "lucide-react";
 
 interface Project {
   id: string;
   protocol: string;
+  title?: string | null;
   clientName: string;
   clientEmail?: string;
   clientPhone?: string;
@@ -23,11 +24,13 @@ interface Project {
   payments: Payment[];
 }
 
+type StepState = "PENDING" | "ACTIVE" | "DONE";
+
 interface Step {
   id: string;
   stepKey: string;
   title: string;
-  state: "PENDING" | "ACTIVE" | "DONE";
+  state: StepState;
   order: number;
 }
 
@@ -43,6 +46,7 @@ interface Payment {
   method: string;
   amount: number;
   status: string;
+  note?: string;
   createdAt: string;
 }
 
@@ -83,7 +87,17 @@ export default function AdminProjectPage() {
     fetchProject();
   }, [projectId, router]);
 
-  const handleUpdateStep = async (stepId: string, state: "PENDING" | "ACTIVE" | "DONE") => {
+  /**
+   * Converte uma string para StepState de forma segura
+   */
+  function toStepState(value: string): StepState | null {
+    if (value === "PENDING" || value === "ACTIVE" || value === "DONE") {
+      return value;
+    }
+    return null;
+  }
+
+  const handleUpdateStep = async (stepId: string, state: StepState) => {
     try {
       const response = await fetch(`/api/admin/portal/project/${projectId}/steps`, {
         method: "POST",
@@ -104,6 +118,33 @@ export default function AdminProjectPage() {
     } catch (err) {
       console.error("Erro:", err);
       alert("Erro ao atualizar step");
+    }
+  };
+
+  const handleRenameStep = async (stepId: string, currentTitle: string) => {
+    const newTitle = prompt(`Renomear step:\n\nTítulo atual: ${currentTitle}\n\nNovo título (ex: R1, R2, R3):`, currentTitle);
+    if (!newTitle || newTitle === currentTitle) return;
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}/steps`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stepId, title: newTitle }),
+      });
+
+      if (!response.ok) throw new Error("Erro ao renomear step");
+
+      const data = await response.json();
+      
+      if (project) {
+        setProject({
+          ...project,
+          steps: project.steps.map((s) => s.id === stepId ? data.step : s),
+        });
+      }
+    } catch (err) {
+      console.error("Erro:", err);
+      alert("Erro ao renomear step");
     }
   };
 
@@ -138,42 +179,377 @@ export default function AdminProjectPage() {
     }
   };
 
-  const handleUploadFile = async (kind: "PREVIEW" | "FINAL") => {
-    // Solicitar versão do arquivo
-    const version = prompt(`Versão do arquivo ${kind} (ex: v1, v2, final):`) || "v1";
-    if (!version) return;
+  const handleEditPayment = async (payment: Payment) => {
+    const method = prompt(`Método (PIX/BOLETO/CARTAO/AJUSTE):`, payment.method);
+    if (method === null) return; // Usuário cancelou
 
+    const amount = prompt(`Valor:`, payment.amount.toString());
+    if (amount === null) return; // Usuário cancelou
+
+    const status = prompt(`Status (PENDING/CONFIRMED/CANCELED):`, payment.status);
+    if (status === null) return; // Usuário cancelou
+
+    const note = prompt(`Observações (opcional):`, payment.note || "");
+
+    if (!method || !amount || !status) return;
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}/payment`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentId: payment.id,
+          method: method.toUpperCase(),
+          amount: parseFloat(amount),
+          status: status.toUpperCase(),
+          note: note || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao atualizar pagamento");
+      }
+
+      alert("Pagamento atualizado com sucesso!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Erro:", err);
+      alert(err instanceof Error ? err.message : "Erro ao atualizar pagamento");
+    }
+  };
+
+  const handleDeletePayment = async (payment: Payment) => {
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir este pagamento?\n\n` +
+      `Método: ${payment.method}\n` +
+      `Valor: R$ ${payment.amount.toFixed(2)}\n` +
+      `Status: ${payment.status}\n\n` +
+      `Esta ação não pode ser desfeita e recalculará o saldo do projeto.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}/payment?paymentId=${payment.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao excluir pagamento");
+      }
+
+      alert("Pagamento excluído com sucesso!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Erro:", err);
+      alert(err instanceof Error ? err.message : "Erro ao excluir pagamento");
+    }
+  };
+
+  const handleEditTitle = async () => {
+    if (!project) return;
+
+    const currentTitle = project.title || '';
+    const newTitleInput = prompt(
+      `Título do Projeto:\n\nExemplo: "Projeto de Georreferenciamento de Fazenda São Tomás - Rio Verde (GO)"\n\nTítulo atual: ${currentTitle || '(vazio)'}\n\nNovo título:`,
+      currentTitle
+    );
+
+    if (newTitleInput === null) return; // Usuário cancelou
+
+    const newTitle = newTitleInput.trim();
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newTitle || null,
+        }),
+      });
+
+      if (!response.ok) {
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          // Se não conseguir parsear JSON, usar mensagem genérica
+          throw new Error("Erro ao atualizar título. Verifique se a migration foi aplicada.");
+        }
+        
+        const errorMessage = data.error || "Erro ao atualizar título";
+        const hint = data.hint || "";
+        const errorMsgLower = errorMessage.toLowerCase();
+        
+        // Mostrar mensagem mais clara se for erro de migration ou campo não encontrado
+        if (errorMsgLower.includes("migration") || 
+            errorMsgLower.includes("campo") || 
+            errorMsgLower.includes("title") ||
+            errorMsgLower.includes("disponível") ||
+            errorMsgLower.includes("banco de dados") ||
+            errorMsgLower.includes("column") ||
+            errorMsgLower.includes("does not exist")) {
+          alert(
+            `⚠️ Erro: Campo "title" não disponível\n\n` +
+            `${errorMessage}\n\n` +
+            `${hint ? hint + "\n\n" : ""}` +
+            `O campo "title" ainda não está disponível no banco de dados.\n\n` +
+            `Por favor, execute a migration primeiro:\n\n` +
+            `npm run db:migrate\n\n` +
+            `Ou entre em contato com o administrador do sistema.`
+          );
+        } else {
+          alert(`Erro ao atualizar título:\n\n${errorMessage}${hint ? "\n\n" + hint : ""}`);
+        }
+        return;
+      }
+
+      const responseData = await response.json();
+      
+      // Verificar se há warning (campo não disponível)
+      if (responseData.warning) {
+        alert(
+          `⚠️ Atenção:\n\n${responseData.warning}\n\n` +
+          `O título "${newTitle}" não foi salvo. Por favor, execute a migration do banco de dados primeiro:\n\n` +
+          `npm run db:migrate\n\n` +
+          `Ou entre em contato com o administrador do sistema.`
+        );
+        return;
+      }
+      
+      // Atualizar estado local com os dados retornados
+      if (responseData.project) {
+        setProject({
+          ...project,
+          title: responseData.project.title || newTitle || null,
+        });
+        alert("Título atualizado com sucesso!");
+      } else if (responseData.success) {
+        // Se retornou success mas sem project, assumir que foi atualizado
+        setProject({
+          ...project,
+          title: newTitle || null,
+        });
+        alert("Título atualizado com sucesso!");
+      }
+    } catch (err) {
+      console.error("Erro ao atualizar título:", err);
+      const errorMessage = err instanceof Error ? err.message : "Erro ao atualizar título";
+      
+      // Verificar se é erro de migration
+      if (errorMessage.includes("migration") || 
+          errorMessage.includes("campo") || 
+          errorMessage.includes("title") ||
+          errorMessage.includes("disponível") ||
+          errorMessage.includes("banco de dados")) {
+        alert(
+          `⚠️ Erro:\n\n${errorMessage}\n\n` +
+          `O campo "title" ainda não está disponível no banco de dados.\n\n` +
+          `Por favor, execute a migration primeiro:\n\n` +
+          `npm run db:migrate\n\n` +
+          `Ou entre em contato com o administrador do sistema.`
+        );
+      } else {
+        alert(`Erro ao atualizar título:\n\n${errorMessage}`);
+      }
+    }
+  };
+
+  const handleEditProjectValue = async (field: 'totalValue' | 'entryValue') => {
+    if (!project) return;
+
+    const currentValue = field === 'totalValue' ? project.totalValue : project.entryValue;
+    const fieldLabel = field === 'totalValue' ? 'Valor Total' : 'Valor de Entrada';
+    
+    const newValueInput = prompt(`${fieldLabel}:\n\nValor atual: R$ ${currentValue.toFixed(2)}\n\nNovo valor:`, currentValue.toString());
+    
+    if (newValueInput === null) return; // Usuário cancelou
+    
+    const newValue = parseFloat(newValueInput);
+    if (isNaN(newValue) || newValue < 0) {
+      alert("Valor inválido. Digite um número positivo.");
+      return;
+    }
+
+    // Validação: entrada não pode ser maior que total
+    if (field === 'entryValue' && newValue > project.totalValue) {
+      alert("Valor de entrada não pode ser maior que o valor total do projeto.");
+      return;
+    }
+
+    if (field === 'totalValue' && newValue < project.entryValue) {
+      const confirm = window.confirm(
+        `O valor total (R$ ${newValue.toFixed(2)}) é menor que a entrada atual (R$ ${project.entryValue.toFixed(2)}).\n\n` +
+        `Deseja ajustar a entrada para R$ ${newValue.toFixed(2)} também?`
+      );
+      if (confirm) {
+        // Atualizar ambos os valores
+        try {
+          const response = await fetch(`/api/admin/portal/project/${projectId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              totalValue: newValue,
+              entryValue: newValue,
+            }),
+          });
+
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || "Erro ao atualizar valores");
+          }
+
+          alert("Valores atualizados com sucesso! O saldo será recalculado automaticamente.");
+          window.location.reload();
+        } catch (err) {
+          console.error("Erro:", err);
+          alert(err instanceof Error ? err.message : "Erro ao atualizar valores");
+        }
+        return;
+      } else {
+        return; // Usuário cancelou
+      }
+    }
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          [field]: newValue,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao atualizar valor");
+      }
+
+      alert(`${fieldLabel} atualizado com sucesso! O saldo será recalculado automaticamente.`);
+      window.location.reload();
+    } catch (err) {
+      console.error("Erro:", err);
+      alert(err instanceof Error ? err.message : "Erro ao atualizar valor");
+    }
+  };
+
+  const handleUploadFile = async () => {
+    // Solicitar nome do projeto (ex: Projeto Final, Projeto Final R1, Projeto Final R2, etc)
+    const versionInput = prompt(`Nome do projeto (ex: Projeto Final, Projeto Final R1, Projeto Final R2):`);
+    
+    // Se o usuário clicou em Cancelar, prompt retorna null - abortar
+    if (versionInput === null) {
+      return;
+    }
+    
+    // Se o usuário clicou OK mas não digitou nada, usar valor padrão
+    const version = versionInput?.trim() || "Projeto Final";
+
+    // Criar input de arquivo
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = false; // Por enquanto, um arquivo por vez
+    
+    // Configurar handler ANTES de abrir o seletor
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("kind", kind);
-      formData.append("version", version);
+      formData.append("kind", "FINAL"); // Todos os arquivos são FINAL agora
+      formData.append("version", version); // Nome customizado (Projeto Final, R1, R2, etc)
 
       try {
         const response = await fetch(`/api/admin/portal/project/${projectId}/files/upload`, {
           method: "POST",
           body: formData,
+          // Não incluir Content-Type - o browser define automaticamente com boundary para FormData
+          // Isso garante que não seja tratado como Server Action
         });
 
+        // Verificar se a resposta é OK
         if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || "Erro ao fazer upload");
+          // Tentar parsear como JSON primeiro
+          const contentType = response.headers.get("content-type");
+          let errorMessage = "Erro ao fazer upload";
+          
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              const data = await response.json();
+              errorMessage = data.error || errorMessage;
+            } catch (jsonError) {
+              // Se falhar ao parsear JSON, usar texto da resposta
+              try {
+                const text = await response.text();
+                errorMessage = text || errorMessage;
+              } catch (textError) {
+                // Se falhar ao ler texto, usar mensagem padrão com status
+                errorMessage = `Erro ${response.status}: ${response.statusText || errorMessage}`;
+              }
+            }
+          } else {
+            // Se não for JSON, tentar ler como texto
+            try {
+              const text = await response.text();
+              errorMessage = text || errorMessage;
+            } catch (textError) {
+              errorMessage = `Erro ${response.status}: ${response.statusText || errorMessage}`;
+            }
+          }
+          
+          throw new Error(errorMessage);
         }
 
-        alert(`Arquivo ${kind} (${version}) enviado com sucesso!`);
-        window.location.reload();
+        // Resposta OK - parsear JSON
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          alert(`Arquivo "${version}" enviado com sucesso!`);
+          window.location.reload();
+        } else {
+          // Se não for JSON, ainda assim considerar sucesso se status é 200
+          alert(`Arquivo "${version}" enviado com sucesso!`);
+          window.location.reload();
+        }
       } catch (err) {
-        console.error("Erro:", err);
-        alert(err instanceof Error ? err.message : "Erro ao fazer upload");
+        console.error("Erro no upload:", err);
+        const errorMessage = err instanceof Error ? err.message : "Erro ao fazer upload";
+        alert(`Erro ao fazer upload:\n\n${errorMessage}`);
       }
     };
+    
+    // Abrir seletor de arquivo APÓS configurar o handler
     input.click();
+  };
+
+  const handleDeleteFile = async (fileId: string, filename: string) => {
+    if (!project) return;
+
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir o arquivo "${filename}"?\n\nEsta ação não pode ser desfeita e removerá o arquivo do sistema.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}/files/${fileId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao excluir arquivo");
+      }
+
+      alert("Arquivo excluído com sucesso!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Erro:", err);
+      alert(err instanceof Error ? err.message : "Erro ao excluir arquivo");
+    }
   };
 
   const handleToggleFinalRelease = async () => {
@@ -270,8 +646,32 @@ export default function AdminProjectPage() {
               Excluir Projeto
             </button>
           </div>
-          <h1 className="text-2xl font-bold text-white">{project.protocol}</h1>
-          <p className="text-slate-400 text-sm mt-1">{project.clientName}</p>
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-white">{project.protocol}</h1>
+              {project.title ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-slate-300 text-sm">{project.title}</p>
+                  <button
+                    onClick={handleEditTitle}
+                    className="p-1 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded transition-colors"
+                    title="Editar título do projeto"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleEditTitle}
+                  className="mt-1 text-sm text-indigo-400 hover:text-indigo-300 underline flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Adicionar título do projeto
+                </button>
+              )}
+              <p className="text-slate-400 text-sm mt-1">{project.clientName}</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -280,19 +680,36 @@ export default function AdminProjectPage() {
             <div className="bg-slate-900/60 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6">
               <h2 className="text-lg font-bold text-white mb-4">Steps do Projeto</h2>
               <div className="space-y-3">
-                {project.steps.map((step) => (
+                {/* Filtrar steps removidos: PREVIA_ENTREGUE e AJUSTES */}
+                {project.steps
+                  .filter((step) => step.stepKey !== 'PREVIA_ENTREGUE' && step.stepKey !== 'AJUSTES')
+                  .map((step) => (
                   <div key={step.id} className="flex items-center gap-4 p-3 bg-slate-800/50 rounded-lg">
                     <div className="flex-shrink-0">
                       {step.state === "DONE" && <CheckCircle2 className="w-5 h-5 text-green-400" />}
                       {step.state === "ACTIVE" && <Clock className="w-5 h-5 text-indigo-400" />}
                       {step.state === "PENDING" && <Circle className="w-5 h-5 text-slate-500" />}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 flex items-center gap-2">
                       <p className="text-white font-medium">{step.title}</p>
+                      {step.stepKey === 'REVISAO' && (
+                        <button
+                          onClick={() => handleRenameStep(step.id, step.title)}
+                          className="text-xs text-indigo-400 hover:text-indigo-300 underline"
+                          title="Renomear revisão (ex: R1, R2, R3)"
+                        >
+                          Renomear
+                        </button>
+                      )}
                     </div>
                     <select
                       value={step.state}
-                      onChange={(e) => handleUpdateStep(step.id, e.target.value as any)}
+                      onChange={(e) => {
+                        const next = toStepState(e.target.value);
+                        if (next) {
+                          handleUpdateStep(step.id, next);
+                        }
+                      }}
                       className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm"
                     >
                       <option value="PENDING">Pendente</option>
@@ -314,9 +731,31 @@ export default function AdminProjectPage() {
                 Financeiro
               </h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-slate-400">Total</span>
-                  <span className="text-white font-semibold">R$ {project.totalValue.toFixed(2)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold">R$ {project.totalValue.toFixed(2)}</span>
+                    <button
+                      onClick={() => handleEditProjectValue('totalValue')}
+                      className="p-1 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded transition-colors"
+                      title="Editar valor total"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Entrada</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold">R$ {project.entryValue.toFixed(2)}</span>
+                    <button
+                      onClick={() => handleEditProjectValue('entryValue')}
+                      className="p-1 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded transition-colors"
+                      title="Editar valor de entrada"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Pago</span>
@@ -336,6 +775,56 @@ export default function AdminProjectPage() {
                 <Plus className="w-4 h-4" />
                 Registrar Pagamento
               </button>
+              
+              {/* Lista de Pagamentos */}
+              {project.payments.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-slate-700">
+                  <h4 className="text-sm font-semibold text-white mb-2">Pagamentos Registrados</h4>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {project.payments.map((payment) => (
+                      <div key={payment.id} className="text-xs bg-slate-800/50 rounded p-2 flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-white">{payment.method}</span>
+                            <span className={`px-1.5 py-0.5 rounded text-xs ${
+                              payment.status === 'CONFIRMED' ? 'bg-green-500/20 text-green-300' :
+                              payment.status === 'PENDING' ? 'bg-amber-500/20 text-amber-300' :
+                              'bg-red-500/20 text-red-300'
+                            }`}>
+                              {payment.status}
+                            </span>
+                          </div>
+                          <div className="text-slate-400 mt-1">
+                            R$ {payment.amount.toFixed(2)}
+                            {payment.note && (
+                              <span className="ml-2 text-slate-500">• {payment.note}</span>
+                            )}
+                          </div>
+                          <div className="text-slate-500 text-xs mt-0.5">
+                            {new Date(payment.createdAt).toLocaleDateString("pt-BR")}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleEditPayment(payment)}
+                            className="p-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded transition-colors"
+                            title="Editar pagamento"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeletePayment(payment)}
+                            className="p-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 rounded transition-colors"
+                            title="Excluir pagamento"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Arquivos */}
@@ -343,18 +832,11 @@ export default function AdminProjectPage() {
               <h3 className="text-lg font-bold text-white mb-4">Arquivos</h3>
               <div className="space-y-2">
                 <button
-                  onClick={() => handleUploadFile("PREVIEW")}
+                  onClick={() => handleUploadFile()}
                   className="w-full px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
-                  Upload Preview
-                </button>
-                <button
-                  onClick={() => handleUploadFile("FINAL")}
-                  className="w-full px-4 py-2 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-300 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  Upload Final
+                  Upload do Projeto
                 </button>
               </div>
               <div className="mt-4 space-y-2">
@@ -362,11 +844,18 @@ export default function AdminProjectPage() {
                   <p className="text-xs text-slate-500 text-center py-2">Nenhum arquivo enviado</p>
                 ) : (
                   project.files.map((file) => (
-                    <div key={file.id} className="text-xs text-slate-300 p-2 bg-slate-800/50 rounded flex items-center justify-between">
-                      <div>
+                    <div key={file.id} className="text-xs text-slate-300 p-2 bg-slate-800/50 rounded flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
                         <span className="font-medium">{file.filename}</span>
-                        <span className="text-slate-500 ml-2">({file.kind} - {file.version})</span>
+                        <span className="text-slate-500 ml-2">({file.version})</span>
                       </div>
+                      <button
+                        onClick={() => handleDeleteFile(file.id, file.filename)}
+                        className="flex-shrink-0 p-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 rounded transition-colors"
+                        title="Excluir arquivo"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   ))
                 )}

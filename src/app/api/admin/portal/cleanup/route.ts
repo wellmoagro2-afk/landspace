@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getAdminSession } from '@/lib/portal-auth';
 import { cleanupOldUploads, getUploadsStats } from '@/lib/upload-cleanup';
-import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
+import { getRequestId, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
 import { getClientIP } from '@/lib/rate-limit';
+import { jsonOk, jsonError } from '@/lib/api-response';
 
 /**
  * GET - Estatísticas de uploads
@@ -15,39 +16,32 @@ export async function GET(request: NextRequest) {
     const isAdmin = await getAdminSession();
 
     if (!isAdmin) {
-      return addRequestIdHeader(
-        NextResponse.json(
-          { error: 'Não autorizado' },
-          { status: 401 }
-        ),
-        requestId
-      );
+      return jsonError(request, {
+        status: 401,
+        code: 'unauthorized',
+        message: 'Não autorizado',
+      });
     }
 
     const stats = await getUploadsStats();
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        stats: {
-          ...stats,
-          totalSizeMB: (stats.totalSizeBytes / (1024 * 1024)).toFixed(2),
-        },
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      stats: {
+        ...stats,
+        totalSizeMB: (stats.totalSizeBytes / (1024 * 1024)).toFixed(2),
+      },
+    });
   } catch (error) {
     logStructured('error', 'Admin cleanup stats: erro', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown',
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao obter estatísticas' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao obter estatísticas',
+    });
   }
 }
 
@@ -63,13 +57,11 @@ export async function POST(request: NextRequest) {
     const isAdmin = await getAdminSession();
 
     if (!isAdmin) {
-      return addRequestIdHeader(
-        NextResponse.json(
-          { error: 'Não autorizado' },
-          { status: 401 }
-        ),
-        requestId
-      );
+      return jsonError(request, {
+        status: 401,
+        code: 'unauthorized',
+        message: 'Não autorizado',
+      });
     }
 
     const result = await cleanupOldUploads();
@@ -90,13 +82,10 @@ export async function POST(request: NextRequest) {
       ...result,
     });
 
-    return addRequestIdHeader(
-      NextResponse.json({
-        success: true,
-        result,
-      }),
-      requestId
-    );
+    return jsonOk(request, {
+      success: true,
+      result,
+    });
   } catch (error) {
     logStructured('error', 'Admin cleanup: erro', {
       requestId,
@@ -104,12 +93,10 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown',
     });
 
-    return addRequestIdHeader(
-      NextResponse.json(
-        { error: 'Erro ao executar limpeza' },
-        { status: 500 }
-      ),
-      requestId
-    );
+    return jsonError(request, {
+      status: 500,
+      code: 'internal_error',
+      message: 'Erro ao executar limpeza',
+    });
   }
 }

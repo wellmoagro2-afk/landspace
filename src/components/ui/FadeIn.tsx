@@ -47,13 +47,16 @@ export default function FadeIn({
   className = "",
 }: FadeInProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [shouldAnimate] = useState(() => {
+    // Lazy initializer: verificar prefers-reduced-motion
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      return !mediaQuery.matches;
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // Verificar prefers-reduced-motion
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setShouldAnimate(!mediaQuery.matches);
-
     // Aplicar animação após montagem
     const timer = setTimeout(() => {
       setIsVisible(true);

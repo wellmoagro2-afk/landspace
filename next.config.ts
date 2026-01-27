@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  // Desabilitar Dev Indicator para não poluir layout durante demonstrações
+  // Isso não afeta segurança ou headers, apenas remove o overlay de desenvolvimento
+  // Erros ainda serão exibidos no console, apenas o indicador visual é removido
+  devIndicators: false,
   // Evitar empacotamento incorreto do Prisma no Turbopack
   serverExternalPackages: ["@prisma/client", "prisma"],
   // Headers de segurança (CSP removido - agora gerenciado dinamicamente no middleware com nonce)

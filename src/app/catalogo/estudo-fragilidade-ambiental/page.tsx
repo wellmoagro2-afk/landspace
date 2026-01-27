@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { HideOnError } from "@/components/shared/HideOnError";
-import { CheckCircle2, Play, Award, ArrowRight, Smartphone, Infinity, Zap, MessageCircle, Trophy, BookOpen } from "lucide-react";
+import { CheckCircle2, Play, Award, Infinity, Zap, MessageCircle, Trophy, BookOpen } from "lucide-react";
 import { getTestimonialsBySlug } from "../testimonials";
 import { COURSES } from "../data";
 
@@ -269,7 +269,7 @@ export default function EstudoFragilidadeAmbientalPage() {
                   {getTestimonialsBySlug("estudo-fragilidade-ambiental", COURSES).map((testimonial, idx) => (
                     <div key={idx} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-cyan-500/50 transition-all duration-300 transition-colors">
                       <p className="text-base text-slate-300 italic border-l-2 border-cyan-400 pl-6 mb-6 leading-relaxed">
-                        "{testimonial.text}"
+                        &quot;{testimonial.text}&quot;
                       </p>
                       <div className="flex items-center gap-4">
                         <img

@@ -47,3 +47,30 @@ next-env.d.ts
 prisma/prisma/dev.db
 prisma/prisma/dev.db-journal
 prisma/prisma/*.db*
+
+# Local env / secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# Local logs / runtime artifacts
+.logs/
+cookies.txt
+
+# TypeScript errors (temporary debug files)
+docs/temp/tsc-errors.txt
+tsc-errors.txt
+
+# Local uploads / user artifacts (never commit)
+uploads/
+
+.vercel
+
+# local dev artifacts
+.build.log
+.lint*.txt
+.lint*.json
+.lint_issues.csv
+.lint_top_rules.txt
+.diff_*.txt
+.security_changed_files.txt

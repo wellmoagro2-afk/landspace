@@ -58,8 +58,8 @@ export function setNoStore(res: NextResponse | Response): NextResponse | Respons
  * @param requestId - Request ID
  * @returns NextResponse com x-request-id no header e requestId no body (se erro)
  */
-export function jsonWithRequestId(
-  data: any,
+export function jsonWithRequestId<T = unknown>(
+  data: T,
   init: ResponseInit & { status?: number } = {},
   requestId: string
 ): NextResponse {

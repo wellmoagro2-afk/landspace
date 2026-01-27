@@ -109,19 +109,20 @@ export default function BlogPostClient({ post, relatedCourse }: BlogPostClientPr
               <div className="text-slate-300 leading-relaxed space-y-6">
                 {(() => {
                   const paragraphs = post.content.split("\n").filter(p => p.trim() !== "");
-                  let firstParagraphRendered = false;
+                  // Calcular o índice do primeiro parágrafo real previamente
+                  const firstRealParagraphIndex = paragraphs.findIndex(
+                    (paragraph) =>
+                      !paragraph.startsWith("#") &&
+                      !paragraph.startsWith("##") &&
+                      !paragraph.startsWith("-") &&
+                      paragraph.trim().length > 0
+                  );
                   
                   return paragraphs.map((paragraph, idx) => {
                     // Inserir Asset Card após o primeiro parágrafo real (não título, não lista)
-                    const isFirstRealParagraph = !firstParagraphRendered && 
-                      !paragraph.startsWith("#") && 
-                      !paragraph.startsWith("##") && 
-                      !paragraph.startsWith("-") &&
-                      paragraph.trim().length > 0;
+                    const isFirstRealParagraph = idx === firstRealParagraphIndex;
                     
                     if (isFirstRealParagraph) {
-                      firstParagraphRendered = true;
-                      
                       return (
                         <div key={`content-${idx}`}>
                           <p className="text-lg text-slate-300 leading-relaxed mb-8">

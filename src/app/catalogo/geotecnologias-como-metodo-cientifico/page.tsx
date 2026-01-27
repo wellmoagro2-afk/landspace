@@ -265,7 +265,7 @@ export default function GeotecnologiasComoMetodoCientificoPage() {
                   {getTestimonialsBySlug("geotecnologias-como-metodo-cientifico", COURSES).map((testimonial, idx) => (
                     <div key={idx} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-cyan-500/50 transition-all duration-300">
                       <p className="text-base text-slate-300 italic border-l-2 border-cyan-400 pl-6 mb-6 leading-relaxed">
-                        "{testimonial.text}"
+                        &quot;{testimonial.text}&quot;
                       </p>
                       <div className="flex items-center gap-4">
                         <img

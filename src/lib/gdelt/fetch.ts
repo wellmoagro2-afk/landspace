@@ -17,6 +17,28 @@ export interface GDELTResponse {
 }
 
 /**
+ * Tipo para artigo do GDELT API
+ */
+interface GDELTArticle {
+  title?: unknown;
+  snippet?: unknown;
+}
+
+/**
+ * Type guard para verificar se um valor é string
+ */
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+/**
+ * Extrai string de forma segura de um valor desconhecido
+ */
+function safeString(value: unknown): string {
+  return isString(value) ? value : '';
+}
+
+/**
  * Buscar termos do GDELT usando a DOC API
  * Foca em: geopolítica, recursos naturais, conflitos
  */
@@ -157,7 +179,7 @@ export async function fetchGDELTTerms(context: 'strategy' | 'market' | 'tech' | 
     // - Bloqueio de redirects
     // - Timeout com AbortController
     // - Validação de Content-Type e tamanho
-    const data = await safeFetchJson<{ articles?: Array<{ title?: string; snippet?: string }> }>(
+    const data = await safeFetchJson<{ articles?: GDELTArticle[] }>(
       apiUrl,
       {
         allowedHosts: ['api.gdeltproject.org'],
@@ -170,9 +192,11 @@ export async function fetchGDELTTerms(context: 'strategy' | 'market' | 'tech' | 
     const terms: Record<string, number> = {};
     
     if (data.articles && Array.isArray(data.articles)) {
-      data.articles.forEach((article: any) => {
-        // Extrair termos do título e descrição
-        const text = `${article.title || ''} ${article.snippet || ''}`.toLowerCase();
+      data.articles.forEach((article: GDELTArticle) => {
+        // Extrair termos do título e descrição com type guards
+        const title = safeString(article.title);
+        const snippet = safeString(article.snippet);
+        const text = `${title} ${snippet}`.toLowerCase();
         
         // Usar keywords definidas acima baseado no contexto
         keywords.forEach(keyword => {

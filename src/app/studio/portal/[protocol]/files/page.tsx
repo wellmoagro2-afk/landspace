@@ -121,68 +121,12 @@ export default function PortalFilesPage() {
           <p className="text-slate-400 text-sm mt-1">Protocolo: {protocol}</p>
         </div>
 
-        {/* Seção Preview */}
-        <div className="bg-slate-900/60 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-indigo-400" />
-              Arquivos Preview
-            </h2>
-            {filesData.preview.canDownload ? (
-              <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs font-semibold rounded border border-green-500/30">
-                Liberado
-              </span>
-            ) : (
-              <span className="px-2 py-1 bg-amber-500/20 text-amber-300 text-xs font-semibold rounded border border-amber-500/30">
-                Aguardando Entrada
-              </span>
-            )}
-          </div>
-
-          {filesData.preview.files.length === 0 ? (
-            <p className="text-slate-400 text-sm">Nenhum arquivo preview disponível ainda.</p>
-          ) : (
-            <div className="space-y-2">
-              {filesData.preview.files.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-700/50"
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-indigo-400" />
-                    <div>
-                      <p className="text-white font-medium">{file.filename}</p>
-                      <p className="text-xs text-slate-400">
-                        {file.version} • {new Date(file.uploadedAt).toLocaleDateString("pt-BR")}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleDownload(file.id, file.filename)}
-                    disabled={downloading === file.id || !filesData.preview.canDownload}
-                    className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
-                  >
-                    {downloading === file.id ? (
-                      "Baixando..."
-                    ) : (
-                      <>
-                        <Download className="w-4 h-4" />
-                        Baixar
-                      </>
-                    )}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Seção Final */}
+        {/* Seção de Arquivos do Projeto */}
         <div className="bg-slate-900/60 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-400" />
-              Arquivos Finais
+              <FileText className="w-5 h-5 text-indigo-400" />
+              Arquivos do Projeto
             </h2>
             {filesData.final.canDownload ? (
               <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs font-semibold rounded border border-green-500/30">
@@ -196,23 +140,22 @@ export default function PortalFilesPage() {
             )}
           </div>
 
-          {!filesData.final.canDownload ? (
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-300 text-sm">
-                Os arquivos finais serão liberados após o pagamento completo do saldo e confirmação pela equipe.
-              </p>
-            </div>
-          ) : filesData.final.files.length === 0 ? (
-            <p className="text-slate-400 text-sm">Nenhum arquivo final disponível ainda.</p>
+          {filesData.final.files.length === 0 ? (
+            <p className="text-slate-400 text-sm">Nenhum arquivo disponível ainda.</p>
           ) : (
             <div className="space-y-2">
+              {/* IMPORTANTE: Mostrar TODOS os arquivos (liberados ou bloqueados) */}
               {filesData.final.files.map((file) => (
                 <div
                   key={file.id}
                   className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-700/50"
                 >
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    {filesData.final.canDownload ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <Lock className="w-5 h-5 text-red-400" />
+                    )}
                     <div>
                       <p className="text-white font-medium">{file.filename}</p>
                       <p className="text-xs text-slate-400">
@@ -222,11 +165,17 @@ export default function PortalFilesPage() {
                   </div>
                   <button
                     onClick={() => handleDownload(file.id, file.filename)}
-                    disabled={downloading === file.id}
+                    disabled={downloading === file.id || !filesData.final.canDownload}
                     className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+                    title={!filesData.final.canDownload ? "Download bloqueado: saldo pendente ou step não concluído" : ""}
                   >
                     {downloading === file.id ? (
                       "Baixando..."
+                    ) : !filesData.final.canDownload ? (
+                      <>
+                        <Lock className="w-4 h-4" />
+                        Bloqueado
+                      </>
                     ) : (
                       <>
                         <Download className="w-4 h-4" />
@@ -236,6 +185,14 @@ export default function PortalFilesPage() {
                   </button>
                 </div>
               ))}
+            </div>
+          )}
+          
+          {!filesData.final.canDownload && filesData.final.files.length > 0 && (
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 text-sm">
+                Os arquivos serão liberados após o pagamento completo do saldo e conclusão do step correspondente (Final Pronto ou Revisão).
+              </p>
             </div>
           )}
         </div>

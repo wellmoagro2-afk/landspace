@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPortalSession } from '@/lib/portal-auth';
 import { prisma } from '@/lib/prisma';
-import { canDownloadPreview, canDownloadFinal } from '@/lib/portal-utils';
-import { createReadStream } from 'fs';
-import { join, resolve, normalize } from 'path';
+import { canDownloadFinal } from '@/lib/portal-utils';
+import { createReadStream, type ReadStream } from 'fs';
+import { resolve } from 'path';
 import { stat } from 'fs/promises';
 import { getRequestId, addRequestIdHeader, logStructured } from '@/lib/observability';
 import { auditLog, AuditActions } from '@/lib/audit';
@@ -31,7 +31,16 @@ export async function GET(
     const file = await prisma.projectFile.findUnique({
       where: { id },
       include: {
-        project: true,
+        project: {
+          include: {
+            steps: {
+              select: {
+                stepKey: true,
+                state: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -51,8 +60,10 @@ export async function GET(
     }
 
     // Verificar permissões de download
-    if (file.kind === 'PREVIEW') {
-      if (!canDownloadPreview(file.project)) {
+    // IMPORTANTE: Não há mais arquivos PREVIEW - todos são FINAL agora
+    // Passar steps para verificar se estão concluídos antes de liberar
+    if (file.kind === 'FINAL') {
+      if (!canDownloadFinal(file.project, file.project.steps) || file.isLocked) {
         await auditLog({
           requestId,
           protocol: session.protocol,
@@ -62,36 +73,13 @@ export async function GET(
           ipAddress: clientIP,
           userAgent,
           success: false,
-          errorMessage: 'Entrada ainda não foi paga',
-          metadata: { kind: 'PREVIEW' },
-        });
-
-        return addRequestIdHeader(
-          NextResponse.json(
-            { error: 'Download não autorizado. Entrada ainda não foi paga.' },
-            { status: 403 }
-          ),
-          requestId
-        );
-      }
-    } else if (file.kind === 'FINAL') {
-      if (!canDownloadFinal(file.project) || file.isLocked) {
-        await auditLog({
-          requestId,
-          protocol: session.protocol,
-          action: AuditActions.PORTAL_FILE_DOWNLOAD_BLOCKED,
-          entityType: 'ProjectFile',
-          entityId: file.id,
-          ipAddress: clientIP,
-          userAgent,
-          success: false,
-          errorMessage: 'Saldo pendente ou arquivo bloqueado',
+          errorMessage: 'Saldo pendente, arquivo bloqueado ou step Final Pronto não concluído',
           metadata: { kind: 'FINAL' },
         });
 
         return addRequestIdHeader(
           NextResponse.json(
-            { error: 'Download não autorizado. Saldo pendente ou arquivo bloqueado.' },
+            { error: 'Download não autorizado. Saldo pendente, arquivo bloqueado ou step não concluído (Final Pronto ou Revisão).' },
             { status: 403 }
           ),
           requestId
@@ -171,7 +159,7 @@ export async function GET(
       });
       
       return addRequestIdHeader(
-        new NextResponse(fileStream as any, {
+        new NextResponse(fileStream as unknown as ReadableStream, {
         headers: {
           'Content-Type': contentType,
           'Content-Disposition': `attachment; filename="${safeFilename}"; filename*=UTF-8''${encodeURIComponent(file.filename)}`,

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import EditorialContentWrapper from "./EditorialContentWrapper";
 import EditorialShell from "./components/EditorialShell";
 import ArticleHeader from "./components/ArticleHeader";
@@ -140,12 +141,12 @@ export default async function BriefingEditorialPage({ briefing }: BriefingEditor
             >
               {STRATEGY_EDITORIAL_KICKER}
             </a>
-            <a
+            <Link
               href="/strategy/briefings"
               className="text-xs font-sans editorial-link-hover no-underline war-room-text"
             >
               Voltar para Briefings
-            </a>
+            </Link>
           </div>
         </div>
       </div>

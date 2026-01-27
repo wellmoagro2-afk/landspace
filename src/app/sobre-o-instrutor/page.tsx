@@ -171,7 +171,7 @@ export default function SobreInstrutorPage() {
                 {hoveredCard === 2 && (
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 z-50 pointer-events-none">
                     <div className="bg-slate-900/95 backdrop-blur-sm text-white rounded-lg px-4 py-3 shadow-2xl max-w-xs text-center leading-relaxed animate-tooltip-fade border border-white/10 text-xs">
-                      Autor de capítulos técnicos especializados e organizador da obra multiversionada "Reflexões Geográficas no Cerrado Brasileiro" (Editora CRV).
+                      Autor de capítulos técnicos especializados e organizador da obra multiversionada &quot;Reflexões Geográficas no Cerrado Brasileiro&quot; (Editora CRV).
                       {/* Seta do tooltip */}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
                         <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-slate-900/95"></div>

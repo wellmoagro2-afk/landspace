@@ -41,14 +41,16 @@ export function buildCSP(nonce: string): string {
 
 /**
  * Verifica se CSP deve ser aplicado para esta requisição
- * Exclui APIs, assets estáticos e prefetch requests
+ * Exclui APIs, assets estáticos
+ * 
+ * IMPORTANTE: NÃO excluir prefetch requests durante navegação client-side,
+ * pois eles também precisam de nonce para evitar hydration mismatch.
+ * O Next.js faz requests internas durante navegação que precisam de nonce consistente.
  */
 export function shouldApplyCSP(request: Request): boolean {
   const url = new URL(request.url);
   const method = request.method;
   const accept = request.headers.get('accept') ?? '';
-  const isPrefetch = request.headers.has('next-router-prefetch') || 
-                     request.headers.get('purpose') === 'prefetch';
 
   return (
     (method === 'GET' || method === 'HEAD') &&
@@ -56,7 +58,7 @@ export function shouldApplyCSP(request: Request): boolean {
     !url.pathname.startsWith('/_next/static') &&
     !url.pathname.startsWith('/_next/image') &&
     url.pathname !== '/favicon.ico' &&
-    accept.includes('text/html') &&
-    !isPrefetch
+    accept.includes('text/html')
+    // REMOVIDO: !isPrefetch - prefetch requests também precisam de nonce para evitar hydration mismatch
   );
 }

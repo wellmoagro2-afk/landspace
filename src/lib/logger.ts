@@ -18,7 +18,7 @@ const SENSITIVE_KEYS = [
 /**
  * Redact valores sensíveis de um objeto
  */
-function redactSensitive(obj: any, depth = 0): any {
+function redactSensitive(obj: unknown, depth = 0): unknown {
   if (depth > 10) {
     return '[MAX_DEPTH]';
   }
@@ -43,7 +43,7 @@ function redactSensitive(obj: any, depth = 0): any {
     return obj.map(item => redactSensitive(item, depth + 1));
   }
 
-  const redacted: Record<string, any> = {};
+  const redacted: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
     const lowerKey = key.toLowerCase();
     const isSensitive = SENSITIVE_KEYS.some(sensitive => lowerKey.includes(sensitive));
@@ -63,17 +63,20 @@ function redactSensitive(obj: any, depth = 0): any {
 /**
  * Log estruturado com redaction automática
  */
-export function logSafe(level: 'info' | 'warn' | 'error', message: string, data?: any) {
+export function logSafe(level: 'info' | 'warn' | 'error', message: string, data?: unknown) {
   const redactedData = data ? redactSensitive(data) : undefined;
   
   if (process.env.NODE_ENV === 'production') {
     // Em produção, usar JSON estruturado
-    console.log(JSON.stringify({
+    const logEntry: Record<string, unknown> = {
       level,
       message,
       timestamp: new Date().toISOString(),
-      ...redactedData,
-    }));
+    };
+    if (redactedData && typeof redactedData === 'object' && !Array.isArray(redactedData) && redactedData !== null) {
+      Object.assign(logEntry, redactedData);
+    }
+    console.log(JSON.stringify(logEntry));
   } else {
     // Em desenvolvimento, log mais legível
     console.log(`[${level.toUpperCase()}] ${message}`, redactedData || '');

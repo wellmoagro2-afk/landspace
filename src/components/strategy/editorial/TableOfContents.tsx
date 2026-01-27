@@ -17,6 +17,9 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState("");
 
+  // Helper para requestAnimationFrame (casos de DOM/layout)
+  const raf = (cb: () => void) => requestAnimationFrame(cb);
+
   useEffect(() => {
     // Extrair headings do conteúdo MDX
     const h2Regex = /^##\s+(.+)$/gm;
@@ -42,7 +45,7 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
       found.push({ id, text, level: 3 });
     }
 
-    setHeadings(found);
+    raf(() => setHeadings(found));
 
     // Observer para destacar heading ativo
     const observer = new IntersectionObserver(

@@ -12,6 +12,31 @@ const RETENTION_MONTHS = 12;
 const RETENTION_MS = RETENTION_MONTHS * 30 * 24 * 60 * 60 * 1000;
 
 /**
+ * Extrai o código de erro (errno) de um erro desconhecido
+ * Aceita code como string ou number (converte number para string)
+ */
+function getErrnoCode(err: unknown): string | undefined {
+  if (err === null || err === undefined) {
+    return undefined;
+  }
+  
+  if (typeof err === 'object') {
+    // Verificar se tem propriedade 'code'
+    if ('code' in err) {
+      const code = (err as { code: unknown }).code;
+      if (typeof code === 'string') {
+        return code;
+      }
+      if (typeof code === 'number') {
+        return String(code);
+      }
+    }
+  }
+  
+  return undefined;
+}
+
+/**
  * Limpar uploads de projetos encerrados
  */
 export async function cleanupOldUploads(): Promise<{
@@ -52,9 +77,10 @@ export async function cleanupOldUploads(): Promise<{
             // Deletar arquivo
             await unlink(filePath);
             filesDeleted++;
-          } catch (statError: any) {
+          } catch (statError: unknown) {
             // Arquivo já não existe, apenas remover do banco
-            if (statError.code !== 'ENOENT') {
+            const code = getErrnoCode(statError);
+            if (code !== 'ENOENT') {
               throw statError;
             }
           }

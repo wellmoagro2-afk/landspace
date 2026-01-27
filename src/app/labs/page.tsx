@@ -53,15 +53,15 @@ export default function LabsPage() {
               </h1>
             </div>
             
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-300 mb-6 leading-tight">
-              Engenharia de Produto Geoespacial & Validação
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-amber-400 mb-6 leading-tight">
+              Pesquisa, Desenvolvimento e Inovação (P&D&I)
             </h2>
             
-            <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-              O LandSpace Labs é a camada institucional responsável por transformar métodos e modelos em produtos geotecnológicos robustos, auditáveis e escaláveis, assegurando validação contínua, padrões de qualidade e consistência em todo o ecossistema LandSpace.
+            <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed mt-6">
+              A divisão de P&D&I da LandSpace traduz rigor científico em engenharia geoespacial. Desenvolvemos modelos auditáveis onde a ciência de dados converge com a conformidade, consolidando excelência técnica e inovação em todo o nosso ecossistema.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8 md:mt-10">
               <Link
                 href="#benchmarks"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-base shadow-lg shadow-amber-500/30 hover:from-amber-400 hover:to-amber-500 hover:shadow-amber-500/50 transition-all duration-300 hover:scale-105"

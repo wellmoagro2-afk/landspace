@@ -30,6 +30,15 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
   const isComingSoon = course.priceText === "Lançamento em breve";
   const isFeaturedCourse = course.slug === "transicao-uso-cobertura";
 
+  // Helper para agendar callbacks assíncronos
+  const defer = (cb: () => void) => {
+    if (typeof queueMicrotask === "function") queueMicrotask(cb);
+    else setTimeout(cb, 0);
+  };
+
+  // Helper para requestAnimationFrame (casos de DOM/layout)
+  const raf = (cb: () => void) => requestAnimationFrame(cb);
+
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     // Não navegar se clicou em botão, link, ou popup
@@ -41,7 +50,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
   };
 
   useEffect(() => {
-    setMounted(true);
+    defer(() => setMounted(true));
   }, []);
 
   const updatePopupPosition = useCallback(() => {
@@ -111,7 +120,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
 
   useEffect(() => {
     if (isHovered) {
-      updatePopupPosition();
+      raf(() => updatePopupPosition());
       window.addEventListener("scroll", updatePopupPosition, true);
       window.addEventListener("resize", updatePopupPosition);
       return () => {

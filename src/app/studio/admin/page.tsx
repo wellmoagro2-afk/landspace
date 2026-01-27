@@ -8,6 +8,7 @@ import { Plus, Search, LogOut, Eye, Edit, FileText, DollarSign, Lock, Trash2 } f
 interface Project {
   id: string;
   protocol: string;
+  title?: string | null;
   clientName: string;
   clientEmail?: string;
   serviceType: string;
@@ -93,6 +94,7 @@ export default function AdminDashboardPage() {
 
   const filteredProjects = projects.filter((p) =>
     p.protocol.toLowerCase().includes(search.toLowerCase()) ||
+    (p.title && p.title.toLowerCase().includes(search.toLowerCase())) ||
     p.clientName.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -149,7 +151,7 @@ export default function AdminDashboardPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por protocolo ou cliente..."
+              placeholder="Buscar por protocolo, título ou cliente..."
               className="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-indigo-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
             />
           </div>
@@ -180,6 +182,9 @@ export default function AdminDashboardPage() {
                         {project.status.replace(/_/g, " ")}
                       </span>
                     </div>
+                    {project.title && (
+                      <p className="text-slate-200 mb-1 font-medium">{project.title}</p>
+                    )}
                     <p className="text-slate-300 mb-1">{project.clientName}</p>
                     {project.clientEmail && (
                       <p className="text-sm text-slate-400">{project.clientEmail}</p>

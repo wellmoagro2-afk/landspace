@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { 
   Search,
   Rocket,
   Settings,
   CreditCard,
-  Brain,
   ChevronDown,
   Mail,
   MessageCircle,

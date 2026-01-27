@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Save, Eye, ArrowLeft, Upload, X } from "lucide-react";
 
+type BriefingStatus = "draft" | "published" | "archived";
+
 interface Briefing {
   id: string;
   slug: string;
@@ -15,13 +17,20 @@ interface Briefing {
   coverImageUrl?: string;
   readingTime: string;
   contentMdx: string;
-  status: "draft" | "published" | "archived";
+  status: BriefingStatus;
   publishedAt?: string;
   seoTitle?: string;
   seoDescription?: string;
   pdfUrl?: string;
   youtubeUrl?: string;
   relatedMaps?: string[];
+}
+
+/**
+ * Type guard para validar se um valor é um BriefingStatus válido
+ */
+function isBriefingStatus(value: string): value is BriefingStatus {
+  return value === "draft" || value === "published" || value === "archived";
 }
 
 interface AdminBriefingEditorClientProps {
@@ -36,7 +45,22 @@ export default function AdminBriefingEditorClient({ briefing }: AdminBriefingEdi
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    slug: string;
+    title: string;
+    subtitle: string;
+    summary: string;
+    tags: string;
+    coverImageUrl: string;
+    readingTime: string;
+    contentMdx: string;
+    status: BriefingStatus;
+    seoTitle: string;
+    seoDescription: string;
+    pdfUrl: string;
+    youtubeUrl: string;
+    relatedMaps: string;
+  }>({
     slug: briefing?.slug || "",
     title: briefing?.title || "",
     subtitle: briefing?.subtitle || "",
@@ -45,7 +69,7 @@ export default function AdminBriefingEditorClient({ briefing }: AdminBriefingEdi
     coverImageUrl: briefing?.coverImageUrl || "",
     readingTime: briefing?.readingTime || "5 min",
     contentMdx: briefing?.contentMdx || "",
-    status: briefing?.status || ("draft" as const),
+    status: briefing?.status || "draft",
     seoTitle: briefing?.seoTitle || "",
     seoDescription: briefing?.seoDescription || "",
     pdfUrl: briefing?.pdfUrl || "",
@@ -334,7 +358,9 @@ export default function AdminBriefingEditorClient({ briefing }: AdminBriefingEdi
                   </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, status: e.target.value as BriefingStatus });
+                    }}
                     className="w-full px-4 py-2 bg-[#05070C] border border-[rgba(255,255,255,0.08)] rounded-xl text-white focus:outline-none focus:border-[#00B86B]/50"
                   >
                     <option value="draft">Rascunho</option>

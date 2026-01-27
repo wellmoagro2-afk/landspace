@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { COURSES, getCourseBySlug } from "../data";
-import { getTestimonialsBySlug, TESTIMONIALS } from "../testimonials";
+import { getTestimonialsBySlug } from "../testimonials";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { Clock3, CheckCircle2, Sparkles, Award, Infinity, Zap, MessageCircle, Trophy, BookOpen, Users, GraduationCap, Star } from "lucide-react";
+import { CheckCircle2, Award, Infinity, Zap, MessageCircle, Trophy, BookOpen } from "lucide-react";
 
 export async function generateStaticParams() {
   return COURSES.map((course) => ({
@@ -157,7 +157,7 @@ export default async function CourseDetailPage({
                   <p className="text-base text-slate-300 leading-relaxed">{course.subtitle}</p>
                   <div className="bg-slate-900/50 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-5">
                     <p className="text-sm text-slate-300 leading-relaxed">
-                      <strong className="text-white font-semibold">Como funciona:</strong> Ao clicar em "Obter Licença de Uso", você será redirecionado para o checkout seguro da Hotmart. 
+                      <strong className="text-white font-semibold">Como funciona:</strong> Ao clicar em &quot;Obter Licença de Uso&quot;, você será redirecionado para o checkout seguro da Hotmart. 
                       Após a compra, o acesso é liberado automaticamente na plataforma deles, onde você terá a ferramenta, o treinamento de implementação e suporte.
                     </p>
                   </div>
@@ -347,7 +347,7 @@ export default async function CourseDetailPage({
                     {testimonials.map((testimonial, idx) => (
                       <div key={idx} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-cyan-500/50 transition-all duration-300">
                         <p className="text-base text-slate-300 italic border-l-2 border-cyan-400 pl-6 mb-6 leading-relaxed">
-                          "{testimonial.text}"
+                          &quot;{testimonial.text}&quot;
                         </p>
                         <div className="flex items-center gap-4">
                           <img

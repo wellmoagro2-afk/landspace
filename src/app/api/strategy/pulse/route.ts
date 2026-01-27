@@ -19,7 +19,6 @@ async function handlePulse(request: NextRequest) {
   
   try {
     // Detectar contexto via query param
-    const searchParams = request.nextUrl.searchParams;
     const context = contextName as 'strategy' | 'market' | 'tech' | 'academy' | 'research' | 'studio' | 'studio-pericia-avaliacao';
     
     // Validar contexto

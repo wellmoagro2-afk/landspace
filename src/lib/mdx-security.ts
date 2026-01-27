@@ -32,6 +32,14 @@ function stripCode(source: string): string {
   return stripped;
 }
 
+type ErrorWithDetails = Error & { details?: string };
+
+function setDevDetails(error: Error, details: string): void {
+  if (process.env.NODE_ENV === 'development') {
+    (error as ErrorWithDetails).details = details;
+  }
+}
+
 /**
  * Valida se o conteúdo MDX é seguro (fail-fast)
  * 
@@ -46,9 +54,7 @@ export function assertSafeMdx(source: string): void {
   // 0. Verificar limite de tamanho (DoS protection)
   if (source.length > 200_000) {
     const error = new Error('MDX_TOO_LARGE');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = `Conteúdo MDX excede limite de 200KB (${Math.round(source.length / 1024)}KB)`;
-    }
+    setDevDetails(error, `Conteúdo MDX excede limite de 200KB (${Math.round(source.length / 1024)}KB)`);
     throw error;
   }
 
@@ -61,17 +67,13 @@ export function assertSafeMdx(source: string): void {
   
   if (importPattern.test(scan)) {
     const error = new Error('MDX_EVAL_NOT_ALLOWED');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'Import statements não são permitidos em MDX';
-    }
+    setDevDetails(error, 'Import statements não são permitidos em MDX');
     throw error;
   }
   
   if (exportPattern.test(scan)) {
     const error = new Error('MDX_EVAL_NOT_ALLOWED');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'Export statements não são permitidos em MDX';
-    }
+    setDevDetails(error, 'Export statements não são permitidos em MDX');
     throw error;
   }
 
@@ -80,9 +82,7 @@ export function assertSafeMdx(source: string): void {
   const dangerousUrlPattern = /(javascript:|vbscript:|data:text\/html|data:image\/svg\+xml)/i;
   if (dangerousUrlPattern.test(scan)) {
     const error = new Error('MDX_DANGEROUS_URL');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'URLs perigosas (javascript:, vbscript:, data:text/html, data:image/svg+xml) não são permitidas';
-    }
+    setDevDetails(error, 'URLs perigosas (javascript:, vbscript:, data:text/html, data:image/svg+xml) não são permitidas');
     throw error;
   }
 
@@ -92,9 +92,7 @@ export function assertSafeMdx(source: string): void {
   const dangerousTagsPattern = /<\s*(script|iframe|svg|math|object|embed|form|input|button|select|textarea|style|link|meta)\b/i;
   if (dangerousTagsPattern.test(scan)) {
     const error = new Error('MDX_HTML_TAG_NOT_ALLOWED');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'Tags HTML perigosas não são permitidas em MDX';
-    }
+    setDevDetails(error, 'Tags HTML perigosas não são permitidas em MDX');
     throw error;
   }
 
@@ -106,9 +104,7 @@ export function assertSafeMdx(source: string): void {
   const expressionPattern = /\{[^}]*\}/;
   if (expressionPattern.test(scan)) {
     const error = new Error('MDX_EXPRESSIONS_NOT_ALLOWED');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'Expressões MDX ({...}) não são permitidas';
-    }
+    setDevDetails(error, 'Expressões MDX ({...}) não são permitidas');
     throw error;
   }
 
@@ -117,9 +113,7 @@ export function assertSafeMdx(source: string): void {
   const eventAttrPattern = /on\w+\s*=/i;
   if (eventAttrPattern.test(scan)) {
     const error = new Error('MDX_EVENT_ATTR_NOT_ALLOWED');
-    if (process.env.NODE_ENV === 'development') {
-      (error as any).details = 'Atributos de evento (on*) não são permitidos em MDX';
-    }
+    setDevDetails(error, 'Atributos de evento (on*) não são permitidos em MDX');
     throw error;
   }
 }

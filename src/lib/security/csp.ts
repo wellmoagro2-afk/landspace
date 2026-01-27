@@ -4,15 +4,26 @@ import { isProduction, isDevelopment } from '../env';
 
 /**
  * Proxy helper para CSP seguindo guia oficial do Next.js
- * Gera nonce por request e aplica CSP nos headers
+ * Aplica CSP nos headers usando um nonce já gerado (single source of truth)
+ * 
+ * IMPORTANTE: O nonce deve ser gerado UMA vez no proxy e passado aqui.
+ * Isso garante que o mesmo nonce seja usado em:
+ * - header CSP
+ * - request header x-nonce (lido por layout via headers())
+ * - atributo nonce em <Script>
+ * 
+ * @param request - NextRequest original
+ * @param nonce - Nonce já gerado (não gerar novo)
+ * @param requestHeaders - Headers do request já com x-nonce injetado
  */
-export function applyCSPHeaders(request: NextRequest): {
-  requestHeaders: Headers;
+export function applyCSPHeaders(
+  request: NextRequest,
+  nonce: string,
+  requestHeaders: Headers
+): {
   response: NextResponse;
-  nonce: string;
 } {
-  // Gerar nonce por request
-  const nonce = generateNonce();
+  // Nonce já foi gerado no proxy - usar o mesmo para garantir consistência
   
   const isDev = isDevelopment;
   const isProd = isProduction;
@@ -43,9 +54,8 @@ export function applyCSPHeaders(request: NextRequest): {
     ${isProd ? 'upgrade-insecure-requests;' : ''}
   `.replace(/\s{2,}/g, ' ').trim();
 
-  // Criar request headers com CSP e nonce
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
+  // requestHeaders já tem x-nonce injetado pelo proxy
+  // Apenas adicionar CSP ao request header (para consistência)
   requestHeaders.set('Content-Security-Policy', csp);
 
   // Criar response com CSP e nonce nos headers
@@ -55,12 +65,11 @@ export function applyCSPHeaders(request: NextRequest): {
     },
   });
 
+  // Aplicar CSP e nonce nos response headers
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('x-nonce', nonce);
 
   return {
-    requestHeaders,
     response,
-    nonce,
   };
 }

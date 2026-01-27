@@ -148,6 +148,7 @@ model Project {
   id            String        @id @default(cuid())
   protocol      String        @unique // ex: "LS-2026-000123"
   pinHash       String        // bcrypt hash do PIN
+  title         String?       // Título descritivo do projeto (ex: "Projeto de Georreferenciamento de Fazenda São Tomás - Rio Verde (GO)")
   clientName    String
   clientEmail   String?
   clientPhone   String?

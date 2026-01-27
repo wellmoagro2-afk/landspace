@@ -5,6 +5,48 @@ import path from "path";
 
 const reader = createReader(process.cwd(), config);
 
+// Tipos para documentos do Keystatic (DocumentElement[])
+interface KeystaticDocumentElement {
+  children?: KeystaticDocumentChild[];
+  [key: string]: unknown;
+}
+
+interface KeystaticDocumentChild {
+  text?: string;
+  [key: string]: unknown;
+}
+
+// Type guard para validar estrutura do documento
+function isKeystaticDocumentElement(value: unknown): value is KeystaticDocumentElement {
+  return typeof value === 'object' && value !== null;
+}
+
+function isKeystaticDocumentArray(value: unknown): value is KeystaticDocumentElement[] {
+  return Array.isArray(value) && value.every(isKeystaticDocumentElement);
+}
+
+// Helper para converter documento Keystatic para string
+async function keystaticDocToString(doc: unknown): Promise<string> {
+  if (!isKeystaticDocumentArray(doc)) {
+    return '';
+  }
+  
+  return doc
+    .map((e) => {
+      if (Array.isArray(e.children)) {
+        return e.children
+          .map((c) => (isKeystaticDocumentChild(c) && typeof c.text === 'string' ? c.text : ''))
+          .join('');
+      }
+      return '';
+    })
+    .join('\n');
+}
+
+function isKeystaticDocumentChild(value: unknown): value is KeystaticDocumentChild {
+  return typeof value === 'object' && value !== null;
+}
+
 export interface KeystaticBriefingMeta {
   title: string;
   subtitle?: string;
@@ -80,33 +122,33 @@ export async function getKeystaticBriefing(slug: string): Promise<KeystaticBrief
       // Nova estrutura Big Tech
       // Resolver campos que podem ser funções (DocumentElement[]) ou strings
       introducao: entry.introducao && typeof entry.introducao === 'function' 
-        ? await entry.introducao().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.introducao().then(keystaticDocToString)
         : (entry.introducao as string | undefined),
       area_estudo: entry.area_estudo && typeof entry.area_estudo === 'function'
-        ? await entry.area_estudo().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.area_estudo().then(keystaticDocToString)
         : (entry.area_estudo as string | undefined),
       bases_dados: entry.bases_dados && typeof entry.bases_dados === 'function'
-        ? await entry.bases_dados().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.bases_dados().then(keystaticDocToString)
         : (entry.bases_dados as string | undefined),
       procedimentos: Array.isArray(entry.procedimentos) 
         ? [...entry.procedimentos] 
         : [],
       resultados_discussao: entry.resultados_discussao && typeof entry.resultados_discussao === 'function'
-        ? await entry.resultados_discussao().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.resultados_discussao().then(keystaticDocToString)
         : (entry.resultados_discussao as string | undefined),
       limitacoes_incertezas: entry.limitacoes_incertezas as string | undefined,
       conclusao: Array.isArray(entry.conclusao) 
         ? [...entry.conclusao] 
         : [],
       referencias: entry.referencias && typeof entry.referencias === 'function'
-        ? await entry.referencias().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.referencias().then(keystaticDocToString)
         : (entry.referencias as string | undefined),
       // Campos legados (compatibilidade)
       content: entry.content && typeof entry.content === 'function'
-        ? await entry.content().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.content().then(keystaticDocToString)
         : (entry.content as string | undefined),
       desenvolvimento: entry.desenvolvimento && typeof entry.desenvolvimento === 'function'
-        ? await entry.desenvolvimento().then((doc: any[]) => doc.map((e: any) => e.children?.map((c: any) => c.text).join('') || '').join('\n'))
+        ? await entry.desenvolvimento().then(keystaticDocToString)
         : (entry.desenvolvimento as string | undefined),
     };
   } catch (error) {

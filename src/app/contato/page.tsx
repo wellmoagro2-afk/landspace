@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useRef, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,28 +11,29 @@ type Variant = 'global' | 'tech' | 'academy' | 'strategy';
 
 function ContatoContent() {
   const searchParams = useSearchParams();
-  const [variant, setVariant] = useState<Variant>('global');
   const gridRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Detectar variante via query param ou referrer
+  // Derivar variant diretamente do searchParams e referrer (sem state)
+  const variant = useMemo<Variant>(() => {
     const variantParam = searchParams.get('variant') as Variant | null;
     
     if (variantParam && ['global', 'tech', 'academy', 'strategy'].includes(variantParam)) {
-      setVariant(variantParam);
-    } else if (typeof window !== 'undefined') {
+      return variantParam;
+    }
+    
+    if (typeof window !== 'undefined') {
       // Detectar pelo referrer
       const referrer = document.referrer;
       if (referrer.includes('/tech')) {
-        setVariant('tech');
+        return 'tech';
       } else if (referrer.includes('/academy')) {
-        setVariant('academy');
+        return 'academy';
       } else if (referrer.includes('/strategy')) {
-        setVariant('strategy');
-      } else {
-        setVariant('global');
+        return 'strategy';
       }
     }
+    
+    return 'global';
   }, [searchParams]);
 
   // Configurações de estilo por variante

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -41,87 +41,87 @@ import {
   User,
 } from "lucide-react";
 
-// Serviços reorganizados: PUC e RUSLE integrados como metodologias (15 serviços principais)
+// ServiÃ§os reorganizados: PUC e RUSLE integrados como metodologias (15 serviÃ§os principais)
 const serviceCards = [
   {
     id: 'urbano',
     title: 'Planejamento Urbano e Plano Diretor',
-    description: 'Diagnóstico territorial, mapas normativos e sínteses para Plano Diretor, zoneamento urbano, expansão e requalificação.',
+    description: 'DiagnÃ³stico territorial, mapas normativos e sÃ­nteses para Plano Diretor, zoneamento urbano, expansÃ£o e requalificaÃ§Ã£o.',
     icon: Map,
     accentColor: 'green',
     route: '/studio/urbano-plano-diretor',
     bullets: [
       'Limites, bairros/distritos, malha urbana',
-      'Sistema viário e centralidades',
-      'Uso e ocupação do solo',
+      'Sistema viÃ¡rio e centralidades',
+      'Uso e ocupaÃ§Ã£o do solo',
       'Conflitos de uso e riscos',
-      'Diretrizes de expansão/adensamento'
+      'Diretrizes de expansÃ£o/adensamento'
     ],
   },
   {
     id: 'zee',
     title: 'ZEE e Ordenamento Territorial',
-    description: 'Integra meio físico, biótico e socioeconômico para construir potencialidades, vulnerabilidades e diretrizes por zona. Inclui PUC quando aplicável.',
+    description: 'Integra meio fÃ­sico, biÃ³tico e socioeconÃ´mico para construir potencialidades, vulnerabilidades e diretrizes por zona. Inclui PUC quando aplicÃ¡vel.',
     icon: Layers,
     accentColor: 'indigo',
     route: '/studio/zee-ordenamento',
     bullets: [
-      'Meio físico (relevo/solos/geologia)',
-      'Meio biótico (cobertura vegetal, fragmentação)',
-      'Socioeconômico (infraestrutura, pressões)',
+      'Meio fÃ­sico (relevo/solos/geologia)',
+      'Meio biÃ³tico (cobertura vegetal, fragmentaÃ§Ã£o)',
+      'SocioeconÃ´mico (infraestrutura, pressÃµes)',
       'Potencial de uso conservacionista (PUC)',
       'Mapa final de zonas e diretrizes'
     ],
   },
   {
     id: 'bacias',
-    title: 'Bacias Hidrográficas e Conservação',
-    description: 'Delimitação, indicadores físico-hidrológicos, modelagem de erosão (RUSLE) e priorização conservacionista (PUC) para planejamento territorial e gestão de bacias.',
+    title: 'Bacias HidrogrÃ¡ficas e ConservaÃ§Ã£o',
+    description: 'DelimitaÃ§Ã£o, indicadores fÃ­sico-hidrolÃ³gicos, modelagem de erosÃ£o (RUSLE) e priorizaÃ§Ã£o conservacionista (PUC) para planejamento territorial e gestÃ£o de bacias.',
     icon: Mountain,
     accentColor: 'amber',
     route: '/studio/bacias-hidrograficas',
     bullets: [
-      'Delimitação de bacia/sub-bacias',
-      'Indicadores físico-hidrológicos',
-      'Modelagem de erosão (RUSLE)',
+      'DelimitaÃ§Ã£o de bacia/sub-bacias',
+      'Indicadores fÃ­sico-hidrolÃ³gicos',
+      'Modelagem de erosÃ£o (RUSLE)',
       'Potencial de uso conservacionista (PUC)',
-      'Hotspots e priorização de intervenções'
+      'Hotspots e priorizaÃ§Ã£o de intervenÃ§Ãµes'
     ],
   },
   {
     id: 'riscos',
-    title: 'Riscos Climáticos e Agroclima',
-    description: 'Variabilidade, extremos e indicadores (seca/veranicos/chuva intensa) para apoiar planejamento agrícola, defesa civil e gestão ambiental.',
+    title: 'Riscos ClimÃ¡ticos e Agroclima',
+    description: 'Variabilidade, extremos e indicadores (seca/veranicos/chuva intensa) para apoiar planejamento agrÃ­cola, defesa civil e gestÃ£o ambiental.',
     icon: Cloud,
     accentColor: 'cyan',
     route: '/studio/riscos-climaticos',
     bullets: [
-      'Variabilidade/anomalias de precipitação',
-      'Índices de seca (SPI/SPEI)',
+      'Variabilidade/anomalias de precipitaÃ§Ã£o',
+      'Ãndices de seca (SPI/SPEI)',
       'Indicadores de veranicos/estiagens',
-      'Síntese de exposição',
-      'Cenários e vulnerabilidade'
+      'SÃ­ntese de exposiÃ§Ã£o',
+      'CenÃ¡rios e vulnerabilidade'
     ],
   },
   {
     id: 'aptidao',
-    title: 'Aptidão Agrícola (integrada)',
-    description: 'Integra clima, solo e relevo para classificar aptidão por cultura e manejo, com recomendações e limitações explicitadas.',
+    title: 'AptidÃ£o AgrÃ­cola (integrada)',
+    description: 'Integra clima, solo e relevo para classificar aptidÃ£o por cultura e manejo, com recomendaÃ§Ãµes e limitaÃ§Ãµes explicitadas.',
     icon: Droplets,
     accentColor: 'lime',
     route: '/studio/aptidao-agricola-agroclima',
     bullets: [
-      'Aptidão climática por cultura',
-      'Balanço hídrico',
-      'Aptidão agrícola integrada',
+      'AptidÃ£o climÃ¡tica por cultura',
+      'BalanÃ§o hÃ­drico',
+      'AptidÃ£o agrÃ­cola integrada',
       'Janelas de plantio',
-      'Cenários (irrigado × sequeiro)'
+      'CenÃ¡rios (irrigado Ã— sequeiro)'
     ],
   },
   {
     id: 'precisao',
-    title: 'Agricultura de precisão (zonas de manejo e VRA)',
-    description: 'Produtividade, variabilidade espacial e recomendações operacionais com mapas compatíveis com seu fluxo (GIS e equipamentos).',
+    title: 'Agricultura de precisÃ£o (zonas de manejo e VRA)',
+    description: 'Produtividade, variabilidade espacial e recomendaÃ§Ãµes operacionais com mapas compatÃ­veis com seu fluxo (GIS e equipamentos).',
     icon: Leaf,
     accentColor: 'green',
     route: '/studio/agricultura-precisao',
@@ -129,29 +129,29 @@ const serviceCards = [
       'Zonas de manejo',
       'Produtividade e estabilidade temporal',
       'Plano de amostragem',
-      'Prescrição (VRA)',
+      'PrescriÃ§Ã£o (VRA)',
       'Mapas operacionais'
     ],
   },
   {
     id: 'florestal',
-    title: 'Análise Florestal e Conectividade da Paisagem',
-    description: 'Fragmentação, conectividade, corredores ecológicos e priorização de restauração para planejamento florestal e gestão ambiental.',
+    title: 'AnÃ¡lise Florestal e Conectividade da Paisagem',
+    description: 'FragmentaÃ§Ã£o, conectividade, corredores ecolÃ³gicos e priorizaÃ§Ã£o de restauraÃ§Ã£o para planejamento florestal e gestÃ£o ambiental.',
     icon: TreePine,
     accentColor: 'emerald',
     route: '/studio/florestal-restauracao',
     bullets: [
-      'Cobertura vegetal e fragmentação',
+      'Cobertura vegetal e fragmentaÃ§Ã£o',
       'Conectividade (indicadores)',
-      'Priorização de restauração',
-      'Corredores ecológicos',
-      'Cenários alternativos'
+      'PriorizaÃ§Ã£o de restauraÃ§Ã£o',
+      'Corredores ecolÃ³gicos',
+      'CenÃ¡rios alternativos'
     ],
   },
   {
     id: 'drone',
     title: 'Drone e fotogrametria',
-    description: 'Ortofoto, MDT/MDS e derivados para urbano e agro — com base pronta para GIS/CAD conforme escopo.',
+    description: 'Ortofoto, MDT/MDS e derivados para urbano e agro â€” com base pronta para GIS/CAD conforme escopo.',
     icon: Camera,
     accentColor: 'purple',
     route: '/studio/drone-fotogrametria',
@@ -166,137 +166,137 @@ const serviceCards = [
   },
   {
     id: 'lulc',
-    title: 'Monitoramento e Mudanças de Uso e Cobertura do Solo (LULC)',
-    description: 'Classificação temporal, análise de transições e detecção de mudanças para monitoramento ambiental, licenciamento e planejamento territorial.',
+    title: 'Monitoramento e MudanÃ§as de Uso e Cobertura do Solo (LULC)',
+    description: 'ClassificaÃ§Ã£o temporal, anÃ¡lise de transiÃ§Ãµes e detecÃ§Ã£o de mudanÃ§as para monitoramento ambiental, licenciamento e planejamento territorial.',
     icon: TrendingUp,
     accentColor: 'emerald',
     route: '/studio/monitoramento-lulc',
     bullets: [
-      'Classificação de uso e cobertura (múltiplas datas)',
-      'Análise de transições temporais',
-      'Detecção de desmatamento/expansão urbana',
-      'Taxas de mudança e projeções',
-      'Mapas de mudança e matriz de transição'
+      'ClassificaÃ§Ã£o de uso e cobertura (mÃºltiplas datas)',
+      'AnÃ¡lise de transiÃ§Ãµes temporais',
+      'DetecÃ§Ã£o de desmatamento/expansÃ£o urbana',
+      'Taxas de mudanÃ§a e projeÃ§Ãµes',
+      'Mapas de mudanÃ§a e matriz de transiÃ§Ã£o'
     ],
   },
   {
     id: 'zoneamento-ambiental',
-    title: 'Mapeamento de APP, RL e Áreas Protegidas',
-    description: 'Mapeamento de Áreas de Preservação Permanente (APP), Reserva Legal e áreas protegidas para CAR, licenciamento e regularização ambiental com integração de conflitos de uso.',
+    title: 'Mapeamento de APP, RL e Ãreas Protegidas',
+    description: 'Mapeamento de Ãreas de PreservaÃ§Ã£o Permanente (APP), Reserva Legal e Ã¡reas protegidas para CAR, licenciamento e regularizaÃ§Ã£o ambiental com integraÃ§Ã£o de conflitos de uso.',
     icon: Shield,
     accentColor: 'green',
     route: '/studio/zoneamento-ambiental',
     bullets: [
       'Mapeamento de APP (rios, nascentes, topos)',
-      'Reserva Legal e áreas de preservação',
-      'Integração com CAR',
-      'Conflitos de uso em áreas protegidas',
-      'Diretrizes de regularização'
+      'Reserva Legal e Ã¡reas de preservaÃ§Ã£o',
+      'IntegraÃ§Ã£o com CAR',
+      'Conflitos de uso em Ã¡reas protegidas',
+      'Diretrizes de regularizaÃ§Ã£o'
     ],
   },
   {
     id: 'fragilidade',
-    title: 'Análise de Fragilidade Ambiental',
-    description: 'Avaliação de fragilidade do meio físico (relevo, solo, geologia) para planejamento territorial e gestão ambiental com diretrizes de uso compatível.',
+    title: 'AnÃ¡lise de Fragilidade Ambiental',
+    description: 'AvaliaÃ§Ã£o de fragilidade do meio fÃ­sico (relevo, solo, geologia) para planejamento territorial e gestÃ£o ambiental com diretrizes de uso compatÃ­vel.',
     icon: AlertTriangle,
     accentColor: 'amber',
     route: '/studio/fragilidade-ambiental',
     bullets: [
-      'Fragilidade do meio físico',
+      'Fragilidade do meio fÃ­sico',
       'Fragilidade potencial vs. emergente',
-      'Integração com uso do solo',
-      'Diretrizes de uso compatível',
-      'Mapas de fragilidade e restrições'
+      'IntegraÃ§Ã£o com uso do solo',
+      'Diretrizes de uso compatÃ­vel',
+      'Mapas de fragilidade e restriÃ§Ãµes'
     ],
   },
   {
     id: 'eia-rima',
-    title: 'Suporte Cartográfico para EIA-RIMA/AIA',
-    description: 'Base cartográfica completa e análises ambientais integradas para estudos de impacto ambiental, licenciamento e planejamento de empreendimentos.',
+    title: 'Suporte CartogrÃ¡fico para EIA-RIMA/AIA',
+    description: 'Base cartogrÃ¡fica completa e anÃ¡lises ambientais integradas para estudos de impacto ambiental, licenciamento e planejamento de empreendimentos.',
     icon: FileCheck,
     accentColor: 'indigo',
     route: '/studio/eia-rima',
     bullets: [
-      'Base cartográfica para EIA-RIMA',
-      'Mapas de área de influência',
-      'Análises ambientais integradas',
-      'Mapas temáticos (físico, biótico, socioeconômico)',
-      'Síntese cartográfica para relatórios'
+      'Base cartogrÃ¡fica para EIA-RIMA',
+      'Mapas de Ã¡rea de influÃªncia',
+      'AnÃ¡lises ambientais integradas',
+      'Mapas temÃ¡ticos (fÃ­sico, biÃ³tico, socioeconÃ´mico)',
+      'SÃ­ntese cartogrÃ¡fica para relatÃ³rios'
     ],
   },
   {
     id: 'deslizamentos',
-    title: 'Riscos Geológicos e Suscetibilidade a Deslizamentos',
-    description: 'Mapeamento de suscetibilidade a deslizamentos e riscos geológicos (erosão, solapamento) para planejamento urbano, defesa civil e gestão de riscos.',
+    title: 'Riscos GeolÃ³gicos e Suscetibilidade a Deslizamentos',
+    description: 'Mapeamento de suscetibilidade a deslizamentos e riscos geolÃ³gicos (erosÃ£o, solapamento) para planejamento urbano, defesa civil e gestÃ£o de riscos.',
     icon: Activity,
     accentColor: 'amber',
     route: '/studio/riscos-geologicos',
     bullets: [
       'Susceptibilidade a deslizamentos',
-      'Riscos geológicos (erosão, solapamento)',
-      'Integração com uso do solo e ocupação',
-      'Mapeamento de áreas de risco',
-      'Diretrizes de ocupação segura'
+      'Riscos geolÃ³gicos (erosÃ£o, solapamento)',
+      'IntegraÃ§Ã£o com uso do solo e ocupaÃ§Ã£o',
+      'Mapeamento de Ã¡reas de risco',
+      'Diretrizes de ocupaÃ§Ã£o segura'
     ],
   },
   {
     id: 'areas-degradadas',
-    title: 'Áreas Degradadas e Priorização de Recuperação',
-    description: 'Identificação de áreas degradadas e priorização para recuperação ambiental usando análise multicritério, integração com conectividade e cenários de recuperação.',
+    title: 'Ãreas Degradadas e PriorizaÃ§Ã£o de RecuperaÃ§Ã£o',
+    description: 'IdentificaÃ§Ã£o de Ã¡reas degradadas e priorizaÃ§Ã£o para recuperaÃ§Ã£o ambiental usando anÃ¡lise multicritÃ©rio, integraÃ§Ã£o com conectividade e cenÃ¡rios de recuperaÃ§Ã£o.',
     icon: TreePine,
     accentColor: 'emerald',
     route: '/studio/areas-degradadas',
     bullets: [
-      'Identificação de áreas degradadas',
-      'Priorização para recuperação (multicritério)',
-      'Integração com conectividade e fragmentação',
-      'Cenários de recuperação',
-      'Diretrizes de intervenção'
+      'IdentificaÃ§Ã£o de Ã¡reas degradadas',
+      'PriorizaÃ§Ã£o para recuperaÃ§Ã£o (multicritÃ©rio)',
+      'IntegraÃ§Ã£o com conectividade e fragmentaÃ§Ã£o',
+      'CenÃ¡rios de recuperaÃ§Ã£o',
+      'Diretrizes de intervenÃ§Ã£o'
     ],
   },
   {
     id: 'recursos-hidricos',
-    title: 'Recursos Hídricos: Qualidade e Disponibilidade',
-    description: 'Análise espacializada de disponibilidade hídrica, qualidade de água e balanço hídrico para gestão de recursos hídricos, outorgas e planejamento hídrico.',
+    title: 'Recursos HÃ­dricos: Qualidade e Disponibilidade',
+    description: 'AnÃ¡lise espacializada de disponibilidade hÃ­drica, qualidade de Ã¡gua e balanÃ§o hÃ­drico para gestÃ£o de recursos hÃ­dricos, outorgas e planejamento hÃ­drico.',
     icon: Waves,
     accentColor: 'cyan',
     route: '/studio/recursos-hidricos',
     bullets: [
-      'Disponibilidade hídrica superficial e subterrânea',
-      'Qualidade de água (indicadores espaciais)',
-      'Balanço hídrico espacializado',
-      'Vulnerabilidade de aquíferos',
-      'Diretrizes de gestão hídrica'
+      'Disponibilidade hÃ­drica superficial e subterrÃ¢nea',
+      'Qualidade de Ã¡gua (indicadores espaciais)',
+      'BalanÃ§o hÃ­drico espacializado',
+      'Vulnerabilidade de aquÃ­feros',
+      'Diretrizes de gestÃ£o hÃ­drica'
     ],
   },
   {
     id: 'car',
     title: 'Cadastro Ambiental Rural (CAR)',
-    description: 'Elaboração e validação de Cadastro Ambiental Rural com mapeamento de APP, Reserva Legal, áreas de uso restrito e integração com bases oficiais do SICAR.',
+    description: 'ElaboraÃ§Ã£o e validaÃ§Ã£o de Cadastro Ambiental Rural com mapeamento de APP, Reserva Legal, Ã¡reas de uso restrito e integraÃ§Ã£o com bases oficiais do SICAR.',
     icon: FileText,
     accentColor: 'emerald',
     route: '/studio/car',
     bullets: [
       'Mapeamento de APP e Reserva Legal',
-      'Delimitação de áreas de uso restrito',
-      'Integração com bases do SICAR',
-      'Validação e correção de CAR existente',
-      'Documentação técnica para regularização'
+      'DelimitaÃ§Ã£o de Ã¡reas de uso restrito',
+      'IntegraÃ§Ã£o com bases do SICAR',
+      'ValidaÃ§Ã£o e correÃ§Ã£o de CAR existente',
+      'DocumentaÃ§Ã£o tÃ©cnica para regularizaÃ§Ã£o'
     ],
   },
   {
     id: 'georreferenciamento',
-    title: 'Georreferenciamento de Imóveis Rurais',
-    description: 'Georreferenciamento de imóveis rurais conforme INCRA, com memorial descritivo, coordenadas geodésicas e documentação técnica para regularização fundiária.',
+    title: 'Georreferenciamento de ImÃ³veis Rurais',
+    description: 'Georreferenciamento de imÃ³veis rurais conforme INCRA, com memorial descritivo, coordenadas geodÃ©sicas e documentaÃ§Ã£o tÃ©cnica para regularizaÃ§Ã£o fundiÃ¡ria.',
     icon: Ruler,
     accentColor: 'amber',
     route: '/studio/georreferenciamento',
     bullets: [
       'Georreferenciamento conforme INCRA',
       'Memorial descritivo georreferenciado',
-      'Coordenadas geodésicas certificadas',
-      'Integração com bases cadastrais',
-      'Documentação para regularização fundiária'
+      'Coordenadas geodÃ©sicas certificadas',
+      'IntegraÃ§Ã£o com bases cadastrais',
+      'DocumentaÃ§Ã£o para regularizaÃ§Ã£o fundiÃ¡ria'
     ],
   },
 ];
@@ -334,15 +334,15 @@ export default function StudioPage() {
             </div>
             
             <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Cartografia técnica para
+              GeointeligÃªncia e soluÃ§Ãµes geoespaciais para
               <br />
               <span className="bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
-                decisão pública, ambiental e agro
+                decisÃ£o pÃºblica, ambiental e agro
               </span>
             </h2>
             
             <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-              Mapas, modelos e relatórios prontos para planejamento territorial, gestão ambiental, bacias hidrográficas e agricultura de precisão — com base geoespacial organizada e padrão de qualidade auditável.
+              Mapas, modelos e relatÃ³rios prontos para planejamento territorial, gestÃ£o ambiental, bacias hidrogrÃ¡ficas e agricultura de precisÃ£o â€” com base geoespacial organizada e padrÃ£o de qualidade auditÃ¡vel.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -353,14 +353,14 @@ export default function StudioPage() {
                 accentColor="indigo"
                 className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600"
               >
-                Solicitar orçamento
+                Solicitar orÃ§amento
                 <ArrowRight className="w-5 h-5" />
               </ButtonLink>
               <a
                 href="#servicos"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900/50 border border-indigo-500/30 text-indigo-400 rounded-xl font-semibold text-base hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300"
               >
-                Ver serviços
+                Ver serviÃ§os
               </a>
             </div>
           </div>
@@ -369,12 +369,12 @@ export default function StudioPage() {
         {/* Pulse Word Cloud */}
         <StudioPulseWordCloud />
 
-        {/* (2) O QUE VOCÊ RECEBE */}
+        {/* (2) O QUE VOCÃŠ RECEBE */}
         <section className="py-24 bg-[#02040a] relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
-              title="O que você recebe"
-              subtitle="Entregáveis padronizados com base geoespacial organizada e metodologia transparente"
+              title="O que vocÃª recebe"
+              subtitle="EntregÃ¡veis padronizados com base geoespacial organizada e metodologia transparente"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -398,12 +398,12 @@ export default function StudioPage() {
           </div>
         </section>
 
-        {/* (3) SOLUÇÕES POR OBJETIVO (Grid dos 15 serviços principais - PUC e RUSLE integrados como metodologias) */}
+        {/* (3) SOLUÃ‡Ã•ES POR OBJETIVO (Grid dos 15 serviÃ§os principais - PUC e RUSLE integrados como metodologias) */}
         <section id="servicos" className="py-24 bg-[#02040a] relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
-              title="Soluções por objetivo"
-              subtitle="Quinze linhas de serviço cartográfico padronizado para diferentes objetivos decisórios"
+              title="SoluÃ§Ãµes por objetivo"
+              subtitle="Quinze linhas de serviÃ§o cartogrÃ¡fico padronizado para diferentes objetivos decisÃ³rios"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -455,7 +455,7 @@ export default function StudioPage() {
                       <ul className="space-y-2 flex-1">
                         {service.bullets.map((bullet, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
-                            <span className="text-indigo-400 mt-1">•</span>
+                            <span className="text-indigo-400 mt-1">â€¢</span>
                             <span>{bullet}</span>
                           </li>
                         ))}
@@ -485,7 +485,7 @@ export default function StudioPage() {
               })}
             </div>
 
-            {/* Botão Ver Todos */}
+            {/* BotÃ£o Ver Todos */}
             <div className="flex justify-center mt-12">
               <ButtonLink
                 href="/studio/todos-servicos"
@@ -494,24 +494,24 @@ export default function StudioPage() {
                 accentColor="indigo"
                 className="px-8 py-3"
               >
-                Ver Todos os Serviços
+                Ver Todos os ServiÃ§os
                 <ArrowRight className="w-5 h-5 ml-2" />
               </ButtonLink>
             </div>
           </div>
         </section>
 
-        {/* PERÍCIA & AVALIAÇÃO (HIGH-TICKET) */}
+        {/* PERÃCIA & AVALIAÃ‡ÃƒO (HIGH-TICKET) */}
         <section className="py-24 bg-[#02040a] relative border-t border-indigo-500/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
-              title="Perícia & Avaliação (High-Ticket)"
-              subtitle="Serviços especializados com rigor técnico e rastreabilidade completa para processos judiciais, administrativos e privados"
+              title="PerÃ­cia & AvaliaÃ§Ã£o (High-Ticket)"
+              subtitle="ServiÃ§os especializados com rigor tÃ©cnico e rastreabilidade completa para processos judiciais, administrativos e privados"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {periciaCards.map((service) => {
-                const iconMap: Record<string, any> = {
+                const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
                   'FileSearch': FileSearch,
                   'Scale': Scale,
                   'MapPin': MapPin,
@@ -539,7 +539,7 @@ export default function StudioPage() {
                       <ul className="space-y-2 flex-1 mb-4">
                         {service.bullets.map((bullet, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
-                            <span className="text-indigo-400 mt-1">•</span>
+                            <span className="text-indigo-400 mt-1">â€¢</span>
                             <span>{bullet}</span>
                           </li>
                         ))}
@@ -571,19 +571,19 @@ export default function StudioPage() {
           </div>
         </section>
 
-        {/* (4) PACOTES E NÍVEIS */}
+        {/* (4) PACOTES E NÃVEIS */}
         <section className="py-24 bg-[#02040a] relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
-              title="Pacotes e Níveis"
-              subtitle="Escolha o pacote pelo objetivo: Essencial para diagnóstico rápido, Profissional para modelagem e priorização, Premium para diretrizes e cenários"
+              title="Pacotes e NÃ­veis"
+              subtitle="Escolha o pacote pelo objetivo: Essencial para diagnÃ³stico rÃ¡pido, Profissional para modelagem e priorizaÃ§Ã£o, Premium para diretrizes e cenÃ¡rios"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
-                { level: 'Essencial', maps: '6–12 mapas', report: '2–5 páginas', deadline: '10–20 dias úteis', revisions: '2 revisões', color: 'slate' },
-                { level: 'Profissional', maps: '12–20 mapas + sínteses', report: '4–10 páginas', deadline: '20–45 dias úteis', revisions: '2 revisões', color: 'indigo' },
-                { level: 'Premium', maps: '20+ mapas + cenários', report: '8–15 páginas', deadline: '30–90 dias úteis', revisions: '2 revisões (extras opcionais)', color: 'indigo' },
+                { level: 'Essencial', maps: '6â€“12 mapas', report: '2â€“5 pÃ¡ginas', deadline: '10â€“20 dias Ãºteis', revisions: '2 revisÃµes', color: 'slate' },
+                { level: 'Profissional', maps: '12â€“20 mapas + sÃ­nteses', report: '4â€“10 pÃ¡ginas', deadline: '20â€“45 dias Ãºteis', revisions: '2 revisÃµes', color: 'indigo' },
+                { level: 'Premium', maps: '20+ mapas + cenÃ¡rios', report: '8â€“15 pÃ¡ginas', deadline: '30â€“90 dias Ãºteis', revisions: '2 revisÃµes (extras opcionais)', color: 'indigo' },
               ].map((pkg) => (
                 <Card key={pkg.level} className="p-6" glass hover>
                   <div className="space-y-4">
@@ -594,7 +594,7 @@ export default function StudioPage() {
                         <p className="text-white font-medium">{pkg.maps}</p>
                       </div>
                       <div>
-                        <span className="text-slate-400">Relatório:</span>
+                        <span className="text-slate-400">RelatÃ³rio:</span>
                         <p className="text-white font-medium">{pkg.report}</p>
                       </div>
                       <div>
@@ -602,7 +602,7 @@ export default function StudioPage() {
                         <p className="text-white font-medium">{pkg.deadline}</p>
                       </div>
                       <div>
-                        <span className="text-slate-400">Revisões:</span>
+                        <span className="text-slate-400">RevisÃµes:</span>
                         <p className="text-white font-medium">{pkg.revisions}</p>
                       </div>
                     </div>
@@ -630,15 +630,15 @@ export default function StudioPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
               title="Como funciona"
-              subtitle="Um processo claro. Entregáveis previsíveis."
+              subtitle="Um processo claro. EntregÃ¡veis previsÃ­veis."
             />
 
             <div className="space-y-6 mb-12">
               {[
-                { step: '1', title: 'Briefing e diagnóstico de dados', desc: 'Conferência de área, escala, objetivo e dados disponíveis. Recomendação de pacote + cronograma.' },
-                { step: '2', title: 'Produção e modelagem', desc: 'Processamento + validações. Mapas e sínteses + relatório técnico. Padronização de layouts e base geoespacial.' },
-                { step: '3', title: 'Revisões (2 rodadas inclusas)', desc: 'Layout, simbologia, textos, ajustes pontuais. Alinhamento final com objetivo decisório.' },
-                { step: '4', title: 'Entrega e handoff', desc: 'Atlas PDF + base geoespacial + metadados + simbologia. Checklist final de consistência.' },
+                { step: '1', title: 'Briefing e diagnÃ³stico de dados', desc: 'ConferÃªncia de Ã¡rea, escala, objetivo e dados disponÃ­veis. RecomendaÃ§Ã£o de pacote + cronograma.' },
+                { step: '2', title: 'ProduÃ§Ã£o e modelagem', desc: 'Processamento + validaÃ§Ãµes. Mapas e sÃ­nteses + relatÃ³rio tÃ©cnico. PadronizaÃ§Ã£o de layouts e base geoespacial.' },
+                { step: '3', title: 'RevisÃµes (2 rodadas inclusas)', desc: 'Layout, simbologia, textos, ajustes pontuais. Alinhamento final com objetivo decisÃ³rio.' },
+                { step: '4', title: 'Entrega e handoff', desc: 'Atlas PDF + base geoespacial + metadados + simbologia. Checklist final de consistÃªncia.' },
               ].map((item) => (
                 <Card key={item.step} className="p-6" glass>
                   <div className="flex items-start gap-4">
@@ -674,7 +674,7 @@ export default function StudioPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
               title="Perguntas frequentes"
-              subtitle="Respostas rápidas para as dúvidas mais comuns"
+              subtitle="Respostas rÃ¡pidas para as dÃºvidas mais comuns"
             />
 
             <div className="space-y-4">
@@ -714,7 +714,7 @@ export default function StudioPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
               title="Acesso"
-              subtitle="Acompanhe seu projeto e acesse entregáveis"
+              subtitle="Acompanhe seu projeto e acesse entregÃ¡veis"
             />
             <div className="flex justify-center">
               <Card className="p-6" glass hover>
@@ -723,9 +723,9 @@ export default function StudioPage() {
                     <Layers className="w-6 h-6 text-indigo-400" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-2">Área do Cliente</h3>
+                    <h3 className="text-lg font-bold text-white mb-2">Ãrea do Cliente</h3>
                     <p className="text-sm text-slate-400 mb-4">
-                      Acompanhe seu protocolo, etapas e entregáveis.
+                      Acompanhe seu protocolo, etapas e entregÃ¡veis.
                     </p>
                     <ButtonLink
                       href="/studio/portal"
@@ -749,10 +749,10 @@ export default function StudioPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <Card className="p-12" glass>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Pronto para transformar dados em decisão?
+                Pronto para transformar dados em decisÃ£o?
               </h2>
               <p className="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
-                Envie sua área e objetivo. Nós retornamos com pacote recomendado, cronograma e escopo fechado.
+                Envie sua Ã¡rea e objetivo. NÃ³s retornamos com pacote recomendado, cronograma e escopo fechado.
               </p>
               <ButtonLink
                 href="/studio/orcamento"
@@ -761,7 +761,7 @@ export default function StudioPage() {
                 accentColor="indigo"
                 className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600"
               >
-                Solicitar orçamento
+                Solicitar orÃ§amento
                 <ArrowRight className="w-5 h-5" />
               </ButtonLink>
             </Card>
