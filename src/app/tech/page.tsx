@@ -290,7 +290,8 @@ export default function TechPage() {
   const startCascade = (cardId: string) => {
     clearCascadeTimeouts();
     
-    // Reset do estado (mas mantém isActivated se já foi ativado antes)
+    // Reset do estado para sempre disparar animação, mesmo quando já está ativo
+    // Isso garante que touch/click sempre funcione em mobile/tablet
     setCascadeState(prev => ({
       hoveredCard: cardId,
       step1: false,
@@ -432,6 +433,7 @@ export default function TechPage() {
                   <div
                     className="w-full md:w-[calc((100%-0.75rem)/2)] lg:w-[calc((100%-0.75rem)/3)] max-w-none"
                     onMouseEnter={() => startCascade("engenharia")}
+                    onClick={() => startCascade("engenharia")}
                   >
                     <ExpertiseTag 
                       name="Inteligência Geoespacial" 
@@ -454,6 +456,7 @@ export default function TechPage() {
                 {/* Linha 1 (Entrada de Dados): Sensoriamento | Geodesia Inteligente | SIG */}
                 <div
                   onMouseEnter={() => startCascade("sensoramento")}
+                  onClick={() => startCascade("sensoramento")}
                 >
                   <ExpertiseTag 
                     name="Sensoramento Remoto & Radar Avançado" 
@@ -470,6 +473,7 @@ export default function TechPage() {
         </div>
                 <div
                   onMouseEnter={() => startCascade("geodesia")}
+                  onClick={() => startCascade("geodesia")}
                 >
                   <ExpertiseTag 
                     name="Geodesia Inteligente" 
@@ -486,6 +490,7 @@ export default function TechPage() {
             </div>
                 <div
                   onMouseEnter={() => startCascade("sig-cloud")}
+                  onClick={() => startCascade("sig-cloud")}
                 >
                   <ExpertiseTag 
                     name="SIG Cloud & Plataformas Geoespaciais" 
@@ -504,6 +509,7 @@ export default function TechPage() {
                 {/* Linha 2 (Processamento - Hub Central): Drones | Agroecossistemas | GeoAI */}
                 <div
                   onMouseEnter={() => startCascade("drones")}
+                  onClick={() => startCascade("drones")}
                 >
                   <ExpertiseTag 
                     name="Drones, Fotogrametria & 3D" 
@@ -520,6 +526,7 @@ export default function TechPage() {
               </div>
                 <div
                   onMouseEnter={() => startCascade("agroecossistemas")}
+                  onClick={() => startCascade("agroecossistemas")}
                 >
                   <ExpertiseTag 
                     name="Agroecossistemas" 
@@ -536,6 +543,7 @@ export default function TechPage() {
             </div>
                 <div
                   onMouseEnter={() => startCascade("geoai")}
+                  onClick={() => startCascade("geoai")}
                 >
                   <ExpertiseTag 
                     name="GeoAI & Machine Learning" 
@@ -554,6 +562,7 @@ export default function TechPage() {
                 {/* Linha 3 (Resultados e Modelagens Especializadas): Hidrologia | Inteligência Territorial | Gêmeos Digitais */}
                 <div
                   onMouseEnter={() => startCascade("modelagem")}
+                  onClick={() => startCascade("modelagem")}
                 >
                   <ExpertiseTag 
                     name="Modelagem Hidrológica & Ambiental" 
@@ -570,6 +579,7 @@ export default function TechPage() {
                 </div>
                 <div
                   onMouseEnter={() => startCascade("inteligencia-territorial")}
+                  onClick={() => startCascade("inteligencia-territorial")}
                 >
                   <ExpertiseTag 
                     name="Inteligência Territorial" 
@@ -586,19 +596,23 @@ export default function TechPage() {
                 </div>
                 <div
                   onMouseEnter={() => startCascade("gemeos-digitais")}
+                  onClick={() => startCascade("gemeos-digitais")}
+                  className="md:col-start-1 md:col-span-2 md:flex md:justify-center lg:col-start-auto lg:col-span-auto lg:flex-none"
                 >
-                  <ExpertiseTag 
-                    name="Gêmeos Digitais & Simulação" 
-                    icon={Box} 
-                    color="digital" 
-                    technologies={[]}
-                    isActivated={isMasterHovered}
-                    cardId="gemeos-digitais"
-                    isCascadeActive={cascadeState.step4}
-                    isHovered={false}
-                    isPersistentActive={cascadeState.isActivated && cascadeState.step4}
-                    highlightLevel="subtle"
-                  />
+                  <div className="w-full md:max-w-fit lg:w-full">
+                    <ExpertiseTag 
+                      name="Gêmeos Digitais & Simulação" 
+                      icon={Box} 
+                      color="digital" 
+                      technologies={[]}
+                      isActivated={isMasterHovered}
+                      cardId="gemeos-digitais"
+                      isCascadeActive={cascadeState.step4}
+                      isHovered={false}
+                      isPersistentActive={cascadeState.isActivated && cascadeState.step4}
+                      highlightLevel="subtle"
+                    />
+                  </div>
                 </div>
                 </div>
 
@@ -606,6 +620,7 @@ export default function TechPage() {
                 <div 
                   className="flex justify-center mt-6"
                   onMouseEnter={() => startCascade("ferramentas")}
+                  onClick={() => startCascade("ferramentas")}
                 >
                 <div className={`group relative px-2.5 py-4 w-full md:w-[calc((100%-0.75rem)/2)] lg:w-[calc((100%-0.75rem)/3)] max-w-none bg-white/3 border-2 rounded-xl backdrop-blur-[12px] transition-all duration-300 ease-out hover:-translate-y-1 ${
                   cascadeState.step5 
