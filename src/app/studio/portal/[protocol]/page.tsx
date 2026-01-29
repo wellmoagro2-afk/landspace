@@ -14,6 +14,7 @@ import {
   Calendar,
   ArrowRight
 } from "lucide-react";
+import { toastInfo } from "@/lib/toast";
 
 interface Project {
   id: string;
@@ -299,11 +300,9 @@ export default function PortalDashboardPage() {
                   </p>
                   <button 
                     onClick={() => {
-                      alert(
-                        `Instruções de Pagamento\n\n` +
-                        `Saldo pendente: ${formatCurrency(project.balanceValue)}\n\n` +
-                        `Para realizar o pagamento, entre em contato com nossa equipe através do e-mail ou telefone cadastrado no projeto.\n\n` +
-                        `Após a confirmação do pagamento, os arquivos finais serão liberados automaticamente.`
+                      toastInfo(
+                        "Instruções de Pagamento",
+                        `Saldo pendente: ${formatCurrency(project.balanceValue)}. Entre em contato para pagar e liberar a entrega.`
                       );
                     }}
                     className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-semibold transition-colors"

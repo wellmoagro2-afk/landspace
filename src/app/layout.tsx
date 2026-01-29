@@ -6,6 +6,7 @@ import { unstable_noStore } from "next/cache";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { VariantProvider } from "@/components/VariantProvider";
+import ToastViewport from "@/components/ui/ToastViewport";
 import { branding } from "@/lib/branding";
 // Importação segura do Prisma - se falhar, layout ainda renderiza
 // O try-catch no código garante que erros de conexão não quebrem o SSR
@@ -176,6 +177,7 @@ export default async function RootLayout({
         <CartProvider>
           <VariantProvider initialVariant={initialVariant}>
             {children}
+            <ToastViewport />
           </VariantProvider>
         </CartProvider>
       </body>
