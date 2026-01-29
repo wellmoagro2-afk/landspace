@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Download, Lock, FileText, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { toastError } from "@/lib/toast";
 
 interface File {
   id: string;
@@ -80,7 +81,7 @@ export default function PortalFilesPage() {
       document.body.removeChild(a);
     } catch (err) {
       console.error("Erro no download:", err);
-      alert("Erro ao fazer download do arquivo");
+      toastError("Erro ao fazer download do arquivo");
     } finally {
       setDownloading(null);
     }

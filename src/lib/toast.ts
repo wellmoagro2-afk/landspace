@@ -1,29 +1,38 @@
-import { toast } from "sonner";
-
 /**
- * Helper functions para toasts padronizados no projeto Strategy
- * Usa sonner com tema Big Tech customizado
+ * Helper functions para toasts padronizados (CSP-safe)
+ * Dispara eventos "ls:toast" consumidos por ToastViewport (sem inline styles)
  */
 
+type ToastType = "success" | "error" | "info";
+
+function dispatchToast(type: ToastType, message: string, description?: string, durationMs?: number) {
+  if (typeof window === "undefined") return;
+
+  const defaultDuration =
+    type === "success" ? 3000 : type === "error" ? 4000 : 2500;
+
+  window.dispatchEvent(
+    new CustomEvent("ls:toast", {
+      detail: {
+        type,
+        message,
+        description,
+        durationMs: durationMs ?? defaultDuration,
+      },
+    })
+  );
+}
+
 export const toastSuccess = (message: string, description?: string) => {
-  toast.success(message, {
-    description,
-    duration: 3000,
-  });
+  dispatchToast("success", message, description, 3000);
 };
 
 export const toastError = (message: string, description?: string) => {
-  toast.error(message, {
-    description,
-    duration: 4000,
-  });
+  dispatchToast("error", message, description, 4000);
 };
 
 export const toastInfo = (message: string, description?: string) => {
-  toast.info(message, {
-    description,
-    duration: 2500,
-  });
+  dispatchToast("info", message, description, 2500);
 };
 
 // Mensagens padrão para ações comuns

@@ -74,3 +74,4 @@ uploads/
 .lint_top_rules.txt
 .diff_*.txt
 .security_changed_files.txt
+scripts/fix-mojibake.mjs

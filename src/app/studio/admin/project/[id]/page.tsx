@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, Upload, DollarSign, CheckCircle2, Clock, Circle, Trash2, Edit2 } from "lucide-react";
+import { ArrowLeft, Plus, Upload, DollarSign, CheckCircle2, Clock, Circle, Trash2, Edit2 } from "lucide-react";
+import { toastSuccess, toastError, toastInfo } from "@/lib/toast";
 
 interface Project {
   id: string;
@@ -59,33 +60,32 @@ export default function AdminProjectPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const fetchProject = useCallback(async () => {
+    if (!projectId || projectId === "new") return;
+    try {
+      const response = await fetch(`/api/admin/portal/project/${projectId}`);
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push("/studio/admin/login");
+          return;
+        }
+        throw new Error("Erro ao carregar projeto");
+      }
+      const data = await response.json();
+      setProject(data.project);
+    } catch (err) {
+      console.error("Erro:", err);
+      toastError("Erro ao carregar projeto");
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId, router]);
+
   useEffect(() => {
     if (!projectId || projectId === "new") return;
-
-    async function fetchProject() {
-      try {
-        // Buscar projeto por protocol ou id
-        const response = await fetch(`/api/admin/portal/project/${projectId}`);
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            router.push("/studio/admin/login");
-            return;
-          }
-          throw new Error("Erro ao carregar projeto");
-        }
-
-        const data = await response.json();
-        setProject(data.project);
-      } catch (err) {
-        console.error("Erro:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
+    setLoading(true);
     fetchProject();
-  }, [projectId, router]);
+  }, [projectId, fetchProject]);
 
   /**
    * Converte uma string para StepState de forma segura
@@ -117,7 +117,7 @@ export default function AdminProjectPage() {
       }
     } catch (err) {
       console.error("Erro:", err);
-      alert("Erro ao atualizar step");
+      toastError("Erro ao atualizar step");
     }
   };
 
@@ -144,7 +144,7 @@ export default function AdminProjectPage() {
       }
     } catch (err) {
       console.error("Erro:", err);
-      alert("Erro ao renomear step");
+      toastError("Erro ao renomear step");
     }
   };
 
@@ -169,13 +169,11 @@ export default function AdminProjectPage() {
 
       if (!response.ok) throw new Error("Erro ao registrar pagamento");
 
-      const data = await response.json();
-      
-      // Recarregar projeto
-      window.location.reload();
+      await fetchProject();
+      toastSuccess("Pagamento registrado com sucesso");
     } catch (err) {
       console.error("Erro:", err);
-      alert("Erro ao registrar pagamento");
+      toastError("Erro ao registrar pagamento");
     }
   };
 
@@ -211,11 +209,11 @@ export default function AdminProjectPage() {
         throw new Error(data.error || "Erro ao atualizar pagamento");
       }
 
-      alert("Pagamento atualizado com sucesso!");
-      window.location.reload();
+      await fetchProject();
+      toastSuccess("Pagamento atualizado com sucesso");
     } catch (err) {
       console.error("Erro:", err);
-      alert(err instanceof Error ? err.message : "Erro ao atualizar pagamento");
+      toastError(err instanceof Error ? err.message : "Erro ao atualizar pagamento");
     }
   };
 
@@ -240,11 +238,11 @@ export default function AdminProjectPage() {
         throw new Error(data.error || "Erro ao excluir pagamento");
       }
 
-      alert("Pagamento excluído com sucesso!");
-      window.location.reload();
+      await fetchProject();
+      toastSuccess("Pagamento excluído com sucesso");
     } catch (err) {
       console.error("Erro:", err);
-      alert(err instanceof Error ? err.message : "Erro ao excluir pagamento");
+      toastError(err instanceof Error ? err.message : "Erro ao excluir pagamento");
     }
   };
 
@@ -291,17 +289,9 @@ export default function AdminProjectPage() {
             errorMsgLower.includes("banco de dados") ||
             errorMsgLower.includes("column") ||
             errorMsgLower.includes("does not exist")) {
-          alert(
-            `⚠️ Erro: Campo "title" não disponível\n\n` +
-            `${errorMessage}\n\n` +
-            `${hint ? hint + "\n\n" : ""}` +
-            `O campo "title" ainda não está disponível no banco de dados.\n\n` +
-            `Por favor, execute a migration primeiro:\n\n` +
-            `npm run db:migrate\n\n` +
-            `Ou entre em contato com o administrador do sistema.`
-          );
+          toastError("Campo \"title\" não disponível", "Execute: npm run db:migrate");
         } else {
-          alert(`Erro ao atualizar título:\n\n${errorMessage}${hint ? "\n\n" + hint : ""}`);
+          toastError("Erro ao atualizar título", errorMessage + (hint ? " " + hint : ""));
         }
         return;
       }
@@ -310,12 +300,7 @@ export default function AdminProjectPage() {
       
       // Verificar se há warning (campo não disponível)
       if (responseData.warning) {
-        alert(
-          `⚠️ Atenção:\n\n${responseData.warning}\n\n` +
-          `O título "${newTitle}" não foi salvo. Por favor, execute a migration do banco de dados primeiro:\n\n` +
-          `npm run db:migrate\n\n` +
-          `Ou entre em contato com o administrador do sistema.`
-        );
+        toastError("Atenção", responseData.warning + " Execute: npm run db:migrate");
         return;
       }
       
@@ -325,14 +310,13 @@ export default function AdminProjectPage() {
           ...project,
           title: responseData.project.title || newTitle || null,
         });
-        alert("Título atualizado com sucesso!");
+        toastSuccess("Título atualizado com sucesso");
       } else if (responseData.success) {
-        // Se retornou success mas sem project, assumir que foi atualizado
         setProject({
           ...project,
           title: newTitle || null,
         });
-        alert("Título atualizado com sucesso!");
+        toastSuccess("Título atualizado com sucesso");
       }
     } catch (err) {
       console.error("Erro ao atualizar título:", err);
@@ -344,15 +328,9 @@ export default function AdminProjectPage() {
           errorMessage.includes("title") ||
           errorMessage.includes("disponível") ||
           errorMessage.includes("banco de dados")) {
-        alert(
-          `⚠️ Erro:\n\n${errorMessage}\n\n` +
-          `O campo "title" ainda não está disponível no banco de dados.\n\n` +
-          `Por favor, execute a migration primeiro:\n\n` +
-          `npm run db:migrate\n\n` +
-          `Ou entre em contato com o administrador do sistema.`
-        );
+        toastError("Campo \"title\" não disponível", "Execute: npm run db:migrate");
       } else {
-        alert(`Erro ao atualizar título:\n\n${errorMessage}`);
+        toastError("Erro ao atualizar título", errorMessage);
       }
     }
   };
@@ -369,13 +347,13 @@ export default function AdminProjectPage() {
     
     const newValue = parseFloat(newValueInput);
     if (isNaN(newValue) || newValue < 0) {
-      alert("Valor inválido. Digite um número positivo.");
+      toastError("Valor inválido", "Digite um número positivo.");
       return;
     }
 
     // Validação: entrada não pode ser maior que total
     if (field === 'entryValue' && newValue > project.totalValue) {
-      alert("Valor de entrada não pode ser maior que o valor total do projeto.");
+      toastError("Valor de entrada não pode ser maior que o valor total do projeto.");
       return;
     }
 
@@ -401,11 +379,11 @@ export default function AdminProjectPage() {
             throw new Error(data.error || "Erro ao atualizar valores");
           }
 
-          alert("Valores atualizados com sucesso! O saldo será recalculado automaticamente.");
-          window.location.reload();
+          await fetchProject();
+          toastSuccess("Valores atualizados com sucesso");
         } catch (err) {
           console.error("Erro:", err);
-          alert(err instanceof Error ? err.message : "Erro ao atualizar valores");
+          toastError(err instanceof Error ? err.message : "Erro ao atualizar valores");
         }
         return;
       } else {
@@ -427,11 +405,11 @@ export default function AdminProjectPage() {
         throw new Error(data.error || "Erro ao atualizar valor");
       }
 
-      alert(`${fieldLabel} atualizado com sucesso! O saldo será recalculado automaticamente.`);
-      window.location.reload();
+      await fetchProject();
+      toastSuccess(`${fieldLabel} atualizado com sucesso`);
     } catch (err) {
       console.error("Erro:", err);
-      alert(err instanceof Error ? err.message : "Erro ao atualizar valor");
+      toastError(err instanceof Error ? err.message : "Erro ao atualizar valor");
     }
   };
 
@@ -506,18 +484,14 @@ export default function AdminProjectPage() {
         // Resposta OK - parsear JSON
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          alert(`Arquivo "${version}" enviado com sucesso!`);
-          window.location.reload();
-        } else {
-          // Se não for JSON, ainda assim considerar sucesso se status é 200
-          alert(`Arquivo "${version}" enviado com sucesso!`);
-          window.location.reload();
+          await response.json();
         }
+        await fetchProject();
+        toastSuccess(`Arquivo "${version}" enviado com sucesso`);
       } catch (err) {
         console.error("Erro no upload:", err);
         const errorMessage = err instanceof Error ? err.message : "Erro ao fazer upload";
-        alert(`Erro ao fazer upload:\n\n${errorMessage}`);
+        toastError("Erro ao fazer upload", errorMessage);
       }
     };
     
@@ -544,11 +518,11 @@ export default function AdminProjectPage() {
         throw new Error(data.error || "Erro ao excluir arquivo");
       }
 
-      alert("Arquivo excluído com sucesso!");
-      window.location.reload();
+      await fetchProject();
+      toastSuccess("Arquivo excluído com sucesso");
     } catch (err) {
       console.error("Erro:", err);
-      alert(err instanceof Error ? err.message : "Erro ao excluir arquivo");
+      toastError(err instanceof Error ? err.message : "Erro ao excluir arquivo");
     }
   };
 
@@ -566,10 +540,11 @@ export default function AdminProjectPage() {
 
       if (!response.ok) throw new Error("Erro ao atualizar");
 
-      window.location.reload();
+      await fetchProject();
+      toastSuccess(project.finalRelease ? "Liberação bloqueada" : "Liberação ativada");
     } catch (err) {
       console.error("Erro:", err);
-      alert("Erro ao atualizar");
+      toastError("Erro ao atualizar liberação final");
     }
   };
 
@@ -584,7 +559,7 @@ export default function AdminProjectPage() {
 
     const confirmation = window.prompt('Digite "EXCLUIR" para confirmar a exclusão:');
     if (confirmation !== 'EXCLUIR') {
-      alert('Exclusão cancelada');
+      toastInfo("Exclusão cancelada");
       return;
     }
 
@@ -598,11 +573,11 @@ export default function AdminProjectPage() {
         throw new Error(data.error || "Erro ao excluir projeto");
       }
 
-      alert("Projeto excluído com sucesso");
+      toastSuccess("Projeto excluído com sucesso");
       router.push("/studio/admin");
     } catch (err) {
       console.error("Erro:", err);
-      alert(err instanceof Error ? err.message : "Erro ao excluir projeto");
+      toastError(err instanceof Error ? err.message : "Erro ao excluir projeto");
     }
   };
 
