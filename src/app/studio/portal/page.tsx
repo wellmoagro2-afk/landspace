@@ -10,13 +10,28 @@ export default function PortalLoginPage() {
   const [protocol, setProtocol] = useState("");
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [errorType, setErrorType] = useState<"PROTOCOL_NOT_FOUND" | "INVALID_PIN" | "UNKNOWN_ERROR" | null>(null);
+
+  /**
+   * Helper para extrair mensagem de erro do formato jsonError da API
+   * Suporta: { error: string } | { error: { code, message } } | { message: string }
+   */
+  function extractErrorMessage(data: any, fallback: string): string {
+    const err = data?.error;
+    if (typeof err === 'string') return err;
+    if (err && typeof err === 'object') {
+      if (typeof err.message === 'string') return err.message;
+      if (typeof err.code === 'string') return err.code;
+    }
+    if (typeof data?.message === 'string') return data.message;
+    return fallback;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(null);
     setErrorType(null);
 
     try {
@@ -33,19 +48,25 @@ export default function PortalLoginPage() {
         }),
       });
 
-      const data = await response.json();
+      // Leitura robusta do JSON
+      const raw = await response.text();
+      let data: any = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        const errorMsg = data.error || "Erro ao fazer login";
+        const errorMsg = extractErrorMessage(data, `Erro ao fazer login (${response.status})`);
         console.error('[Portal Login] Erro na resposta:', {
           status: response.status,
-          error: errorMsg,
-          errorType: data.errorType,
-          data: data,
+          error: data?.error,
+          requestId: data?.requestId,
         });
         
         setError(errorMsg);
-        setErrorType(data.errorType || null);
+        setErrorType(data?.errorType || null);
         setLoading(false);
         // Manter o erro visível - não limpar automaticamente
         return;
@@ -102,7 +123,7 @@ export default function PortalLoginPage() {
                   setProtocol(value);
                   // Limpar erro apenas quando o usuário começar a digitar novamente
                   if (error && value !== protocol) {
-                    setError("");
+                    setError(null);
                     setErrorType(null);
                   }
                 }}
@@ -125,7 +146,7 @@ export default function PortalLoginPage() {
                   setPin(value);
                   // Limpar erro apenas quando o usuário começar a digitar novamente
                   if (error && value !== pin) {
-                    setError("");
+                    setError(null);
                     setErrorType(null);
                   }
                 }}
@@ -160,7 +181,7 @@ export default function PortalLoginPage() {
                   </div>
                   <button
                     onClick={() => {
-                      setError("");
+                      setError(null);
                       setErrorType(null);
                     }}
                     className="flex-shrink-0 text-red-400/60 hover:text-red-400 transition-colors"

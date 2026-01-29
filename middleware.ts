@@ -58,9 +58,15 @@ export async function middleware(request: NextRequest) {
   // Interceptar apenas rotas /api/admin/* e /api/admin
   if (pathname.startsWith('/api/admin/') || pathname === '/api/admin') {
     // Allowlist: rotas que não precisam de sessão prévia
-    // /api/admin/login - endpoint de autenticação (precisa ser acessível sem sessão)
-    // /api/admin/logout - endpoint de logout (pode ser acessível sem sessão para limpar cookie)
-    if (pathname === '/api/admin/login' || pathname === '/api/admin/logout') {
+    // Admin principal: login/logout
+    // Admin do Portal: portal/login, portal/logout, portal/password (GET público para checagem/setup)
+    if (
+      pathname === '/api/admin/login' ||
+      pathname === '/api/admin/logout' ||
+      pathname === '/api/admin/portal/login' ||
+      pathname === '/api/admin/portal/logout' ||
+      pathname === '/api/admin/portal/password'
+    ) {
       // Bypass: deixar passar sem verificar sessão
       // A segurança continua sendo garantida pelas rotas (ADMIN_KEY, rate limiting, etc.)
       return NextResponse.next();
